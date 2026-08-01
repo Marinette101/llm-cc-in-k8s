@@ -1,0 +1,86 @@
+site_name: "Confidential Computing for LLM Serving on GKE"
+site_description: "Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving"
+site_author: "linghuanym"
+
+nav:
+  - Threat Model & Curriculum: index.md
+  - Module 1 - Confidential Computing Foundations: 01_confidential_computing_foundations.md
+  - Module 2 - Hardware TEE Architectures: 02_hardware_tee_architectures.md
+  - Module 3 - Remote Attestation and Key Release: 03_remote_attestation_and_key_release.md
+  - Module 4 - Confidential GPUs and Accelerators: 04_confidential_gpus_and_accelerators.md
+  - Module 5 - The Google Cloud Confidential Surface: 05_google_cloud_confidential_surface.md
+  - Module 6 - Designing Confidential LLM Serving on GKE: 06_designing_confidential_llm_serving_on_gke.md
+  - Module 7 - Performance, Operations, and Evaluation: 07_performance_operations_and_evaluation.md
+  - Appendix A - Master Glossary: appendix_glossary_and_terminology.md
+  - Appendix B - Primary Source Reading List: appendix_reading_list.md
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode toggle
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode toggle
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: 简体中文
+          build: true
+          nav_translations:
+            Threat Model & Curriculum: 威胁模型与课程大纲
+            Module 1 - Confidential Computing Foundations: 模块 1 - 机密计算基础
+            Module 2 - Hardware TEE Architectures: 模块 2 - 硬件 TEE 架构
+            Module 3 - Remote Attestation and Key Release: 模块 3 - 远程证明与密钥释放
+            Module 4 - Confidential GPUs and Accelerators: 模块 4 - 机密 GPU 与加速器
+            Module 5 - The Google Cloud Confidential Surface: 模块 5 - Google Cloud 机密计算产品面
+            Module 6 - Designing Confidential LLM Serving on GKE: 模块 6 - 在 GKE 上设计机密 LLM 服务
+            Module 7 - Performance, Operations, and Evaluation: 模块 7 - 性能、运维与评估
+            Appendix A - Master Glossary: 附录 A - 术语总表
+            Appendix B - Primary Source Reading List: 附录 B - 一手资料阅读清单
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+  - tables
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/custom.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
