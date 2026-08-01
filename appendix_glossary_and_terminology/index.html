@@ -1,0 +1,3852 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../07_performance_operations_and_evaluation/">
+      
+      
+        <link rel="next" href="../appendix_reading_list/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/appendix_glossary_and_terminology/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Appendix A - Master Glossary - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#appendix-a-master-glossary" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Appendix A - Master Glossary
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/appendix_glossary_and_terminology/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-core-concepts-and-threat-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core Concepts and Threat Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Core Concepts and Threat Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tee-trusted-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TEE (Trusted Execution Environment)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb-trusted-computing-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB (Trusted Computing Base)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rot-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RoT (Root of Trust)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ccc-confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCC (Confidential Computing Consortium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data in Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-versus-confidentiality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control versus Confidentiality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toctou-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOCTOU (Time of Check to Time of Use)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma-direct-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA (Direct Memory Access)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iommu-input-output-memory-management-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOMMU (Input-Output Memory Management Unit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-and-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV and SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV and SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sev-secure-encrypted-virtualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV (Secure Encrypted Virtualization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-es-sev-encrypted-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-ES (SEV Encrypted State)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-snp-sev-secure-nested-paging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-SNP (SEV Secure Nested Paging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asid-address-space-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASID (Address Space Identifier)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmp-reverse-map-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMP (Reverse Map Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pvalidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVALIDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpl-virtual-machine-privilege-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPL (Virtual Machine Privilege Level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#svsm-secure-vm-service-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVSM (Secure VM Service Module)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmsa-vm-save-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMSA (VM Save Area)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcb-guest-hypervisor-communication-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GHCB (Guest-Hypervisor Communication Block)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc-vmm-communication-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #VC (VMM Communication Exception)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psp-asp-platform-security-processor-amd-secure-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PSP / ASP (Platform Security Processor / AMD Secure Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcek-versioned-chip-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VCEK (Versioned Chip Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlek-versioned-loaded-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VLEK (Versioned Loaded Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpck-vm-platform-communication-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPCK (VM Platform Communication Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-ask-amd-root-key-amd-sev-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK / ASK (AMD Root Key / AMD SEV Signing Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kds-key-distribution-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KDS (Key Distribution Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ma_report_id-migration-agent-report-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MA_REPORT_ID (Migration Agent Report ID)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx-and-sgx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX and SGX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX and SGX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdx-trust-domain-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX (Trust Domain Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD (Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seam-secure-arbitration-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAM (Secure Arbitration Mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seamcall-tdcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAMCALL / TDCALL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SHARED bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-ept-secure-extended-page-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure EPT (Secure Extended Page Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mktme-multi-key-total-memory-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MKTME (Multi-Key Total Memory Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mrtd-measurement-register-for-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRTD (Measurement Register for Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtmr0-3-runtime-measurement-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RTMR0-3 (Runtime Measurement Registers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDREPORT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qe-quoting-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QE (Quoting Enclave)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcap-data-center-attestation-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCAP (Data Center Attestation Primitives)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcs-pccs-provisioning-certification-service-caching-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCS / PCCS (Provisioning Certification Service / Caching Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pck-provisioning-certification-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCK (Provisioning Certification Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmspc-family-model-stepping-platform-customsku" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMSPC (Family-Model-Stepping-Platform-CustomSKU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgx-software-guard-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SGX (Software Guard Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epc-enclave-page-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EPC (Enclave Page Cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-other-tee-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Other TEE Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Other TEE Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cca-confidential-compute-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCA (Confidential Compute Architecture)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmm-realm-management-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMM (Realm Management Monitor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-granule-protection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT (Granule Protection Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cove-confidential-vm-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoVE (Confidential VM Extension)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-attestation-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Attestation and Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Attestation and Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rats-remote-attestation-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RATS (Remote ATtestation procedureS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attester-verifier-relying-party" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attester / Verifier / Relying Party
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endorser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endorser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-value-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Value Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passport-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passport Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background-check-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background-Check Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launch Measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcr-platform-configuration-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCR (Platform Configuration Register)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report_data-reportdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REPORT_DATA / REPORTDATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HOST_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb_version-svn-security-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB_VERSION / SVN (Security Version Number)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat-entity-attestation-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EAT (Entity Attestation Token)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corim-concise-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoRIM (Concise Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coswid-concise-software-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoSWID (Concise Software Identification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ra-tls-remote-attestation-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RA-TLS (Remote Attestation TLS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dm-verity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dm-verity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-closed-fail-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail-Closed / Fail-Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cryptography-and-key-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Cryptography and Key Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Cryptography and Key Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aes-xts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-XTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-gcm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-GCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kek-dek-key-encryption-key-data-encryption-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEK / DEK (Key Encryption Key / Data Encryption Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skr-secure-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKR (Secure Key Release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hpke-hybrid-public-key-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HPKE (Hybrid Public Key Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spdm-security-protocol-and-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPDM (Security Protocol and Data Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ide-integrity-and-data-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDE (Integrity and Data Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdisp-tee-device-interface-security-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDISP (TEE Device Interface Security Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciphertext-side-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ciphertext Side Channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-confidential-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Confidential GPUs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Confidential GPUs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cc-mode-confidential-computing-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CC mode (Confidential Computing mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-unprotected-memory-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected / Unprotected Memory Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounce-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounce Buffer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gsp-gpu-system-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GSP (GPU System Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rim-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RIM (Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nras-nvidia-remote-attestation-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NRAS (NVIDIA Remote Attestation Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spt-single-gpu-passthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPT (Single GPU Passthrough)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-nvlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected NVLink
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-tio-sev-trusted-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-TIO (SEV Trusted I/O)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-persistenced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvidia-persistenced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-ready-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU Ready State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-launcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container Launcher
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbgstat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dbgstat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hwmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hwmodel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swname-swversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        swname / swversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat_nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eat_nonce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wif-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WIF (Workload Identity Federation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cmek-customer-managed-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMEK (Customer-Managed Encryption Keys)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ekm-external-key-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EKM (External Key Manager)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shielded-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shielded VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-sc-vpc-service-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC-SC (VPC Service Controls)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-llm-serving-intersection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. LLM Serving Intersection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. LLM Serving Intersection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kv-cache-key-value-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KV cache (Key-Value cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaggregated-prefilldecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaggregated Prefill/Decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttft-tpot-time-to-first-token-time-per-output-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTFT / TPOT (Time To First Token / Time Per Output Token)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-intensity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Intensity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attested-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attested Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maas-3p-maas-model-as-a-service-third-party-maas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MaaS / 3P MaaS (Model-as-a-Service / Third-Party MaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcc-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCC (Private Cloud Compute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-core-concepts-and-threat-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core Concepts and Threat Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Core Concepts and Threat Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tee-trusted-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TEE (Trusted Execution Environment)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb-trusted-computing-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB (Trusted Computing Base)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rot-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RoT (Root of Trust)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ccc-confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCC (Confidential Computing Consortium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data in Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-versus-confidentiality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control versus Confidentiality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toctou-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOCTOU (Time of Check to Time of Use)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma-direct-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA (Direct Memory Access)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iommu-input-output-memory-management-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOMMU (Input-Output Memory Management Unit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-and-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV and SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV and SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sev-secure-encrypted-virtualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV (Secure Encrypted Virtualization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-es-sev-encrypted-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-ES (SEV Encrypted State)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-snp-sev-secure-nested-paging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-SNP (SEV Secure Nested Paging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asid-address-space-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASID (Address Space Identifier)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmp-reverse-map-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMP (Reverse Map Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pvalidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVALIDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpl-virtual-machine-privilege-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPL (Virtual Machine Privilege Level)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#svsm-secure-vm-service-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVSM (Secure VM Service Module)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmsa-vm-save-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMSA (VM Save Area)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcb-guest-hypervisor-communication-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GHCB (Guest-Hypervisor Communication Block)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc-vmm-communication-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #VC (VMM Communication Exception)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psp-asp-platform-security-processor-amd-secure-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PSP / ASP (Platform Security Processor / AMD Secure Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcek-versioned-chip-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VCEK (Versioned Chip Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlek-versioned-loaded-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VLEK (Versioned Loaded Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpck-vm-platform-communication-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPCK (VM Platform Communication Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-ask-amd-root-key-amd-sev-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK / ASK (AMD Root Key / AMD SEV Signing Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kds-key-distribution-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KDS (Key Distribution Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ma_report_id-migration-agent-report-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MA_REPORT_ID (Migration Agent Report ID)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx-and-sgx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX and SGX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX and SGX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdx-trust-domain-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX (Trust Domain Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD (Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seam-secure-arbitration-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAM (Secure Arbitration Mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seamcall-tdcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAMCALL / TDCALL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SHARED bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-ept-secure-extended-page-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure EPT (Secure Extended Page Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mktme-multi-key-total-memory-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MKTME (Multi-Key Total Memory Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mrtd-measurement-register-for-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRTD (Measurement Register for Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtmr0-3-runtime-measurement-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RTMR0-3 (Runtime Measurement Registers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDREPORT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qe-quoting-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QE (Quoting Enclave)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcap-data-center-attestation-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCAP (Data Center Attestation Primitives)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcs-pccs-provisioning-certification-service-caching-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCS / PCCS (Provisioning Certification Service / Caching Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pck-provisioning-certification-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCK (Provisioning Certification Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmspc-family-model-stepping-platform-customsku" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMSPC (Family-Model-Stepping-Platform-CustomSKU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgx-software-guard-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SGX (Software Guard Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epc-enclave-page-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EPC (Enclave Page Cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-other-tee-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Other TEE Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Other TEE Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cca-confidential-compute-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCA (Confidential Compute Architecture)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmm-realm-management-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMM (Realm Management Monitor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-granule-protection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT (Granule Protection Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cove-confidential-vm-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoVE (Confidential VM Extension)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-attestation-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Attestation and Evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Attestation and Evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rats-remote-attestation-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RATS (Remote ATtestation procedureS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attester-verifier-relying-party" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attester / Verifier / Relying Party
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endorser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endorser
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-value-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Value Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passport-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passport Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background-check-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background-Check Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launch Measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcr-platform-configuration-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCR (Platform Configuration Register)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report_data-reportdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REPORT_DATA / REPORTDATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HOST_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb_version-svn-security-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB_VERSION / SVN (Security Version Number)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat-entity-attestation-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EAT (Entity Attestation Token)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corim-concise-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoRIM (Concise Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coswid-concise-software-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoSWID (Concise Software Identification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ra-tls-remote-attestation-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RA-TLS (Remote Attestation TLS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dm-verity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dm-verity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-closed-fail-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail-Closed / Fail-Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cryptography-and-key-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Cryptography and Key Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Cryptography and Key Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aes-xts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-XTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-gcm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-GCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kek-dek-key-encryption-key-data-encryption-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEK / DEK (Key Encryption Key / Data Encryption Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skr-secure-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKR (Secure Key Release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hpke-hybrid-public-key-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HPKE (Hybrid Public Key Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spdm-security-protocol-and-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPDM (Security Protocol and Data Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ide-integrity-and-data-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDE (Integrity and Data Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdisp-tee-device-interface-security-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDISP (TEE Device Interface Security Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciphertext-side-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ciphertext Side Channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-confidential-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Confidential GPUs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Confidential GPUs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cc-mode-confidential-computing-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CC mode (Confidential Computing mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-unprotected-memory-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected / Unprotected Memory Region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounce-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounce Buffer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gsp-gpu-system-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GSP (GPU System Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rim-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RIM (Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nras-nvidia-remote-attestation-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NRAS (NVIDIA Remote Attestation Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spt-single-gpu-passthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPT (Single GPU Passthrough)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-nvlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected NVLink
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-tio-sev-trusted-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-TIO (SEV Trusted I/O)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-persistenced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvidia-persistenced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-ready-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU Ready State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-launcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container Launcher
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbgstat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dbgstat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hwmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hwmodel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swname-swversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        swname / swversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat_nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eat_nonce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wif-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WIF (Workload Identity Federation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cmek-customer-managed-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMEK (Customer-Managed Encryption Keys)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ekm-external-key-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EKM (External Key Manager)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shielded-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shielded VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-sc-vpc-service-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC-SC (VPC Service Controls)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-llm-serving-intersection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. LLM Serving Intersection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. LLM Serving Intersection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kv-cache-key-value-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KV cache (Key-Value cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaggregated-prefilldecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaggregated Prefill/Decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttft-tpot-time-to-first-token-time-per-output-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTFT / TPOT (Time To First Token / Time Per Output Token)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-intensity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Intensity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attested-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attested Ingress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maas-3p-maas-model-as-a-service-third-party-maas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MaaS / 3P MaaS (Model-as-a-Service / Third-Party MaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcc-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCC (Private Cloud Compute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="appendix-a-master-glossary">Appendix A: Master Glossary<a class="headerlink" href="#appendix-a-master-glossary" title="Permanent link">&para;</a></h1>
+<p>Every acronym and term used in this book, grouped by domain. Each entry gives the expansion, a one-line definition, and where it is developed.</p>
+<hr />
+<h2 id="1-core-concepts-and-threat-modeling">1. Core Concepts and Threat Modeling<a class="headerlink" href="#1-core-concepts-and-threat-modeling" title="Permanent link">&para;</a></h2>
+<h3 id="tee-trusted-execution-environment"><code>TEE</code> (Trusted Execution Environment)<a class="headerlink" href="#tee-trusted-execution-environment" title="Permanent link">&para;</a></h3>
+<p>A hardware-enforced region whose contents are protected from more privileged software. Meaningful only when combined with attestation. → Module 1, §1.3</p>
+<h3 id="tcb-trusted-computing-base"><code>TCB</code> (Trusted Computing Base)<a class="headerlink" href="#tcb-trusted-computing-base" title="Permanent link">&para;</a></h3>
+<p>The set of components whose compromise breaks the security guarantee. VM TEEs trade a large TCB (the entire guest OS) for zero porting cost. → Module 1, §2.3</p>
+<h3 id="rot-root-of-trust"><code>RoT</code> (Root of Trust)<a class="headerlink" href="#rot-root-of-trust" title="Permanent link">&para;</a></h3>
+<p>An unextractable secret fused into silicon at manufacture, plus immutable boot code, endorsed by a vendor certificate chain. → Module 1, §3.1</p>
+<h3 id="ccc-confidential-computing-consortium"><code>CCC</code> (Confidential Computing Consortium)<a class="headerlink" href="#ccc-confidential-computing-consortium" title="Permanent link">&para;</a></h3>
+<p>The Linux Foundation body whose definition — protection of data in use, in a hardware-based, <em>attested</em> TEE — is the field's reference wording. → Module 1, §1.3</p>
+<h3 id="data-in-use">Data in Use<a class="headerlink" href="#data-in-use" title="Permanent link">&para;</a></h3>
+<p>Plaintext data in DRAM, registers, or GPU HBM during computation. The state that disk and transport encryption leave unprotected. → Module 1, §1.1</p>
+<h3 id="control-versus-confidentiality">Control versus Confidentiality<a class="headerlink" href="#control-versus-confidentiality" title="Permanent link">&para;</a></h3>
+<p>The defining asymmetry of VM TEEs: the hypervisor keeps full resource control over the guest while being locked out of its data. → Module 1, §2.2</p>
+<h3 id="sealing">Sealing<a class="headerlink" href="#sealing" title="Permanent link">&para;</a></h3>
+<p>Deriving an encryption key from the root of trust <em>and</em> the current measurement, so data sealed by one code version cannot be unsealed by different code. → Module 1, §3.5</p>
+<h3 id="toctou-time-of-check-to-time-of-use"><code>TOCTOU</code> (Time of Check to Time of Use)<a class="headerlink" href="#toctou-time-of-check-to-time-of-use" title="Permanent link">&para;</a></h3>
+<p>Attestation is a snapshot; execution continues afterward. Mitigated by immutability, not by re-checking. → Module 3, §2.3</p>
+<h3 id="dma-direct-memory-access"><code>DMA</code> (Direct Memory Access)<a class="headerlink" href="#dma-direct-memory-access" title="Permanent link">&para;</a></h3>
+<p>Device access to memory without CPU involvement. In a TEE, DMA targets must be shared (unencrypted) pages, which is why bounce buffers exist. → Module 2, §4.2.4</p>
+<h3 id="iommu-input-output-memory-management-unit"><code>IOMMU</code> (Input-Output Memory Management Unit)<a class="headerlink" href="#iommu-input-output-memory-management-unit" title="Permanent link">&para;</a></h3>
+<p>Hardware that translates and restricts device memory access. Programmed by the hypervisor, which is why it is not a confidentiality control in a TEE.</p>
+<hr />
+<h2 id="2-amd-sev-and-sev-snp">2. AMD SEV and SEV-SNP<a class="headerlink" href="#2-amd-sev-and-sev-snp" title="Permanent link">&para;</a></h2>
+<h3 id="sev-secure-encrypted-virtualization"><code>SEV</code> (Secure Encrypted Virtualization)<a class="headerlink" href="#sev-secure-encrypted-virtualization" title="Permanent link">&para;</a></h3>
+<p>AMD's first-generation memory encryption for VMs. Confidentiality only — no integrity, and register state is plaintext on <code>VMEXIT</code>. → Module 2, §1.1</p>
+<h3 id="sev-es-sev-encrypted-state"><code>SEV-ES</code> (SEV Encrypted State)<a class="headerlink" href="#sev-es-sev-encrypted-state" title="Permanent link">&para;</a></h3>
+<p>Adds <code>VMSA</code> encryption so register state survives world switches confidentially. Still no memory integrity. → Module 2, §1.2</p>
+<h3 id="sev-snp-sev-secure-nested-paging"><code>SEV-SNP</code> (SEV Secure Nested Paging)<a class="headerlink" href="#sev-snp-sev-secure-nested-paging" title="Permanent link">&para;</a></h3>
+<p>Adds memory <em>integrity</em> via the <code>RMP</code>, defeating replay, remap, and aliasing. The first generation that defends against an actively malicious hypervisor. → Module 2, §1.3</p>
+<h3 id="c-bit"><code>C-bit</code><a class="headerlink" href="#c-bit" title="Permanent link">&para;</a></h3>
+<p>A physical-address bit in the guest's page tables marking a page as encrypted. Set = encrypted (the inverse of TDX's SHARED bit). → Module 2, §1.1</p>
+<h3 id="asid-address-space-identifier"><code>ASID</code> (Address Space Identifier)<a class="headerlink" href="#asid-address-space-identifier" title="Permanent link">&para;</a></h3>
+<p>Identifies a confidential VM; the memory controller holds one AES key per ASID. → Module 2, §1.1</p>
+<h3 id="rmp-reverse-map-table"><code>RMP</code> (Reverse Map Table)<a class="headerlink" href="#rmp-reverse-map-table" title="Permanent link">&para;</a></h3>
+<p>A system-wide table, one entry per 4 KB page, recording ownership and the guest physical address a page may back. Hypervisor cannot write it. The core of SNP integrity. → Module 2, §1.3</p>
+<h3 id="pvalidate"><code>PVALIDATE</code><a class="headerlink" href="#pvalidate" title="Permanent link">&para;</a></h3>
+<p>The guest instruction that accepts a page as private memory. One-shot and hardware-tracked, which closes the replay attack. → Module 2, §1.3</p>
+<h3 id="vmpl-virtual-machine-privilege-level"><code>VMPL</code> (Virtual Machine Privilege Level)<a class="headerlink" href="#vmpl-virtual-machine-privilege-level" title="Permanent link">&para;</a></h3>
+<p>Four privilege levels <em>inside</em> an SNP guest (VMPL0 most privileged), enabling a paravisor or SVSM to provide services the guest kernel should not implement itself. → Module 2, §1.3</p>
+<h3 id="svsm-secure-vm-service-module"><code>SVSM</code> (Secure VM Service Module)<a class="headerlink" href="#svsm-secure-vm-service-module" title="Permanent link">&para;</a></h3>
+<p>Trusted software at VMPL0 providing in-guest services — most importantly a vTPM that the hypervisor cannot forge. → Module 2, §1.3</p>
+<h3 id="vmsa-vm-save-area"><code>VMSA</code> (VM Save Area)<a class="headerlink" href="#vmsa-vm-save-area" title="Permanent link">&para;</a></h3>
+<p>The encrypted, integrity-checked region holding guest register state across world switches. Its ciphertext is what CipherLeaks observes. → Module 2, §1.2</p>
+<h3 id="ghcb-guest-hypervisor-communication-block"><code>GHCB</code> (Guest-Hypervisor Communication Block)<a class="headerlink" href="#ghcb-guest-hypervisor-communication-block" title="Permanent link">&para;</a></h3>
+<p>A shared page through which the guest deliberately discloses what the hypervisor needs for I/O emulation. → Module 2, §1.2</p>
+<h3 id="vc-vmm-communication-exception"><code>#VC</code> (VMM Communication Exception)<a class="headerlink" href="#vc-vmm-communication-exception" title="Permanent link">&para;</a></h3>
+<p>The in-guest exception raised for operations requiring hypervisor involvement, making disclosure explicit and guest-controlled. → Module 2, §1.2</p>
+<h3 id="psp-asp-platform-security-processor-amd-secure-processor"><code>PSP</code> / <code>ASP</code> (Platform Security Processor / AMD Secure Processor)<a class="headerlink" href="#psp-asp-platform-security-processor-amd-secure-processor" title="Permanent link">&para;</a></h3>
+<p>The on-die coprocessor that is AMD's root of trust: holds keys, computes launch measurements, signs attestation reports. → Module 2, §1.1</p>
+<h3 id="vcek-versioned-chip-endorsement-key"><code>VCEK</code> (Versioned Chip Endorsement Key)<a class="headerlink" href="#vcek-versioned-chip-endorsement-key" title="Permanent link">&para;</a></h3>
+<p>The report-signing key, derived from chip-unique secrets <strong>and the current TCB version</strong> — which is why firmware updates invalidate cached certificates. → Module 2, §1.4</p>
+<h3 id="vlek-versioned-loaded-endorsement-key"><code>VLEK</code> (Versioned Loaded Endorsement Key)<a class="headerlink" href="#vlek-versioned-loaded-endorsement-key" title="Permanent link">&para;</a></h3>
+<p>An alternative to VCEK, keyed to a cloud service provider rather than an individual chip; reports no longer fingerprint a specific machine. → Module 3, §3.2</p>
+<h3 id="vmpck-vm-platform-communication-key"><code>VMPCK</code> (VM Platform Communication Key)<a class="headerlink" href="#vmpck-vm-platform-communication-key" title="Permanent link">&para;</a></h3>
+<p>Established at launch, known only to the guest and the AMD Secure Processor; secures the guest's attestation-request channel. → Module 2, §1.4</p>
+<h3 id="ark-ask-amd-root-key-amd-sev-signing-key"><code>ARK</code> / <code>ASK</code> (AMD Root Key / AMD SEV Signing Key)<a class="headerlink" href="#ark-ask-amd-root-key-amd-sev-signing-key" title="Permanent link">&para;</a></h3>
+<p>The certificate chain anchoring VCEK/VLEK signatures. The ARK is the trust anchor to pin. → Module 3, §3.2</p>
+<h3 id="kds-key-distribution-service"><code>KDS</code> (Key Distribution Service)<a class="headerlink" href="#kds-key-distribution-service" title="Permanent link">&para;</a></h3>
+<p>AMD's service for retrieving VCEK certificates and the CA chain. A runtime dependency on the verification path. → Module 3, §3.2</p>
+<h3 id="ma_report_id-migration-agent-report-id"><code>MA_REPORT_ID</code> (Migration Agent Report ID)<a class="headerlink" href="#ma_report_id-migration-agent-report-id" title="Permanent link">&para;</a></h3>
+<p>Links an attestation report to its migration agent's report, if migration is enabled. → Module 2, §1.4</p>
+<hr />
+<h2 id="3-intel-tdx-and-sgx">3. Intel TDX and SGX<a class="headerlink" href="#3-intel-tdx-and-sgx" title="Permanent link">&para;</a></h2>
+<h3 id="tdx-trust-domain-extensions"><code>TDX</code> (Trust Domain Extensions)<a class="headerlink" href="#tdx-trust-domain-extensions" title="Permanent link">&para;</a></h3>
+<p>Intel's VM-level TEE. Reaches the same guarantees as SEV-SNP through a new CPU mode and an Intel-signed software module. → Module 2, §2</p>
+<h3 id="td-trust-domain"><code>TD</code> (Trust Domain)<a class="headerlink" href="#td-trust-domain" title="Permanent link">&para;</a></h3>
+<p>A TDX confidential guest.</p>
+<h3 id="seam-secure-arbitration-mode"><code>SEAM</code> (Secure Arbitration Mode)<a class="headerlink" href="#seam-secure-arbitration-mode" title="Permanent link">&para;</a></h3>
+<p>A CPU mode more privileged than VMX root, in which only the TDX Module runs. → Module 2, §2.1</p>
+<h3 id="tdx-module"><code>TDX Module</code><a class="headerlink" href="#tdx-module" title="Permanent link">&para;</a></h3>
+<p>Intel-signed software running in SEAM mode that arbitrates every transition into and out of a TD. Adds ~10⁵ lines of code to the TCB, in exchange for patchability. → Module 2, §2.1</p>
+<h3 id="seamcall-tdcall"><code>SEAMCALL</code> / <code>TDCALL</code><a class="headerlink" href="#seamcall-tdcall" title="Permanent link">&para;</a></h3>
+<p>The interfaces by which the hypervisor and the guest respectively request services from the TDX Module. → Module 2, §2.1</p>
+<h3 id="shared-bit"><code>SHARED bit</code><a class="headerlink" href="#shared-bit" title="Permanent link">&para;</a></h3>
+<p>The most significant guest-physical-address bit. Set = shared and plaintext; clear = private, encrypted, integrity-protected. The inverse convention to AMD's C-bit. → Module 2, §2.2</p>
+<h3 id="secure-ept-secure-extended-page-table"><code>Secure EPT</code> (Secure Extended Page Table)<a class="headerlink" href="#secure-ept-secure-extended-page-table" title="Permanent link">&para;</a></h3>
+<p>The second-stage page table for TD private memory, owned by the TDX Module rather than the hypervisor. TDX's equivalent of the RMP invariant. → Module 2, §2.2</p>
+<h3 id="mktme-multi-key-total-memory-encryption"><code>MKTME</code> (Multi-Key Total Memory Encryption)<a class="headerlink" href="#mktme-multi-key-total-memory-encryption" title="Permanent link">&para;</a></h3>
+<p>The memory encryption engine providing a per-TD key. → Module 2, §2.2</p>
+<h3 id="mrtd-measurement-register-for-trust-domain"><code>MRTD</code> (Measurement Register for Trust Domain)<a class="headerlink" href="#mrtd-measurement-register-for-trust-domain" title="Permanent link">&para;</a></h3>
+<p>The build-time launch measurement, finalized when the TD is constructed. Immutable thereafter. → Module 2, §2.3</p>
+<h3 id="rtmr0-3-runtime-measurement-registers"><code>RTMR0-3</code> (Runtime Measurement Registers)<a class="headerlink" href="#rtmr0-3-runtime-measurement-registers" title="Permanent link">&para;</a></h3>
+<p>Four extend-only registers behaving like TPM PCRs, covering kernel, initrd, rootfs, and workload. TDX's architectural advantage over SEV-SNP. → Module 2, §2.3</p>
+<h3 id="tdreport"><code>TDREPORT</code><a class="headerlink" href="#tdreport" title="Permanent link">&para;</a></h3>
+<p>Local evidence MAC'd with a CPU-local key. <strong>Not remotely verifiable</strong> — it must be converted to a Quote. → Module 2, §2.4</p>
+<h3 id="td-quote"><code>TD Quote</code><a class="headerlink" href="#td-quote" title="Permanent link">&para;</a></h3>
+<p>The remotely verifiable, asymmetrically signed attestation produced by the TD Quoting Enclave from a TDREPORT. → Module 2, §2.4</p>
+<h3 id="qe-quoting-enclave"><code>QE</code> (Quoting Enclave)<a class="headerlink" href="#qe-quoting-enclave" title="Permanent link">&para;</a></h3>
+<p>An SGX enclave that verifies a TDREPORT's MAC and re-signs it with an attestation key. SGX's surviving job. → Module 2, §2.4</p>
+<h3 id="dcap-data-center-attestation-primitives"><code>DCAP</code> (Data Center Attestation Primitives)<a class="headerlink" href="#dcap-data-center-attestation-primitives" title="Permanent link">&para;</a></h3>
+<p>Intel's library and collateral model for third-party attestation verification without a live Intel service on every check. → Module 3, §3.3</p>
+<h3 id="pcs-pccs-provisioning-certification-service-caching-service"><code>PCS</code> / <code>PCCS</code> (Provisioning Certification Service / Caching Service)<a class="headerlink" href="#pcs-pccs-provisioning-certification-service-caching-service" title="Permanent link">&para;</a></h3>
+<p>Intel's source for verification collateral, and the local cache you run in production. → Module 3, §3.3</p>
+<h3 id="pck-provisioning-certification-key"><code>PCK</code> (Provisioning Certification Key)<a class="headerlink" href="#pck-provisioning-certification-key" title="Permanent link">&para;</a></h3>
+<p>The certificate identifying a specific CPU package and TCB level in the Intel chain. → Module 3, §3.3</p>
+<h3 id="fmspc-family-model-stepping-platform-customsku"><code>FMSPC</code> (Family-Model-Stepping-Platform-CustomSKU)<a class="headerlink" href="#fmspc-family-model-stepping-platform-customsku" title="Permanent link">&para;</a></h3>
+<p>The platform identifier under which Intel publishes TCB info. → Module 3, §3.3</p>
+<h3 id="sgx-software-guard-extensions"><code>SGX</code> (Software Guard Extensions)<a class="headerlink" href="#sgx-software-guard-extensions" title="Permanent link">&para;</a></h3>
+<p>Intel's process-level enclave TEE. Disqualified for model serving by memory limits and lack of device access; survives as the TDX Quoting Enclave. → Module 1, §4.1</p>
+<h3 id="epc-enclave-page-cache"><code>EPC</code> (Enclave Page Cache)<a class="headerlink" href="#epc-enclave-page-cache" title="Permanent link">&para;</a></h3>
+<p>The limited encrypted memory region backing SGX enclaves — the constraint that ruled SGX out for LLM weights.</p>
+<hr />
+<h2 id="4-other-tee-architectures">4. Other TEE Architectures<a class="headerlink" href="#4-other-tee-architectures" title="Permanent link">&para;</a></h2>
+<h3 id="cca-confidential-compute-architecture"><code>CCA</code> (Confidential Compute Architecture)<a class="headerlink" href="#cca-confidential-compute-architecture" title="Permanent link">&para;</a></h3>
+<p>ARM's VM-level TEE, introducing Realms. → Module 2, §3</p>
+<h3 id="rmm-realm-management-monitor"><code>RMM</code> (Realm Management Monitor)<a class="headerlink" href="#rmm-realm-management-monitor" title="Permanent link">&para;</a></h3>
+<p>ARM CCA's trusted component managing Realms; the analogue of the TDX Module. → Module 2, §3</p>
+<h3 id="gpt-granule-protection-table"><code>GPT</code> (Granule Protection Table)<a class="headerlink" href="#gpt-granule-protection-table" title="Permanent link">&para;</a></h3>
+<p>ARM CCA's page-ownership table; the analogue of AMD's RMP. → Module 2, §3</p>
+<h3 id="cove-confidential-vm-extension"><code>CoVE</code> (Confidential VM Extension)<a class="headerlink" href="#cove-confidential-vm-extension" title="Permanent link">&para;</a></h3>
+<p>RISC-V's confidential computing standard, with a TEE Security Manager in the TDX Module role. Notable as an <em>open</em> TEE. → Module 2, §3</p>
+<hr />
+<h2 id="5-attestation-and-evidence">5. Attestation and Evidence<a class="headerlink" href="#5-attestation-and-evidence" title="Permanent link">&para;</a></h2>
+<h3 id="rats-remote-attestation-procedures"><code>RATS</code> (Remote ATtestation procedureS)<a class="headerlink" href="#rats-remote-attestation-procedures" title="Permanent link">&para;</a></h3>
+<p>The IETF architecture (RFC 9334) defining Attester, Verifier, Relying Party, Endorser, and Reference Value Provider. → Module 3, §1.1</p>
+<h3 id="attester-verifier-relying-party">Attester / Verifier / Relying Party<a class="headerlink" href="#attester-verifier-relying-party" title="Permanent link">&para;</a></h3>
+<p>The entity producing Evidence; the entity appraising it; the entity acting on the result. <strong>Who plays Verifier is the most consequential decision in a confidential design.</strong> → Module 3, §1.3</p>
+<h3 id="endorser">Endorser<a class="headerlink" href="#endorser" title="Permanent link">&para;</a></h3>
+<p>The party vouching that hardware is genuine — AMD, Intel, NVIDIA — via certificate chains. → Module 3, §1.1</p>
+<h3 id="reference-value-provider">Reference Value Provider<a class="headerlink" href="#reference-value-provider" title="Permanent link">&para;</a></h3>
+<p>The party publishing what measurements <em>should</em> be. Usually the weakest link. → Module 3, §7</p>
+<h3 id="passport-model">Passport Model<a class="headerlink" href="#passport-model" title="Permanent link">&para;</a></h3>
+<p>The attester obtains an attestation result once and presents it to relying parties. GCP's model. → Module 3, §1.2</p>
+<h3 id="background-check-model">Background-Check Model<a class="headerlink" href="#background-check-model" title="Permanent link">&para;</a></h3>
+<p>The relying party forwards evidence to a verifier itself. AWS Nitro's model; naturally fresher. → Module 3, §1.2</p>
+<h3 id="launch-measurement">Launch Measurement<a class="headerlink" href="#launch-measurement" title="Permanent link">&para;</a></h3>
+<p>A hash of the initial guest image and vCPU state, computed before execution. Immutable. <code>MEASUREMENT</code> on SNP, <code>MRTD</code> on TDX. → Module 1, §3.2</p>
+<h3 id="runtime-measurement">Runtime Measurement<a class="headerlink" href="#runtime-measurement" title="Permanent link">&para;</a></h3>
+<p>Extend-only registers covering what was loaded after launch. <code>RTMR</code> on TDX; a vTPM PCR on SEV-SNP. → Module 1, §3.2</p>
+<h3 id="pcr-platform-configuration-register"><code>PCR</code> (Platform Configuration Register)<a class="headerlink" href="#pcr-platform-configuration-register" title="Permanent link">&para;</a></h3>
+<p>A TPM register that can only be extended, never set: <code>PCR_new = H(PCR_old ‖ measurement)</code>. → Module 1, §3.2</p>
+<h3 id="event-log">Event Log<a class="headerlink" href="#event-log" title="Permanent link">&para;</a></h3>
+<p>The ordered record of what was measured, allowing a verifier to replay and interpret PCR values rather than compare against an opaque golden hash. → Module 3, §3.1</p>
+<h3 id="report_data-reportdata"><code>REPORT_DATA</code> / <code>REPORTDATA</code><a class="headerlink" href="#report_data-reportdata" title="Permanent link">&para;</a></h3>
+<p>64 caller-supplied bytes in an attestation report. Carries the nonce and/or the TLS public key hash. The basis of RA-TLS. → Module 1, §3.4</p>
+<h3 id="host_data"><code>HOST_DATA</code><a class="headerlink" href="#host_data" title="Permanent link">&para;</a></h3>
+<p>32 bytes supplied by the <em>hypervisor</em> at launch. Untrusted by construction — useful for correlation, never for security. → Module 2, §1.4</p>
+<h3 id="tcb_version-svn-security-version-number"><code>TCB_VERSION</code> / <code>SVN</code> (Security Version Number)<a class="headerlink" href="#tcb_version-svn-security-version-number" title="Permanent link">&para;</a></h3>
+<p>Firmware component security versions in the report. Pin a <strong>floor</strong>, never an exact value. → Module 3, §4.2</p>
+<h3 id="eat-entity-attestation-token"><code>EAT</code> (Entity Attestation Token)<a class="headerlink" href="#eat-entity-attestation-token" title="Permanent link">&para;</a></h3>
+<p>RFC 9711's standard claims format for attestation. The reason GCP tokens have claims named <code>eat_nonce</code>, <code>dbgstat</code>, <code>hwmodel</code>. → Module 3, §3.4</p>
+<h3 id="corim-concise-reference-integrity-manifest"><code>CoRIM</code> (Concise Reference Integrity Manifest)<a class="headerlink" href="#corim-concise-reference-integrity-manifest" title="Permanent link">&para;</a></h3>
+<p>A standard format for publishing reference values. → Module 3, §3.4</p>
+<h3 id="coswid-concise-software-identification"><code>CoSWID</code> (Concise Software Identification)<a class="headerlink" href="#coswid-concise-software-identification" title="Permanent link">&para;</a></h3>
+<p>Software identification tags binding reference values to identifiable software. → Module 3, §3.4</p>
+<h3 id="ra-tls-remote-attestation-tls"><code>RA-TLS</code> (Remote Attestation TLS)<a class="headerlink" href="#ra-tls-remote-attestation-tls" title="Permanent link">&para;</a></h3>
+<p>Binding an attestation report to a TLS session by embedding the public key hash in the report's caller-supplied data. The only clean end-to-end guarantee for a client. → Module 3, §6</p>
+<h3 id="dm-verity"><code>dm-verity</code><a class="headerlink" href="#dm-verity" title="Permanent link">&para;</a></h3>
+<p>A Merkle tree over a read-only filesystem whose root hash is measured, with per-block verification on read. What makes a measured rootfs meaningful at runtime. → Module 3, §2.2</p>
+<h3 id="fail-closed-fail-open">Fail-Closed / Fail-Open<a class="headerlink" href="#fail-closed-fail-open" title="Permanent link">&para;</a></h3>
+<p>Whether an unreachable verifier or stale collateral blocks operation or is ignored. <strong>Choosing by accident means choosing fail-open.</strong> → Module 3, §3.3</p>
+<hr />
+<h2 id="6-cryptography-and-key-management">6. Cryptography and Key Management<a class="headerlink" href="#6-cryptography-and-key-management" title="Permanent link">&para;</a></h2>
+<h3 id="aes-xts"><code>AES-XTS</code><a class="headerlink" href="#aes-xts" title="Permanent link">&para;</a></h3>
+<p>The length-preserving, address-tweaked, <strong>deterministic</strong> mode used for memory encryption. Its determinism is the ciphertext side channel. → Module 1, §3.3</p>
+<h3 id="aes-gcm"><code>AES-GCM</code><a class="headerlink" href="#aes-gcm" title="Permanent link">&para;</a></h3>
+<p>Authenticated, non-deterministic mode used on the GPU PCIe path, where nonce and tag expansion is affordable. → Module 4, §2.2</p>
+<h3 id="kek-dek-key-encryption-key-data-encryption-key"><code>KEK</code> / <code>DEK</code> (Key Encryption Key / Data Encryption Key)<a class="headerlink" href="#kek-dek-key-encryption-key-data-encryption-key" title="Permanent link">&para;</a></h3>
+<p>Envelope encryption: bulk data under a DEK, the DEK wrapped under a KEK. Rotating the KEK is cheap; rotating the DEK means re-encrypting the model. → Module 6, §3.2</p>
+<h3 id="skr-secure-key-release"><code>SKR</code> (Secure Key Release)<a class="headerlink" href="#skr-secure-key-release" title="Permanent link">&para;</a></h3>
+<p>Releasing key material only to an environment whose attestation satisfies a policy. → Module 3, §5</p>
+<h3 id="hpke-hybrid-public-key-encryption"><code>HPKE</code> (Hybrid Public Key Encryption)<a class="headerlink" href="#hpke-hybrid-public-key-encryption" title="Permanent link">&para;</a></h3>
+<p>RFC 9180 public-key encryption, usable for client-side payload encryption to an attested public key. → Module 6, §5.2</p>
+<h3 id="spdm-security-protocol-and-data-model"><code>SPDM</code> (Security Protocol and Data Model)<a class="headerlink" href="#spdm-security-protocol-and-data-model" title="Permanent link">&para;</a></h3>
+<p>The DMTF standard for mutually authenticated key exchange with a device, used to establish the CPU-TEE-to-GPU session. → Module 4, §2.3</p>
+<h3 id="ide-integrity-and-data-encryption"><code>IDE</code> (Integrity and Data Encryption)<a class="headerlink" href="#ide-integrity-and-data-encryption" title="Permanent link">&para;</a></h3>
+<p>The PCIe link-layer standard for encrypting and integrity-protecting bus traffic. → Module 4, §2.3</p>
+<h3 id="tdisp-tee-device-interface-security-protocol"><code>TDISP</code> (TEE Device Interface Security Protocol)<a class="headerlink" href="#tdisp-tee-device-interface-security-protocol" title="Permanent link">&para;</a></h3>
+<p>The PCIe standard for assigning a device interface directly into a TEE. Eliminates bounce buffers when broadly implemented. → Module 4, §6.2</p>
+<h3 id="ciphertext-side-channel">Ciphertext Side Channel<a class="headerlink" href="#ciphertext-side-channel" title="Permanent link">&para;</a></h3>
+<p>Inferring plaintext changes by observing deterministic ciphertext. Architectural, not a bug. CipherLeaks and successors. → Module 2, §5.1</p>
+<hr />
+<h2 id="7-confidential-gpus">7. Confidential GPUs<a class="headerlink" href="#7-confidential-gpus" title="Permanent link">&para;</a></h2>
+<h3 id="cc-mode-confidential-computing-mode"><code>CC mode</code> (Confidential Computing mode)<a class="headerlink" href="#cc-mode-confidential-computing-mode" title="Permanent link">&para;</a></h3>
+<p>The NVIDIA GPU device state. <code>OFF</code>, <code>ON</code> (protections active, profiling disabled), or <code>DEVTOOLS</code> (<strong>not a security mode</strong>). → Module 4, §2.1</p>
+<h3 id="protected-unprotected-memory-region">Protected / Unprotected Memory Region<a class="headerlink" href="#protected-unprotected-memory-region" title="Permanent link">&para;</a></h3>
+<p>The HBM split: protected holds weights, KV cache, and activations; unprotected is the ciphertext bounce landing zone. → Module 4, §2.2</p>
+<h3 id="bounce-buffer">Bounce Buffer<a class="headerlink" href="#bounce-buffer" title="Permanent link">&para;</a></h3>
+<p>A shared, host-visible staging buffer through which encrypted data crosses the PCIe boundary. The dominant source of CC overhead. → Module 4, §2.2</p>
+<h3 id="gsp-gpu-system-processor"><code>GSP</code> (GPU System Processor)<a class="headerlink" href="#gsp-gpu-system-processor" title="Permanent link">&para;</a></h3>
+<p>The GPU's on-die microcontroller whose firmware is measured as part of GPU attestation. → Module 4, §2.2</p>
+<h3 id="rim-reference-integrity-manifest"><code>RIM</code> (Reference Integrity Manifest)<a class="headerlink" href="#rim-reference-integrity-manifest" title="Permanent link">&para;</a></h3>
+<p>NVIDIA's signed publication of expected measurements for a firmware and driver version. The GPU's answer to the reference-value problem. → Module 4, §3.1</p>
+<h3 id="nras-nvidia-remote-attestation-service"><code>NRAS</code> (NVIDIA Remote Attestation Service)<a class="headerlink" href="#nras-nvidia-remote-attestation-service" title="Permanent link">&para;</a></h3>
+<p>NVIDIA's hosted verifier. Convenient; adds a dependency and reveals your fleet. A local verifier is the alternative. → Module 4, §3.1</p>
+<h3 id="nvtrust"><code>nvtrust</code><a class="headerlink" href="#nvtrust" title="Permanent link">&para;</a></h3>
+<p>NVIDIA's open-source tooling for GPU attestation and verification. → Module 4, lab</p>
+<h3 id="composite-attestation">Composite Attestation<a class="headerlink" href="#composite-attestation" title="Permanent link">&para;</a></h3>
+<p>A single policy decision over <em>bound</em> CPU TEE, GPU, and workload-image evidence. Verifying them separately proves little. → Module 4, §3.2</p>
+<h3 id="spt-single-gpu-passthrough"><code>SPT</code> (Single GPU Passthrough)<a class="headerlink" href="#spt-single-gpu-passthrough" title="Permanent link">&para;</a></h3>
+<p>The Hopper-generation confidential GPU mode: one GPU per confidential VM, no protected interconnect. Appears as <code>cc_feature</code> in GCP tokens. → Module 4, §4.1</p>
+<h3 id="protected-nvlink">Protected NVLink<a class="headerlink" href="#protected-nvlink" title="Permanent link">&para;</a></h3>
+<p>Blackwell-generation hardware-encrypted GPU-to-GPU interconnect, enabling 1/2/4/8-GPU confidential groups and therefore tensor parallelism inside a TEE. → Module 4, §4.2</p>
+<h3 id="sev-tio-sev-trusted-io"><code>SEV-TIO</code> (SEV Trusted I/O)<a class="headerlink" href="#sev-tio-sev-trusted-io" title="Permanent link">&para;</a></h3>
+<p>AMD's trusted device assignment, pairing Instinct accelerators with SEV-SNP. → Module 4, §6.1</p>
+<h3 id="nvidia-persistenced"><code>nvidia-persistenced</code><a class="headerlink" href="#nvidia-persistenced" title="Permanent link">&para;</a></h3>
+<p>The daemon keeping the driver loaded so that CC session renegotiation and re-attestation do not occur on every process exit. Required in CC mode. → Module 4, §2.4</p>
+<h3 id="gpu-ready-state">GPU Ready State<a class="headerlink" href="#gpu-ready-state" title="Permanent link">&para;</a></h3>
+<p>The hardware gate that refuses compute until attestation has succeeded (<code>nvidia-smi conf-compute -srs 1</code>). Puts attestation on the cold-start critical path by design. → Module 4, §2.4</p>
+<hr />
+<h2 id="8-google-cloud">8. Google Cloud<a class="headerlink" href="#8-google-cloud" title="Permanent link">&para;</a></h2>
+<h3 id="confidential-vm">Confidential VM<a class="headerlink" href="#confidential-vm" title="Permanent link">&para;</a></h3>
+<p>The base product. <code>--confidential-compute-type=SEV | SEV_SNP | TDX</code>. <strong>Plain SEV lacks memory integrity.</strong> → Module 5, §1</p>
+<h3 id="confidential-gke-nodes">Confidential GKE Nodes<a class="headerlink" href="#confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p>Node pools whose VMs are Confidential VMs. <code>--confidential-node-type=sev|sev_snp|tdx</code>. <strong>Does not cover the Google-operated control plane.</strong> → Module 5, §2</p>
+<h3 id="confidential-space">Confidential Space<a class="headerlink" href="#confidential-space" title="Permanent link">&para;</a></h3>
+<p>A hardened, measured image running exactly one container and emitting an attestation token. Separates workload author, workload operator, and data collaborators — the operator has full project admin and still cannot read the data. → Module 5, §3</p>
+<h3 id="container-launcher">Container Launcher<a class="headerlink" href="#container-launcher" title="Permanent link">&para;</a></h3>
+<p>The Confidential Space component that starts the workload and serves attestation tokens over <code>/run/container_launcher/teeserver.sock</code>. → Module 5, §4.1</p>
+<h3 id="google-cloud-attestation">Google Cloud Attestation<a class="headerlink" href="#google-cloud-attestation" title="Permanent link">&para;</a></h3>
+<p>GCP's verifier, issuing OIDC JWT attestation tokens. Note that for a threat model including Google, a Google-signed result is a statement by the distrusted party. → Module 5, §4.1</p>
+<h3 id="dbgstat"><code>dbgstat</code><a class="headerlink" href="#dbgstat" title="Permanent link">&para;</a></h3>
+<p>The token claim indicating debug state: <code>disabled-since-boot</code> or <code>enabled</code>. <strong>The single most important claim to assert.</strong> → Module 5, §3.3</p>
+<h3 id="hwmodel"><code>hwmodel</code><a class="headerlink" href="#hwmodel" title="Permanent link">&para;</a></h3>
+<p>The token claim naming the hardware: <code>GCP_AMD_SEV</code>, <code>GCP_AMD_SEV_ES</code>, <code>GCP_INTEL_TDX</code>, or <code>GCP_SHIELDED_VM</code>. Assert the one you expect — Shielded VM is not a TEE. → Module 5, §4.2</p>
+<h3 id="swname-swversion"><code>swname</code> / <code>swversion</code><a class="headerlink" href="#swname-swversion" title="Permanent link">&para;</a></h3>
+<p><code>CONFIDENTIAL_SPACE</code> or <code>GCE</code>, and the image version. Distinguishes a Confidential Space image from a bare confidential VM. → Module 5, §4.2</p>
+<h3 id="submods"><code>submods</code><a class="headerlink" href="#submods" title="Permanent link">&para;</a></h3>
+<p>The token's nested claim structure: <code>submods.container</code> (image digest, signatures, args, env), <code>submods.gce</code> (project, zone, instance), <code>submods.confidential_space</code> (support attributes, monitoring), <code>submods.nvidia_gpu</code> (<code>cc_mode</code>, per-GPU model, driver, VBIOS). → Module 3, §5.2</p>
+<h3 id="eat_nonce"><code>eat_nonce</code><a class="headerlink" href="#eat_nonce" title="Permanent link">&para;</a></h3>
+<p>Caller-supplied freshness values in the token. Use them; relying on <code>exp</code> alone accepts a replay window. → Module 3, §4.1</p>
+<h3 id="wif-workload-identity-federation"><code>WIF</code> (Workload Identity Federation)<a class="headerlink" href="#wif-workload-identity-federation" title="Permanent link">&para;</a></h3>
+<p>The mechanism exchanging an attestation token for a Google credential, with a CEL <strong>attribute condition</strong> over the token claims acting as the release policy. → Module 5, §4.2</p>
+<h3 id="cmek-customer-managed-encryption-keys"><code>CMEK</code> (Customer-Managed Encryption Keys)<a class="headerlink" href="#cmek-customer-managed-encryption-keys" title="Permanent link">&para;</a></h3>
+<p>Encryption keys you control in Cloud KMS. Better than Google-managed, and still not attestation-gated. → Module 5, §1.3</p>
+<h3 id="ekm-external-key-manager"><code>EKM</code> (External Key Manager)<a class="headerlink" href="#ekm-external-key-manager" title="Permanent link">&para;</a></h3>
+<p>Cloud KMS backed by a key manager <strong>outside</strong> Google. The qualitatively different option for a model provider's weight KEK. → Module 5, §4.3</p>
+<h3 id="shielded-vm">Shielded VM<a class="headerlink" href="#shielded-vm" title="Permanent link">&para;</a></h3>
+<p>Secure boot, vTPM, and integrity monitoring. <strong>Not confidential computing</strong> — memory is not encrypted. → Module 5, §5.3</p>
+<h3 id="binary-authorization">Binary Authorization<a class="headerlink" href="#binary-authorization" title="Permanent link">&para;</a></h3>
+<p>GKE admission control blocking unsigned or unattested images. Prevents <em>deployment</em>; the attestation policy prevents <em>key release</em>. → Module 5, §5.1</p>
+<h3 id="vpc-sc-vpc-service-controls"><code>VPC-SC</code> (VPC Service Controls)<a class="headerlink" href="#vpc-sc-vpc-service-controls" title="Permanent link">&para;</a></h3>
+<p>Perimeter controls on data egress — one of the few places a control <em>outside</em> the TEE helps, because the threat is the workload itself. → Module 5, §5.3</p>
+<hr />
+<h2 id="9-llm-serving-intersection">9. LLM Serving Intersection<a class="headerlink" href="#9-llm-serving-intersection" title="Permanent link">&para;</a></h2>
+<h3 id="kv-cache-key-value-cache"><code>KV cache</code> (Key-Value cache)<a class="headerlink" href="#kv-cache-key-value-cache" title="Permanent link">&para;</a></h3>
+<p>Cached attention keys and values. <strong>A high-fidelity encoding of everything the model has been told</strong> — treat it with the sensitivity of the prompt itself. → Module 6, §6.1</p>
+<h3 id="prefix-caching">Prefix Caching<a class="headerlink" href="#prefix-caching" title="Permanent link">&para;</a></h3>
+<p>Reusing computed KV blocks for a shared prompt prefix. <strong>Across tenants this is a timing oracle over other tenants' prompt content</strong>, and memory encryption does not help. → Module 6, §6.2</p>
+<h3 id="continuous-batching">Continuous Batching<a class="headerlink" href="#continuous-batching" title="Permanent link">&para;</a></h3>
+<p>Iteration-level scheduling that mixes multiple tenants' requests into one forward pass. Isolation between them is software, not hardware. → Module 6, §7.2</p>
+<h3 id="disaggregated-prefilldecode">Disaggregated Prefill/Decode<a class="headerlink" href="#disaggregated-prefilldecode" title="Permanent link">&para;</a></h3>
+<p>Splitting the two phases across machines, shipping KV cache between them. Requires mutually attested, encrypted transport in a confidential design. → Module 6, §6.3</p>
+<h3 id="ttft-tpot-time-to-first-token-time-per-output-token"><code>TTFT</code> / <code>TPOT</code> (Time To First Token / Time Per Output Token)<a class="headerlink" href="#ttft-tpot-time-to-first-token-time-per-output-token" title="Permanent link">&para;</a></h3>
+<p>Prefill-dominated and decode-dominated latency metrics respectively. TPOT is least affected by confidential computing. → Module 7, §1.3</p>
+<h3 id="arithmetic-intensity">Arithmetic Intensity<a class="headerlink" href="#arithmetic-intensity" title="Permanent link">&para;</a></h3>
+<p>FLOPs per byte transferred. CC taxes the denominator only, so relative overhead scales as <span class="arithmatex">\(1/I\)</span> — which is why it shrinks with model size, batch size, and sequence length. → Module 4, §5.2</p>
+<h3 id="attested-ingress">Attested Ingress<a class="headerlink" href="#attested-ingress" title="Permanent link">&para;</a></h3>
+<p>Terminating TLS, or decrypting the payload, <strong>inside</strong> the TEE. A managed L7 load balancer holds plaintext prompts and voids the guarantee. → Module 6, §5</p>
+<h3 id="maas-3p-maas-model-as-a-service-third-party-maas"><code>MaaS</code> / <code>3P MaaS</code> (Model-as-a-Service / Third-Party MaaS)<a class="headerlink" href="#maas-3p-maas-model-as-a-service-third-party-maas" title="Permanent link">&para;</a></h3>
+<p>Serving another organization's model on your infrastructure. The three-way trust conflict that motivates this entire book. → index</p>
+<h3 id="pcc-private-cloud-compute"><code>PCC</code> (Private Cloud Compute)<a class="headerlink" href="#pcc-private-cloud-compute" title="Permanent link">&para;</a></h3>
+<p>Apple's confidential inference architecture: stateless computation, enforceable guarantees, no privileged runtime access, non-targetability, verifiable transparency. The bar to measure against. → Module 7, §6.2</p>
+<hr />
+<p>Return to the <a href="../">curriculum index</a>, or continue to <a href="../appendix_reading_list/">Appendix B: Primary Source Reading List</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

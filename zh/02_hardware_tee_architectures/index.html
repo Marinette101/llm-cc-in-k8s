@@ -1,0 +1,2184 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../01_confidential_computing_foundations/">
+      
+      
+        <link rel="next" href="../03_remote_attestation_and_key_release/">
+      
+      
+        
+          <link rel="alternate" href="../../02_hardware_tee_architectures/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>模块 2 - 硬件 TEE 架构 - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#2-tee" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              模块 2 - 硬件 TEE 架构
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../02_hardware_tee_architectures/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 1 - 机密计算基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-amd-sev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: AMD SEV 谱系
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: AMD SEV 谱系">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-sevc-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 SEV：C-bit 与内存加密引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-sev-es-ghcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 SEV-ES：加密状态与 GHCB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 SEV-SNP：通过反向映射表实现完整性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 SEV-SNP：通过反向映射表实现完整性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-vmpl-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. VMPL —— guest 内部的特权级
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-guest-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Guest policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Launch measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 证明报告
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: Intel TDX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: Intel TDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-seam-tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 SEAM 与 TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-shared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 私有与共享内存：SHARED 位
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-mrtd-rtmr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 度量寄存器：MRTD 与 RTMR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Quote 路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 版图的其余部分
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 对比与运维后果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 对比与运维后果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 正面对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 什么会停止工作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 什么会停止工作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 热迁移
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 内存气球与超分
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 启动时间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 设备访问与 DMA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 嵌套虚拟化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 可观测性与调试
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 证明进入关键路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 已知攻击与残余风险
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 已知攻击与残余风险">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 密文侧信道
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 中断注入与指令级操纵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 单步执行与 TDX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 诚实的总结
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 拉一份真实的证明报告并解码
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 拉一份真实的证明报告并解码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sev-snp-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 步 —— 启动一台 SEV-SNP VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 步 —— 确认 guest 设备存在
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-snpguest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 步 —— 安装 snpguest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-report_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 步 —— 用你自己的 REPORT_DATA 请求一份报告
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 步 —— 读字段
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 步 —— 取回证书链
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 步 —— 验证
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 步 —— 注意你仍然没有得到什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 步 —— 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: 硬件 TEE 对比
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 3 - 远程证明与密钥释放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 4 - 机密 GPU 与加速器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 6 - 在 GKE 上设计机密 LLM 服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B - 一手资料阅读清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-amd-sev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: AMD SEV 谱系
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: AMD SEV 谱系">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-sevc-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 SEV：C-bit 与内存加密引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-sev-es-ghcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 SEV-ES：加密状态与 GHCB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 SEV-SNP：通过反向映射表实现完整性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 SEV-SNP：通过反向映射表实现完整性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-vmpl-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. VMPL —— guest 内部的特权级
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-guest-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Guest policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Launch measurement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 证明报告
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: Intel TDX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: Intel TDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-seam-tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 SEAM 与 TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-shared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 私有与共享内存：SHARED 位
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-mrtd-rtmr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 度量寄存器：MRTD 与 RTMR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Quote 路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 版图的其余部分
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 对比与运维后果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 对比与运维后果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 正面对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 什么会停止工作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 什么会停止工作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 热迁移
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 内存气球与超分
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 启动时间
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 设备访问与 DMA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 嵌套虚拟化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 可观测性与调试
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 证明进入关键路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 已知攻击与残余风险
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 已知攻击与残余风险">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 密文侧信道
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 中断注入与指令级操纵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 单步执行与 TDX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 诚实的总结
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 拉一份真实的证明报告并解码
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 拉一份真实的证明报告并解码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sev-snp-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 步 —— 启动一台 SEV-SNP VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 步 —— 确认 guest 设备存在
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-snpguest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 步 —— 安装 snpguest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-report_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 步 —— 用你自己的 REPORT_DATA 请求一份报告
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 步 —— 读字段
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 步 —— 取回证书链
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 步 —— 验证
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 步 —— 注意你仍然没有得到什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 步 —— 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: 硬件 TEE 对比
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="2-tee">模块 2: 硬件 TEE 架构<a class="headerlink" href="#2-tee" title="Permanent link">&para;</a></h1>
+<p>模块 1 确立了 VM TEE 需要五种原语：信任根、度量、内存加密、完整性、证明。本模块考察 AMD 与 Intel 究竟如何构建它们。目标不是把两套指令集扩展讲成百科全书——而是让你在读到一句厂商论断、一个证明报告字段或一份事件公告时，能准确知道它指的是哪个机制、以及它<strong>没有</strong>覆盖什么。</p>
+<p>本模块涵盖 <strong>AMD SEV 谱系与 SEV-SNP 完整性模型</strong>、<strong>Intel TDX 及其额外的 TCB 层</strong>、<strong>TEE 版图的其余部分</strong>、<strong>打开这些开关后运维上会坏掉什么</strong>，以及<strong>已公开的攻击对你的安全论断意味着什么</strong>。</p>
+<hr />
+<h2 id="1-amd-sev">第 1 部分: AMD SEV 谱系<a class="headerlink" href="#1-amd-sev" title="Permanent link">&para;</a></h2>
+<p>AMD 的机密计算出了三代，代际差异不是营销增量——每一代都封堵了模块 1 §3.3 里的一类具体攻击。你在哪一代上，决定了你实际排除掉了哪个攻击者。</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph G1 ["SEV (2016) —— 仅内存机密性"]
+        S1["内存控制器中按 VM 分配的 AES 密钥&lt;br&gt;页表中的 C-bit 标记加密页"]
+        S1 --&gt; S1B["❌ VMEXIT 时寄存器状态&lt;br&gt;以明文保存&lt;br&gt;❌ 无完整性：重放与重映射可行"]
+    end
+
+    subgraph G2 ["SEV-ES (2017) —— 加密状态"]
+        S2["VMSA：世界切换时寄存器状态&lt;br&gt;被加密并校验完整性&lt;br&gt;#VC 异常 + GHCB 用于&lt;br&gt;显式的 hypervisor 通信"]
+        S2 --&gt; S2B["❌ 仍无内存完整性&lt;br&gt;❌ VMSA 密文可观测 → CipherLeaks"]
+    end
+
+    subgraph G3 ["SEV-SNP (2020) —— 安全嵌套分页"]
+        S3["RMP：反向映射表&lt;br&gt;每个系统 4 KB 页一条表项&lt;br&gt;PVALIDATE、RMPUPDATE&lt;br&gt;VMPL、guest policy、launch measurement"]
+        S3 --&gt; S3B["✅ 完整性：重放、重映射、别名&lt;br&gt;与注入均可被检测&lt;br&gt;✅ 主动作恶的 hypervisor 进入防护范围"]
+    end
+
+    G1 --&gt; G2 --&gt; G3</code></pre>
+<h3 id="11-sevc-bit">1.1 SEV：C-bit 与内存加密引擎<a class="headerlink" href="#11-sevc-bit" title="Permanent link">&para;</a></h3>
+<p>基础机制很简单，自 2016 年起没变过。每台机密 VM 被分配一个 <strong>ASID</strong>（地址空间标识符），AMD 安全处理器把该 ASID 对应的 AES 密钥编程进内存控制器。密钥在安全处理器内部生成、从不外流，guest、hypervisor 以及任何软件都读不到它。</p>
+<p>哪些页会被加密由 <strong>C-bit</strong> 控制——这是一个物理地址位（在典型 EPYC 上是 bit 47），由 guest 在<strong>自己的</strong>页表里设置。带 C-bit 映射的页用该 VM 的密钥加密；不带 C-bit 的页是明文，guest 正是用这种方式<strong>刻意</strong>建立 I/O 共享缓冲区。</p>
+<div class="arithmatex">\[
+\text{DRAM}[pa] = \text{AES-XTS}_{K_{ASID}}\big(\text{plaintext},\ \text{tweak} = f(pa)\big)
+\]</div>
+<p>由此立刻得到两个后果，两个后面都要紧：</p>
+<ol>
+<li><strong>由 guest 决定什么是机密的。</strong> guest 想 DMA 给设备的任何数据，都必须放进<strong>共享</strong>（C-bit 清零）页。这就是为什么机密 VM 里的设备 I/O 需要 bounce buffer——guest 把数据从私有内存拷进共享 bounce buffer，设备再从那里 DMA。模块 4 会说明机密 GPU 就是这同一套机制，只是在 bounce 路径上再加了一层加密。</li>
+<li><strong>tweak 是物理地址的函数。</strong> 这使得密文按地址确定，也正是密文侧信道的根源（§5.1）。</li>
+</ol>
+<p>初代 SEV 有个显眼的漏洞：<code>VMEXIT</code> 时，guest 的寄存器状态以<strong>明文</strong>写入 VMCB，hypervisor 可以随意读写。一边加密内存、一边在每次世界切换时敞开寄存器堆，保护不了多少东西。</p>
+<h3 id="12-sev-es-ghcb">1.2 SEV-ES：加密状态与 GHCB<a class="headerlink" href="#12-sev-es-ghcb" title="Permanent link">&para;</a></h3>
+<p>SEV-ES 用 <strong>VMSA</strong>（VM Save Area）堵上了这个洞——这是一块加密且带完整性校验的区域，跨世界切换保存 guest 寄存器状态。hypervisor 不再能在退出时读取或篡改寄存器。</p>
+<p>但 hypervisor 仍然需要<strong>某些</strong>信息来模拟 I/O。SEV-ES 把这件事从隐式变成显式：以前会导致静默 <code>VMEXIT</code> 的操作，现在会在 guest 内部抛出 <strong><code>#VC</code>（VMM Communication）异常</strong>，由 guest 侧的处理程序决定披露什么，并把它写进共享页 <strong>GHCB</strong>（Guest-Hypervisor Communication Block）。</p>
+<p>这个反转是整套设计的架构核心，值得作为一条原则写下来：</p>
+<blockquote>
+<p><strong>由 guest 而非 hypervisor 决定什么离开信任边界。</strong> 每种 VM-TEE 架构都收敛到这一点。TDX 通过 <code>TDCALL</code> 与 shared/private GPA 位到达同一个地方。</p>
+</blockquote>
+<p>残余弱点——正是 CipherLeaks 所利用的——在于：VMSA 虽然被加密，它的<strong>密文</strong>却存放在 hypervisor 可读的内存里、位于固定地址、且是确定性加密的。攻击者在每次退出后转储 VMSA 密文，就能得知某个寄存器何时改变了值、何时又回到了此前见过的值。这足以攻破常量时间的密码学实现。</p>
+<h3 id="13-sev-snp">1.3 SEV-SNP：通过反向映射表实现完整性<a class="headerlink" href="#13-sev-snp" title="Permanent link">&para;</a></h3>
+<p>SEV-SNP 补上了模块 1 §3.3 缺的那一半：<strong>完整性</strong>。机制是 <strong>RMP</strong>（反向映射表）——一张全系统唯一的表，每个 4 KB 物理页一条表项，由硬件与 AMD 安全处理器维护，且 <strong>hypervisor 不可写</strong>。</p>
+<p>每条 RMP 表项记录这一页归谁所有：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">RMP 字段</th>
+<th style="text-align: left;">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Assigned</code></td>
+<td style="text-align: left;">这一页是分配给某个 guest 的，还是 hypervisor 自有的？</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ASID</code></td>
+<td style="text-align: left;">归哪个 guest</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GPA</code></td>
+<td style="text-align: left;">这个系统页被允许承载的<strong>guest</strong> 物理地址</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Validated</code></td>
+<td style="text-align: left;">guest 是否已通过 <code>PVALIDATE</code> 接受了它？</td>
+</tr>
+<tr>
+<td style="text-align: left;">VMPL 权限</td>
+<td style="text-align: left;">按特权级的读/写/执行/supervisor 权限</td>
+</tr>
+<tr>
+<td style="text-align: left;">页大小</td>
+<td style="text-align: left;">4 KB vs 2 MB</td>
+</tr>
+</tbody>
+</table>
+<p>guest 的每一次内存访问，除了走嵌套页表，还要额外过一遍 RMP 检查。最要紧的是 <strong>GPA 绑定</strong>：分配给 guest <span class="arithmatex">\(g\)</span>、位于 guest 物理地址 <span class="arithmatex">\(x\)</span> 的系统物理页，永远只能以 <span class="arithmatex">\(x\)</span> 的身份被访问。仅这一条不变式就杀掉了重映射与别名攻击——hypervisor 仍可改嵌套页表，但如果它把 GPA <span class="arithmatex">\(y\)</span> 指向一个 RMP 表项标称 GPA <span class="arithmatex">\(x\)</span> 的页，这次访问就会 fault。</p>
+<p><code>PVALIDATE</code> 是这份契约的 guest 侧。一页在 guest 自己对它执行 <code>PVALIDATE</code> 之前不可作为私有内存使用，而且硬件强制一页只能被验证一次（直到它被回收并重新分配）。这封死了<strong>双重验证/重放</strong>攻击：hypervisor 无法悄悄换入一页旧副本并让 guest 接受它，因为"接受"是一次性的、由 guest 发起的、硬件追踪的事件。</p>
+<h4 id="1-vmpl-guest">1. VMPL —— guest <strong>内部</strong>的特权级<a class="headerlink" href="#1-vmpl-guest" title="Permanent link">&para;</a></h4>
+<p>SEV-SNP 定义了四个 <strong>虚拟机特权级</strong>（VMPL0–VMPL3），VMPL0 特权最高。RMP 表项带按 VMPL 的权限，因此运行在 VMPL0 的软件可以限制 VMPL1 上的 guest kernel 对某页能做什么。</p>
+<p>它的存在是为了支持 <strong>paravisor</strong> 或 <strong>Secure VM Service Module (SVSM)</strong>——一个运行在 VMPL0 的小型可信层，提供那些 guest kernel 需要、但不应由它自己实现的服务，其中最重要的是<strong>虚拟 TPM</strong>。由 hypervisor 实现的 vTPM 在机密 VM 里毫无意义（hypervisor 就是攻击者）；而在加密 guest 内部由 VMPL0 实现的 vTPM 才有意义。请记住这一点以备模块 3：在 GCP 上，产出度量启动证据的那个 vTPM 总得来自某处，而它来自哪里决定了它的 quote 值不值钱。</p>
+<h4 id="2-guest-policy">2. Guest policy<a class="headerlink" href="#2-guest-policy" title="Permanent link">&para;</a></h4>
+<p>启动时 guest 所有者指定一份 <strong>policy</strong>——一个烧进证明报告的位域——声明可接受的最低固件版本，以及是否允许 debug、SMT、迁移等特性。固件会拒绝启动那些平台无法满足其所请策略的 guest，而且该策略出现在每一份证明报告里，因此验证方可以拒绝一个（比如）开着 debug 启动的 guest。</p>
+<p>检查 policy 字段不是可选项。一份来自真品 SEV-SNP 机器、但 policy 里允许 <code>DEBUG</code> 的证明报告，来自一台运营商可以读其内存的机器。<strong>只检查度量值、不检查 policy 的验证方</strong>是现实中反复出现的 bug。</p>
+<h4 id="3-launch-measurement">3. Launch measurement<a class="headerlink" href="#3-launch-measurement" title="Permanent link">&para;</a></h4>
+<p>AMD 安全处理器在 guest 被构造出来、还没执行一条指令之前，对初始 guest 内存页、其页类型以及初始 vCPU 状态（VMSA）计算一个 SHA-384 摘要。这就是证明报告的 <code>MEASUREMENT</code> 字段，也是模块 3 里一切的锚点。</p>
+<p>关键在于它覆盖的是<strong>初始镜像</strong>，实践中意味着固件加上交给固件的东西。它<strong>不</strong>覆盖固件后来从磁盘上加载的那个内核——除非那被单独度量进 vTPM。绝大多数真实度量链正是断在这个缺口上，模块 3 §2 讲怎么把它接上。</p>
+<h3 id="14">1.4 证明报告<a class="headerlink" href="#14" title="Permanent link">&para;</a></h3>
+<p>guest 通过 <code>/dev/sev-guest</code> 请求报告，它会向 AMD 安全处理器发起一次固件调用，通道由 <strong>VMPCK</strong>（VM Platform Communication Key，启动时建立，仅 guest 与 ASP 知晓）加密。ASP 返回一份用 <strong>VCEK</strong>（Versioned Chip Endorsement Key）签名的报告，该密钥由芯片唯一的熔断秘密<strong>以及当前 TCB 版本</strong>派生而来。</p>
+<p>运维上要紧的字段：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">字段</th>
+<th style="text-align: left;">内容</th>
+<th style="text-align: left;">验证方为何必须检查它</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>MEASUREMENT</code></td>
+<td style="text-align: left;">SHA-384 启动摘要</td>
+<td style="text-align: left;">这就是"在跑什么代码"</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REPORT_DATA</code></td>
+<td style="text-align: left;">guest 提供的 64 字节</td>
+<td style="text-align: left;">nonce 和/或公钥绑定——模块 1 §3.4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>HOST_DATA</code></td>
+<td style="text-align: left;"><strong>hypervisor</strong> 在启动时提供的 32 字节</td>
+<td style="text-align: left;">按构造即不可信；可用于关联，绝不可用于安全判定</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POLICY</code></td>
+<td style="text-align: left;">guest policy 位，含 debug</td>
+<td style="text-align: left;">一份允许 debug 的报告不构成机密性保证</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TCB_VERSION</code> / <code>*_SVN</code></td>
+<td style="text-align: left;">各固件组件的安全版本号</td>
+<td style="text-align: left;">拒绝已知存在漏洞的平台固件</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ID_KEY_DIGEST</code>、<code>AUTHOR_KEY_DIGEST</code></td>
+<td style="text-align: left;">guest 所有者签名密钥的摘要</td>
+<td style="text-align: left;">让验证方确认<strong>是谁</strong>启动了这个 guest，而不只是跑了什么</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>VMPL</code></td>
+<td style="text-align: left;">请求该报告的特权级</td>
+<td style="text-align: left;">VMPL3 的报告比 VMPL0 的说明力弱</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REPORT_ID</code>、<code>MA_REPORT_ID</code></td>
+<td style="text-align: left;">报告标识；关联迁移代理的报告</td>
+<td style="text-align: left;">仅在启用迁移时相关</td>
+</tr>
+</tbody>
+</table>
+<p><code>TCB_VERSION</code> 那一行值得强调，因为它是重大运维痛点的来源。VCEK 是<strong>从</strong> TCB 版本<strong>派生</strong>的——也就是说，AMD 发布固件更新、平台 TCB 前进时，<strong>签名密钥就变了</strong>，每一份缓存的证书和每一个钉死的参考值随之失效。模块 3 §4 讲这会引发的全机群风暴。</p>
+<hr />
+<h2 id="2-intel-tdx">第 2 部分: Intel TDX<a class="headerlink" href="#2-intel-tdx" title="Permanent link">&para;</a></h2>
+<p>Intel 的 Trust Domain Extensions 走了一条结构上不同的路到达同一目的地。AMD 把执行逻辑放进由协处理器管理的硬件表；Intel 则引入了一个新的特权模式，以及一个运行在其中的新<strong>软件</strong>组件。</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph SEAM ["SEAM —— 安全仲裁模式（新的 CPU 模式）"]
+        TDXM["🔷 Intel TDX Module&lt;br&gt;Intel 签名的软件，由认证代码模块 (ACM) 加载。&lt;br&gt;仲裁进出 TD 的一切转换。"]
+    end
+
+    HV["Hypervisor / VMM&lt;br&gt;不可信"] --&gt;|"SEAMCALL"| TDXM
+    TD["🔒 Trust Domain（guest）&lt;br&gt;私有内存以每 TD 的&lt;br&gt;MKTME 密钥加密"] --&gt;|"TDCALL"| TDXM
+    TDXM --&gt;|"TDENTER / TDEXIT"| TD
+    TDXM --&gt;|"仅受控结果"| HV
+
+    TD --- MEM["Guest 物理地址空间&lt;br&gt;SHARED 位 = 1 → 明文，hypervisor 可见&lt;br&gt;SHARED 位 = 0 → 私有，加密 + 完整性保护"]
+    TDXM --- EPT["Secure EPT&lt;br&gt;由 TDX Module 管理，&lt;br&gt;**不**由 hypervisor 管理"]</code></pre>
+<h3 id="21-seam-tdx-module">2.1 SEAM 与 TDX Module<a class="headerlink" href="#21-seam-tdx-module" title="Permanent link">&para;</a></h3>
+<p>TDX 引入 <strong>SEAM</strong>（安全仲裁模式），一个比 hypervisor 的 VMX root 模式更高特权的 CPU 模式。里面只跑一样东西：<strong>Intel TDX Module</strong>，一个由 Intel 签名的软件组件，在启动时由认证代码模块加载并被度量进平台。</p>
+<p>进出 Trust Domain 的每一次转换都要经过 TDX Module。hypervisor 通过 <code>SEAMCALL</code> 请求，guest 通过 <code>TDCALL</code> 请求。hypervisor 从不直接触碰 TD 内存或 TD 寄存器状态——它提出请求，由模块决定。</p>
+<p><strong>这个架构权衡是显式的，任何设计文档都该写明</strong>：TDX 把一块可观的<strong>软件</strong>加进了 TCB，而 AMD 的设计里没有这一块。TDX Module 是十万行量级的代码，运行在机器上的最高特权级。作为交换，Intel 获得了灵活性——模块可以更新以修复 bug、增加功能，无需换硅片，这正是 §5.3 里 TDX 勘误的处理方式。AMD 基于 RMP 的执行更僵硬，但软件 TCB 更小。</p>
+<p>两种做法没有绝对优劣，它们的<strong>失效方式不同</strong>。AMD 的失效往往需要硬件或 PSP 固件修复；Intel 的失效常常能在模块里打补丁，代价是一次让此前所有证明失效的 TCB recovery 事件。</p>
+<h3 id="22-shared">2.2 私有与共享内存：SHARED 位<a class="headerlink" href="#22-shared" title="Permanent link">&para;</a></h3>
+<p>TDX 用 guest 物理地址的最高位作为 <strong>SHARED</strong> 标志来切分 guest 物理地址空间：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">GPA 位</th>
+<th style="text-align: left;">内存类型</th>
+<th style="text-align: left;">加密？</th>
+<th style="text-align: left;">完整性保护？</th>
+<th style="text-align: left;">hypervisor 访问</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SHARED = 0</td>
+<td style="text-align: left;">私有</td>
+<td style="text-align: left;">是，每 TD 的 MKTME 密钥</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;">无</td>
+</tr>
+<tr>
+<td style="text-align: left;">SHARED = 1</td>
+<td style="text-align: left;">共享</td>
+<td style="text-align: left;">否</td>
+<td style="text-align: left;">否</td>
+<td style="text-align: left;">完全</td>
+</tr>
+</tbody>
+</table>
+<p>这在功能上与 AMD 的 C-bit <strong>相反</strong>（那边置位表示加密，这边置位表示共享），但用途完全相同：由 guest 显式指定它用来与外界通信的那部分内存。Virtio ring、bounce buffer 以及任何 DMA 目标都住在共享页里。</p>
+<p>私有内存通过 <strong>Secure EPT</strong> 管理——这是一张由 <strong>TDX Module</strong> 拥有的二级页表。hypervisor 可以请求增删页，但它不能把一个私有页映射到不同的 GPA，也不能把两个私有页做别名，因为它没有写权限——与 AMD 上 RMP 提供的是同一条不变式，只是执行机制不同。</p>
+<h3 id="23-mrtd-rtmr">2.3 度量寄存器：MRTD 与 RTMR<a class="headerlink" href="#23-mrtd-rtmr" title="Permanent link">&para;</a></h3>
+<p>TDX 提供两类度量寄存器，这个划分与模块 1 §3.2 完全对应：</p>
+<ul>
+<li><strong><code>MRTD</code></strong>（Measurement Register for Trust Domain）—— <strong>构建期</strong>度量，由 TDX Module 在 TD 从其初始页构造出来时计算，随后 finalize，此后不可变。SEV-SNP launch measurement 的直接对应物。</li>
+<li><strong><code>RTMR0</code> … <code>RTMR3</code></strong> —— 四个<strong>运行时</strong>可扩展寄存器，行为类似 TPM PCR：只可扩展，<code>RTMR_new = SHA384(RTMR_old ‖ data)</code>。guest 在启动过程中扩展它们，以覆盖内核、initrd、命令行，以及——对 Kubernetes 最要紧的那部分——容器镜像摘要。</li>
+</ul>
+<p>惯例划分沿用 TCG 风格的启动阶段：<code>RTMR0</code> 给虚拟固件及其配置，<code>RTMR1</code> 给 OS loader 与内核，<code>RTMR2</code> 给 OS 应用层，<code>RTMR3</code> 留给工作负载。<strong>只检查 <code>MRTD</code> 的验证方，验证了初始镜像，却对它启动了什么一无所知。</strong></p>
+<h3 id="24-quote">2.4 Quote 路径<a class="headerlink" href="#24-quote" title="Permanent link">&para;</a></h3>
+<p>从 TD 内部的度量走到远端方可验证的东西要两步，而这个两步结构正是要记住的重点：</p>
+<pre class="mermaid"><code>flowchart TD
+    A["TD guest&lt;br&gt;经由 /dev/tdx_guest&lt;br&gt;发起 TDCALL[TDG.MR.REPORT]"] --&gt; B["TDX Module 产出 TDREPORT&lt;br&gt;MRTD ‖ RTMRs ‖ TD 属性 ‖ REPORTDATA&lt;br&gt;用 CPU 本地密钥做 MAC&lt;br&gt;❗ 仅本地可验证"]
+    B --&gt; C["TD Quoting Enclave&lt;br&gt;同平台上的一个 SGX enclave&lt;br&gt;验证 MAC，然后重新签名"]
+    C --&gt; D["TD Quote&lt;br&gt;用 ECDSA 证明密钥签名，&lt;br&gt;由 Intel 的配置链背书"]
+    D --&gt; E["远端验证方&lt;br&gt;DCAP / PCS collateral：&lt;br&gt;PCK 证书链、TCB info、QE identity、CRL"]</code></pre>
+<p>两个常把人绊倒的点：</p>
+<ol>
+<li><strong>TDREPORT 不是远程可验证的。</strong> 它带的是一个 MAC，密钥只有那颗 CPU 封装持有，只在本机有用。Quoting Enclave 的职责就是把本地的对称证据转换成远程可验证的非对称签名。如果你在一张架构图里看到 "TDREPORT" 跨越网络边界，那张图是错的。</li>
+<li><strong>Quoting Enclave 是一个 SGX enclave。</strong> SGX 在客户端产品上已被弃用、作为应用平台也在退场，但它在 Xeon 上作为 TDX 证明的底座活了下来。它没消失，只是换了工作。</li>
+</ol>
+<p>验证需要从 Intel 配置证明服务拉取 <strong>collateral</strong>：该颗 CPU 的 PCK 证书链、当前 TCB info、QE identity 与 CRL。这是 AMD KDS 的对应物，运维后果也一样——验证依赖于能连上厂商服务，或者依赖于缓存其输出并处理陈旧问题。</p>
+<hr />
+<h2 id="3">第 3 部分: 版图的其余部分<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>你会在规范、论文和厂商路线图里碰到下面这三个。简略处理足矣，但知道各自的位置能避免范畴错误。</p>
+<pre class="mermaid"><code>flowchart TD
+    A["TEE 版图"] --&gt; B["Intel SGX&lt;br&gt;进程级 enclave"]
+    A --&gt; C["ARM CCA / Realms&lt;br&gt;VM 级，ARMv9"]
+    A --&gt; D["RISC-V CoVE&lt;br&gt;VM 级，开放标准"]
+    A --&gt; E["AMD SEV-SNP&lt;br&gt;Intel TDX&lt;br&gt;← 生产路径"]
+
+    B --&gt; B1["作为应用平台在退场。&lt;br&gt;以 TDX Quoting Enclave 的形式&lt;br&gt;及密钥管理小众场景存活。"]
+    C --&gt; C1["Realm Management Monitor +&lt;br&gt;Granule Protection Table。&lt;br&gt;结构上接近 SEV-SNP 的 RMP。&lt;br&gt;尚非主流服务器路径。"]
+    D --&gt; D1["TEE Security Manager，由 TSM 驱动。&lt;br&gt;标准化推进中且开放；&lt;br&gt;关注它，但现在别在上面搭东西。"]</code></pre>
+<p><strong>Intel SGX</strong> 就是模块 1 §4.1 里的进程级 TEE。它历史上的约束——加密页缓存很小、应用拆分痛苦、无法干净地访问设备——使它在模型服务上出局。仍然值得理解，原因有二：TDX 的证明路径依赖它；而且大量攻击文献（单步执行、受控信道）起源于此，并直接迁移到了 VM TEE 上。</p>
+<p><strong>ARM CCA</strong> 引入 <em>Realm</em>——由 <strong>Realm Management Monitor</strong> 管理的隔离类 VM 环境，并用 <strong>Granule Protection Table</strong> 追踪页归属。如果这听起来像 RMP，那是因为它就是同一个想法换了名字——而这正是有用的结论：业界在"硬件强制的页归属追踪"是正确完整性原语这件事上，独立地收敛了三次。</p>
+<p><strong>RISC-V CoVE</strong>（Confidential VM Extension）定义了 <strong>TEE Security Manager</strong>，扮演类似 TDX Module 的角色。它的意义在于：它是"这套架构现在是标准而非专有"的证据；而且开放 TEE 是消除厂商信任（模块 1 里的攻击者 B3）的唯一路径。今天它还不是部署选项。</p>
+<hr />
+<h2 id="4">第 4 部分: 对比与运维后果<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 正面对比<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">维度</th>
+<th style="text-align: left;">SEV-SNP</th>
+<th style="text-align: left;">TDX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">执行机制</td>
+<td style="text-align: left;">RMP 表 + 硬件检查</td>
+<td style="text-align: left;">SEAM 模式下的 TDX Module 软件</td>
+</tr>
+<tr>
+<td style="text-align: left;">新增软件 TCB</td>
+<td style="text-align: left;">AMD PSP 固件</td>
+<td style="text-align: left;">等价的 PSP <strong>加上</strong> TDX Module（约 10⁵ 行）</td>
+</tr>
+<tr>
+<td style="text-align: left;">内存机密性</td>
+<td style="text-align: left;">按 ASID 的 AES-XTS 密钥</td>
+<td style="text-align: left;">按 TD 的 MKTME 密钥</td>
+</tr>
+<tr>
+<td style="text-align: left;">内存完整性</td>
+<td style="text-align: left;">RMP 归属 + <code>PVALIDATE</code></td>
+<td style="text-align: left;">由 TDX Module 管理的 Secure EPT</td>
+</tr>
+<tr>
+<td style="text-align: left;">私有/共享标记</td>
+<td style="text-align: left;">C-bit 置位 = <strong>加密</strong></td>
+<td style="text-align: left;">SHARED 位置位 = <strong>明文</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Launch measurement</td>
+<td style="text-align: left;"><code>MEASUREMENT</code>（SHA-384）</td>
+<td style="text-align: left;"><code>MRTD</code>（SHA-384）</td>
+</tr>
+<tr>
+<td style="text-align: left;">原生运行时度量</td>
+<td style="text-align: left;">无——需要 vTPM（通常经 VMPL0 上的 SVSM）</td>
+<td style="text-align: left;">有——<code>RTMR0-3</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">证明产物</td>
+<td style="text-align: left;">由 VCEK/VLEK 签名的报告</td>
+<td style="text-align: left;">经 Quoting Enclave 由 ECDSA AK 签名的 TD Quote</td>
+</tr>
+<tr>
+<td style="text-align: left;">背书服务</td>
+<td style="text-align: left;">AMD KDS</td>
+<td style="text-align: left;">Intel PCS / DCAP collateral</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest 内特权级</td>
+<td style="text-align: left;">VMPL0–3</td>
+<td style="text-align: left;">无对应物</td>
+</tr>
+<tr>
+<td style="text-align: left;">热迁移</td>
+<td style="text-align: left;">需迁移代理；GCP 上实际禁用</td>
+<td style="text-align: left;">不支持</td>
+</tr>
+<tr>
+<td style="text-align: left;">GCP 机型族</td>
+<td style="text-align: left;">N2D（SEV、SEV-SNP）、C2D/C3D（SEV）、C4D（SEV）</td>
+<td style="text-align: left;">C3，以及 A3 机密 GPU 路径</td>
+</tr>
+</tbody>
+</table>
+<p>最值得内化的是<strong>运行时度量</strong>那一行。TDX 在架构里就给了你 <code>RTMR0-3</code>；SEV-SNP 没有，所以覆盖内核与容器镜像的度量启动链必须搭在 vTPM 上，而这个 vTPM 自身必须可信，这正是 §1.3 里 SVSM/VMPL0 那套机制存在的原因。这也是为什么 Google Cloud 上的<strong>机密 GPU</strong> 路径是基于 TDX 的——它开箱即得的证明故事更完整。</p>
+<h3 id="42">4.2 什么会停止工作<a class="headerlink" href="#42" title="Permanent link">&para;</a></h3>
+<p>这一节是该带去设计评审的那一节。启用机密计算不是透明的，而且这些破坏是<strong>结构性的</strong>，不是"以后再修的 bug"。</p>
+<h4 id="1">1. 热迁移<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p>热迁移要求把 guest 内存拷到另一台主机。在机密 VM 里，内存用 hypervisor 拿不到的密钥加密，因此迁移需要一个位于信任边界<strong>内部</strong>的迁移代理来为目标端重新加密页面——外加对目标平台的证明，外加允许迁移的策略。AMD 规范化了这套（报告里的 <code>MA_REPORT_ID</code> 即为此），Intel 不支持，而在 GCP 上现实答案是 <code>--maintenance-policy=TERMINATE</code>。</p>
+<p><strong>对 LLM 服务的后果</strong>：主机维护事件会终止你的推理节点。在冷启动要好几分钟的前提下（模块 6 §4），这是一个容量规划问题，而不是一个脚注。你需要普通 GKE 节点池不需要的余量容量与排空处理。</p>
+<h4 id="2">2. 内存气球与超分<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<p>私有页必须由 guest 显式接受（<code>PVALIDATE</code> / TD 页接受）。hypervisor 无法悄悄回收它们。因此内存气球与超分要么不工作，要么需要 guest 配合。云厂商的应对是<strong>不对机密实例超分</strong>——这也是它们更贵、容量更紧的部分原因。</p>
+<h4 id="3_1">3. 启动时间<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h4>
+<p>guest 在使用前必须接受它的整个私有内存区间。对一台数百 GB 的 VM，这是可测量的——接受循环与内存大小成正比，而且它直接落进你的冷启动预算。去<strong>测</strong>它，别假设。</p>
+<h4 id="4-dma">4. 设备访问与 DMA<a class="headerlink" href="#4-dma" title="Permanent link">&para;</a></h4>
+<p>每一个 DMA 目标都必须是共享页。那些假定自己能从任意内核内存 DMA 的驱动，必须走内核的 bounce buffer 路径（<code>swiotlb</code>）。对高吞吐设备而言，这次 bounce 就是主导开销——而这恰恰就是模块 4 会展示的、主导机密 GPU 性能的那个机制。</p>
+<h4 id="5">5. 嵌套虚拟化<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<p>在机密 VM 内通常不可用。如果你的栈依赖嵌套虚拟化——某些沙箱运行时、某些 CI 模式——请在承诺之前先验证。</p>
+<h4 id="6">6. 可观测性与调试<a class="headerlink" href="#6" title="Permanent link">&para;</a></h4>
+<p>host 侧 profiling、内存自省、在线内核调试，以及转储到 host 可见位置的 crash dump，全都按设计停止工作。从 host 跑 <code>perf</code> 看不到任何有用的东西。core dump 含机密数据，因此不得以明文离开 TEE。模块 7 §3 专门讲这个。</p>
+<h4 id="7">7. 证明进入关键路径<a class="headerlink" href="#7" title="Permanent link">&para;</a></h4>
+<p>现在每一次节点加入、每一次密钥释放、每一次镜像发布，都依赖于能连上验证方，并且传递性地依赖厂商背书服务。你已经把"能不能开始服务流量"这件事，硬依赖到了 AMD KDS 或 Intel PCS 上。请缓存 collateral，并且弄清楚"缓存是冷的、服务连不上"时你的行为是什么。</p>
+<hr />
+<h2 id="5_1">第 5 部分: 已知攻击与残余风险<a class="headerlink" href="#5_1" title="Permanent link">&para;</a></h2>
+<p>本节的目的不是编漏洞目录，而是回答一个问题：<strong>当你对模型提供方说"Google 读不到你的权重"时，有哪些已公开的结果会给这句话加限定条件？</strong> 诚实回答比不知道更有防御力，也更专业。</p>
+<h3 id="51">5.1 密文侧信道<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<p>最深的问题，因为它是架构性的而非 bug。</p>
+<p>内存加密是 AES-XTS，tweak 由物理地址派生（§1.1），因此它是<strong>确定性的</strong>：同一明文、同一地址、同一密钥，永远产出同一密文。能读到密文的攻击者——hypervisor 永远能读，因为物理内存归它管——可以在完全不解密的情况下，察觉<strong>某个值何时改变</strong>以及<strong>何时回到了此前观测过的值</strong>。</p>
+<p><strong>CIPHERLEAKS</strong>（USENIX Security 2021）针对 SEV-ES 与 SEV-SNP 演示了这一点：通过跨 <code>VMEXIT</code> 观测 VMSA 密文，从 OpenSSL 的常量时间 RSA 与 ECDSA 实现中恢复出完整私钥。常量时间代码在这里不是防御——常量时间防的是<strong>时序</strong>泄露，而这条信道泄露的是<strong>取值</strong>。</p>
+<p>后续工作把它从 VMSA 推广到 guest 数据页，并产出了自动化检测工具（CipherH）与编译器级缓解（Cipherfix、CipherGuard、Zebrafix）——后者通过掩码或交织依赖秘密的内存来打破明文与密文之间的确定性。<strong>Heracles</strong>（CCS 2025）进一步推进到针对 SEV-SNP 的选择明文攻击领域。</p>
+<p><strong>这对一套 LLM 服务设计意味着什么。</strong> 对保存在 guest 内存里的密码学秘密——TLS 私钥、用于解密权重的 KEK——这是严重威胁。对权重本身则弱得多：那是数百 GB 的高熵数据，没人打算靠一个确定性预言机把它重建出来。正确的应对是尽可能把密码学运算移出机密 VM 的 CPU，并把 guest DRAM 里任何长期存活的密钥当成系统里价值最高的攻击目标。<strong>不要</strong>用"这条信道不存在"来应对。</p>
+<h3 id="52">5.2 中断注入与指令级操纵<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<p>第二个家族利用的是"hypervisor 仍然控制着中断投递和部分缓存操作"这一事实：</p>
+<ul>
+<li><strong>Heckler</strong> 与 <strong>WeSee</strong> 向机密 VM 注入中断以操纵 guest 执行流。guest 的 <code>#VC</code>/中断处理路径之所以成为攻击面，恰恰是因为 hypervisor 保留了调度控制权——就是模块 1 §2.2 里那条"控制权 vs 机密性"的不对称性，从攻击者一侧看过去的样子。</li>
+<li><strong>CacheWarp</strong> 滥用 <code>INVD</code> 指令把 guest 的写从缓存里丢掉，实际上回滚了 guest 内存状态，从而击穿安全敏感代码路径里的检查。</li>
+</ul>
+<p>这些通过 guest 内核加固与固件更新的组合得到了处理。结构性教训可以推广：<strong>凡是 hypervisor 被刻意留下控制权的东西，都是攻击面</strong>，而 hypervisor 每多保留一项能力，就多一个攻击面。</p>
+<h3 id="53-tdx">5.3 单步执行与 TDX<a class="headerlink" href="#53-tdx" title="Permanent link">&para;</a></h3>
+<p><strong>TDXdown</strong>（CCS 2024）针对 Intel TDX 演示了单步执行与指令计数，击穿了模块内建的缓解措施。单步执行——在 TEE 每执行一条指令后暂停以观测微架构状态——最早针对 SGX 提出，可迁移到 VM TEE，并且它通过给攻击者精确的观测点控制权，极大放大了其他所有侧信道。</p>
+<p>Intel 的应对是通过 TDX Module 更新，这正是 §2.1 里那个灵活性优势的兑现。它同时也展示了代价：模块更新会推进 TCB，使此前的证明结果失效，从而逼出一次全机群重新证明。</p>
+<h3 id="54">5.4 诚实的总结<a class="headerlink" href="#54" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">攻击类别</th>
+<th style="text-align: left;">状态</th>
+<th style="text-align: left;">对你向模型提供方作出的论断有何影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">跨 VM 读内存</td>
+<td style="text-align: left;">已阻止</td>
+<td style="text-align: left;">完全解决</td>
+</tr>
+<tr>
+<td style="text-align: left;">恶意 hypervisor 读 guest DRAM</td>
+<td style="text-align: left;">已阻止（SNP/TDX）</td>
+<td style="text-align: left;">完全解决</td>
+</tr>
+<tr>
+<td style="text-align: left;">重放 / 重映射 / 别名</td>
+<td style="text-align: left;">已阻止（RMP、Secure EPT）</td>
+<td style="text-align: left;">完全解决</td>
+</tr>
+<tr>
+<td style="text-align: left;">物理 DRAM 攻击</td>
+<td style="text-align: left;">已阻止</td>
+<td style="text-align: left;">完全解决</td>
+</tr>
+<tr>
+<td style="text-align: left;">密文侧信道</td>
+<td style="text-align: left;"><strong>架构性，缓解在软件侧</strong></td>
+<td style="text-align: left;">需加限定：guest 内存中的密码学密钥风险升高</td>
+</tr>
+<tr>
+<td style="text-align: left;">中断注入、<code>INVD</code> 回滚</td>
+<td style="text-align: left;">已打补丁，类别仍开放</td>
+<td style="text-align: left;">要求固件与 guest 内核保持在最新</td>
+</tr>
+<tr>
+<td style="text-align: left;">单步执行</td>
+<td style="text-align: left;"><strong>开放，仍在被积极研究</strong></td>
+<td style="text-align: left;">放大其他信道；不在厂商威胁模型内</td>
+</tr>
+<tr>
+<td style="text-align: left;">流量分析、请求时序</td>
+<td style="text-align: left;"><strong>从不在范围内</strong></td>
+<td style="text-align: left;">明说；不要暗示相反</td>
+</tr>
+<tr>
+<td style="text-align: left;">可用性</td>
+<td style="text-align: left;"><strong>从不在范围内</strong></td>
+<td style="text-align: left;">运营商永远能停掉你</td>
+</tr>
+</tbody>
+</table>
+<p>专业的姿态就是第三列。一份列出了这些限定条件的设计文档，在一个成熟的对手方眼里，比一份声称"问题已解决"的文档<strong>更</strong>可信——而且模型提供方的安全团队是知道这批文献的。</p>
+<hr />
+<h2 id="lab">Lab: 拉一份真实的证明报告并解码<a class="headerlink" href="#lab" title="Permanent link">&para;</a></h2>
+<p><strong>目标</strong>：取得一份真正由硬件签名的 SEV-SNP 证明报告，并逐一手工辨认 §1.4 讨论过的每个字段。这个练习会把模块 3 从抽象变成机械。</p>
+<p><strong>成本</strong>：一台 <code>n2d-standard-2</code> 跑约 20 分钟。<strong>状态</strong>：<code>gcloud</code> 调用已对照 Google Cloud 文档核验；<code>snpguest</code> 步骤遵循上游 VirTEE 工具的文档化接口——请用你所安装版本的 <code>snpguest --help</code> 核对子命令名。</p>
+<h3 id="1-sev-snp-vm">第 1 步 —— 启动一台 SEV-SNP VM<a class="headerlink" href="#1-sev-snp-vm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>snp-attest-lab<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
+
+gcloud<span class="w"> </span>compute<span class="w"> </span>ssh<span class="w"> </span>snp-attest-lab<span class="w"> </span>--zone<span class="o">=</span>us-central1-a
+</code></pre></div>
+<h3 id="2-guest">第 2 步 —— 确认 guest 设备存在<a class="headerlink" href="#2-guest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest
+sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>sev
+</code></pre></div>
+<p>如果 <code>/dev/sev-guest</code> 不存在，说明这台实例并没有真的跑在 SNP 下，下面的一切都不会工作。先修这个——顺带一提，这也正是你的生产就绪探针该做的检查。</p>
+<h3 id="3-snpguest">第 3 步 —— 安装 <code>snpguest</code><a class="headerlink" href="#3-snpguest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>build-essential<span class="w"> </span>pkg-config<span class="w"> </span>libssl-dev<span class="w"> </span>git
+curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>https://sh.rustup.rs<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>-y
+<span class="nb">source</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.cargo/env&quot;</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/virtee/snpguest.git
+<span class="nb">cd</span><span class="w"> </span>snpguest<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cargo<span class="w"> </span>build<span class="w"> </span>--release
+sudo<span class="w"> </span>cp<span class="w"> </span>target/release/snpguest<span class="w"> </span>/usr/local/bin/
+</code></pre></div>
+<h3 id="4-report_data">第 4 步 —— 用你自己的 <code>REPORT_DATA</code> 请求一份报告<a class="headerlink" href="#4-report_data" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 64 字节由调用方提供的数据——生产中这里是 nonce</span>
+<span class="c1"># 和/或你的 TLS 公钥哈希（模块 1 §3.4、模块 3 §6）</span>
+openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="w"> </span>&gt;<span class="w"> </span>request-data.txt
+
+sudo<span class="w"> </span>snpguest<span class="w"> </span>report<span class="w"> </span>attestation-report.bin<span class="w"> </span>request-data.txt
+sudo<span class="w"> </span>snpguest<span class="w"> </span>display<span class="w"> </span>report<span class="w"> </span>attestation-report.bin
+</code></pre></div>
+<h3 id="5_2">第 5 步 —— 读字段<a class="headerlink" href="#5_2" title="Permanent link">&para;</a></h3>
+<p>把解码输出逐条过一遍，找到下面每一项。这才是本实验真正的学习目标：</p>
+<ul>
+<li><code>MEASUREMENT</code> —— SHA-384 启动摘要。注意：你<strong>没有</strong>任何独立途径知道这里<strong>应该</strong>是什么值。请在这份不适里多待一会儿——这就是模块 3 §7 的参考值问题，也是本领域最难的未解问题。</li>
+<li><code>REPORT_DATA</code> —— 确认它回显了你提供的字节。</li>
+<li><code>POLICY</code> —— 把位解出来。允许 debug 吗？</li>
+<li><code>TCB_VERSION</code> 与各 <code>*_SVN</code> 字段 —— 平台的固件安全版本。</li>
+<li><code>VMPL</code> —— 是哪个特权级请求的。除非用了 paravisor，否则应为 0。</li>
+<li><code>SIGNATURE</code> —— 一个 ECDSA P-384 签名；在你拿证书链验证它之前，它毫无意义。</li>
+</ul>
+<h3 id="6_1">第 6 步 —— 取回证书链<a class="headerlink" href="#6_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 从 AMD 密钥分发服务取回 VCEK 与 ARK/ASK 链</span>
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>vcek<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
+ls<span class="w"> </span>-l<span class="w"> </span>./certs
+</code></pre></div>
+<p>注意刚刚发生了什么：验证需要联系一个 AMD 的服务。这个依赖现在就在你生产密钥释放流程的关键路径上（§4.2.7）。</p>
+<h3 id="7_1">第 7 步 —— 验证<a class="headerlink" href="#7_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snpguest<span class="w"> </span>verify<span class="w"> </span>certs<span class="w"> </span>./certs
+sudo<span class="w"> </span>snpguest<span class="w"> </span>verify<span class="w"> </span>attestation<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
+</code></pre></div>
+<p>验证成功确立了这样一件事：<strong>一颗真品 AMD EPYC 处理器，处于 SNP 模式，位于某个特定固件 TCB 层级，启动了一个具有这个 launch measurement 与这份 policy 的 guest，并回显了我的 <code>REPORT_DATA</code>。</strong></p>
+<h3 id="8">第 8 步 —— 注意你<strong>仍然</strong>没有得到什么<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<p>在往下走之前，写下这份报告<strong>没有</strong>告诉你的东西：</p>
+<ol>
+<li>那个 launch measurement 是否对应你信任的代码——你手上有个哈希，没有参考值。</li>
+<li>guest 在启动<strong>之后</strong>加载了什么。内核、容器镜像和你的 Python 依赖，在这份报告里一个字都没有。</li>
+<li>给你看这份报告的实体，是否就是你实际在与之通话的实体——在你把公钥哈希放进 <code>REPORT_DATA</code> 之前，没有任何东西把它绑定到一条通道上。</li>
+</ol>
+<p>这三个缺口就是模块 3 的第 2、6、7 部分。</p>
+<h3 id="9">第 9 步 —— 清理<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>snp-attest-lab<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+</code></pre></div>
+<hr />
+<h2 id="tee">总结: 硬件 TEE 对比<a class="headerlink" href="#tee" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">问题</th>
+<th style="text-align: left;">SEV-SNP</th>
+<th style="text-align: left;">TDX</th>
+<th style="text-align: left;">为什么它在下游要紧</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">谁执行隔离？</td>
+<td style="text-align: left;">RMP 表，硬件检查</td>
+<td style="text-align: left;">SEAM 模式下的 TDX Module 软件</td>
+<td style="text-align: left;">决定 TCB 体量与打补丁模型</td>
+</tr>
+<tr>
+<td style="text-align: left;">哪个位标记机密内存？</td>
+<td style="text-align: left;">C-bit 置位 = 加密</td>
+<td style="text-align: left;">SHARED 位置位 = 明文</td>
+<td style="text-align: left;">约定相反；常见的混淆来源</td>
+</tr>
+<tr>
+<td style="text-align: left;">怎么防重放？</td>
+<td style="text-align: left;">RMP 的 GPA 绑定 + 一次性 <code>PVALIDATE</code></td>
+<td style="text-align: left;">TDX Module 拥有的 Secure EPT</td>
+<td style="text-align: left;">这就是 SEV-ES → SEV-SNP 的代际跃迁</td>
+</tr>
+<tr>
+<td style="text-align: left;">内建运行时度量？</td>
+<td style="text-align: left;">无——需 vTPM，通常经 VMPL0 上的 SVSM</td>
+<td style="text-align: left;">有——<code>RTMR0-3</code></td>
+<td style="text-align: left;">这就是 GCP 机密 GPU 路径基于 TDX 的原因</td>
+</tr>
+<tr>
+<td style="text-align: left;">谁给证据签名？</td>
+<td style="text-align: left;">VCEK，由芯片秘密<strong>与 TCB 版本</strong>派生</td>
+<td style="text-align: left;">经 TD Quoting Enclave（一个 SGX enclave）的 ECDSA AK</td>
+<td style="text-align: left;">两者都造成对厂商服务的硬依赖</td>
+</tr>
+<tr>
+<td style="text-align: left;">热迁移？</td>
+<td style="text-align: left;">需迁移代理；实践中禁用</td>
+<td style="text-align: left;">不支持</td>
+<td style="text-align: left;">主机维护会终止你的推理节点</td>
+</tr>
+<tr>
+<td style="text-align: left;">最大残余风险</td>
+<td style="text-align: left;">密文侧信道（架构性）</td>
+<td style="text-align: left;">单步执行（TDXdown 类）</td>
+<td style="text-align: left;">据此为你的安全论断加限定</td>
+</tr>
+</tbody>
+</table>
+<p>你现在能拿到一份关于运行中机器的、硬件签名的声明。这份声明目前一文不值，原因有三：你没有参考值可以拿来比对度量值；它对 guest 启动后加载了什么只字未提；而且它没有绑定到你正在通信的任何通道上。闭合这三个缺口——并用结果去释放一把密钥——就是<strong>模块 3: 远程证明与基于证明的密钥释放 (<code>03_remote_attestation_and_key_release.md</code>)</strong>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

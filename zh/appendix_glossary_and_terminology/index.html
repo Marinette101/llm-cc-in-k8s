@@ -1,0 +1,3852 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../07_performance_operations_and_evaluation/">
+      
+      
+        <link rel="next" href="../appendix_reading_list/">
+      
+      
+        
+          <link rel="alternate" href="../../appendix_glossary_and_terminology/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>附录 A - 术语总表 - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#a" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              附录 A - 术语总表
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../appendix_glossary_and_terminology/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 1 - 机密计算基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 3 - 远程证明与密钥释放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 4 - 机密 GPU 与加速器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 6 - 在 GKE 上设计机密 LLM 服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心概念与威胁建模
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 核心概念与威胁建模">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tee-trusted-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TEE (Trusted Execution Environment，可信执行环境)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb-trusted-computing-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB (Trusted Computing Base，可信计算基)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rot-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RoT (Root of Trust，信任根)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ccc-confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCC (Confidential Computing Consortium，机密计算联盟)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data in Use（使用中的数据）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        控制权 vs 机密性
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealing（封存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toctou-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOCTOU (Time of Check to Time of Use，检查时刻与使用时刻之差)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma-direct-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA (Direct Memory Access，直接内存访问)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iommu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOMMU (输入输出内存管理单元)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV 与 SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV 与 SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sev-secure-encrypted-virtualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV (Secure Encrypted Virtualization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-es-sev-encrypted-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-ES (SEV Encrypted State)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-snp-sev-secure-nested-paging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-SNP (SEV Secure Nested Paging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asid-address-space-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASID (Address Space Identifier，地址空间标识符)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmp-reverse-map-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMP (Reverse Map Table，反向映射表)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pvalidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVALIDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpl-virtual-machine-privilege-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPL (Virtual Machine Privilege Level，虚拟机特权级)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#svsm-secure-vm-service-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVSM (Secure VM Service Module)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmsa-vm-save-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMSA (VM Save Area)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcb-guest-hypervisor-communication-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GHCB (Guest-Hypervisor Communication Block)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc-vmm-communication-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #VC (VMM Communication Exception)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psp-asp-platform-security-processor-amd-secure-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PSP / ASP (Platform Security Processor / AMD Secure Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcek-versioned-chip-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VCEK (Versioned Chip Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlek-versioned-loaded-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VLEK (Versioned Loaded Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpck-vm-platform-communication-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPCK (VM Platform Communication Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-ask-amd-root-key-amd-sev-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK / ASK (AMD Root Key / AMD SEV Signing Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kds-key-distribution-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KDS (Key Distribution Service，密钥分发服务)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ma_report_id-migration-agent-report-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MA_REPORT_ID (Migration Agent Report ID)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx-sgx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX 与 SGX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX 与 SGX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdx-trust-domain-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX (Trust Domain Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD (Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seam-secure-arbitration-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAM (Secure Arbitration Mode，安全仲裁模式)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seamcall-tdcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAMCALL / TDCALL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SHARED bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-ept-secure-extended-page-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure EPT (Secure Extended Page Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mktme-multi-key-total-memory-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MKTME (Multi-Key Total Memory Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mrtd-measurement-register-for-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRTD (Measurement Register for Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtmr0-3-runtime-measurement-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RTMR0-3 (Runtime Measurement Registers，运行时度量寄存器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDREPORT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qe-quoting-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QE (Quoting Enclave)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcap-data-center-attestation-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCAP (Data Center Attestation Primitives)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcs-pccs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCS / PCCS (配置证明服务 / 缓存服务)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pck-provisioning-certification-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCK (Provisioning Certification Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmspc-family-model-stepping-platform-customsku" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMSPC (Family-Model-Stepping-Platform-CustomSKU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgx-software-guard-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SGX (Software Guard Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epc-enclave-page-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EPC (Enclave Page Cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 其他 TEE 架构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 其他 TEE 架构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cca-confidential-compute-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCA (Confidential Compute Architecture)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmm-realm-management-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMM (Realm Management Monitor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-granule-protection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT (Granule Protection Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cove-confidential-vm-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoVE (Confidential VM Extension)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 证明与证据
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 证明与证据">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rats-remote-attestation-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RATS (Remote ATtestation procedureS，远程证明流程)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attester-verifier-relying-party" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attester / Verifier / Relying Party（证明方 / 验证方 / 依赖方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endorser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endorser（背书方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-value-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Value Provider（参考值提供方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passport 模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background-Check 模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launch Measurement（启动度量）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Measurement（运行时度量）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcr-platform-configuration-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCR (Platform Configuration Register，平台配置寄存器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Log（事件日志）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report_data-reportdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REPORT_DATA / REPORTDATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HOST_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb_version-svn-security-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB_VERSION / SVN (Security Version Number，安全版本号)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat-entity-attestation-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EAT (Entity Attestation Token，实体证明令牌)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corim-concise-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoRIM (Concise Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coswid-concise-software-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoSWID (Concise Software Identification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ra-tls-remote-attestation-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RA-TLS (Remote Attestation TLS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dm-verity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dm-verity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-closed-fail-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail-Closed / Fail-Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 密码学与密钥管理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 密码学与密钥管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aes-xts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-XTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-gcm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-GCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kek-dek" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEK / DEK (密钥加密密钥 / 数据加密密钥)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skr-secure-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKR (Secure Key Release，安全密钥释放)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hpke-hybrid-public-key-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HPKE (Hybrid Public Key Encryption，混合公钥加密)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spdm-security-protocol-and-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPDM (Security Protocol and Data Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ide-integrity-and-data-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDE (Integrity and Data Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdisp-tee-device-interface-security-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDISP (TEE Device Interface Security Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciphertext-side-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ciphertext Side Channel（密文侧信道）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 机密 GPU
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 机密 GPU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cc-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CC mode（机密计算模式）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        受保护区 / 非保护区
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounce-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounce Buffer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gsp-gpu-system-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GSP (GPU System Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rim-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RIM (Reference Integrity Manifest，参考完整性清单)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nras-nvidia-remote-attestation-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NRAS (NVIDIA Remote Attestation Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Attestation（复合证明）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spt-single-gpu-passthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPT (Single GPU Passthrough，单卡直通)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-nvlink-nvlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected NVLink（受保护 NVLink）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-tio-sev-trusted-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-TIO (SEV Trusted I/O)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-persistenced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvidia-persistenced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-ready-stategpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU Ready State（GPU 就绪状态）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-launcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container Launcher（容器启动器）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbgstat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dbgstat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hwmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hwmodel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swname-swversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        swname / swversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat_nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eat_nonce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wif-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WIF (Workload Identity Federation，工作负载身份联合)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cmek-customer-managed-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMEK (Customer-Managed Encryption Keys，客户管理的加密密钥)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ekm-external-key-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EKM (External Key Manager，外部密钥管理器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shielded-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shielded VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-sc-vpc-service-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC-SC (VPC Service Controls)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 与 LLM 服务的交叉
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. 与 LLM 服务的交叉">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kv-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KV cache（键值缓存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Caching（前缀缓存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Batching（连续批处理）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaggregated-prefilldecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaggregated Prefill/Decode（分离式预填充/解码）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttft-tpot-token-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTFT / TPOT (首 token 时延 / 每输出 token 时延)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-intensity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Intensity（算术强度）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attested-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attested Ingress（已证明入口）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maas-3p-maas-model-as-a-service-maas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MaaS / 3P MaaS (Model-as-a-Service / 第三方 MaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcc-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCC (Private Cloud Compute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B - 一手资料阅读清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心概念与威胁建模
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 核心概念与威胁建模">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tee-trusted-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TEE (Trusted Execution Environment，可信执行环境)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb-trusted-computing-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB (Trusted Computing Base，可信计算基)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rot-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RoT (Root of Trust，信任根)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ccc-confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCC (Confidential Computing Consortium，机密计算联盟)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data in Use（使用中的数据）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        控制权 vs 机密性
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealing（封存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toctou-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TOCTOU (Time of Check to Time of Use，检查时刻与使用时刻之差)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma-direct-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA (Direct Memory Access，直接内存访问)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iommu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IOMMU (输入输出内存管理单元)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV 与 SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV 与 SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sev-secure-encrypted-virtualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV (Secure Encrypted Virtualization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-es-sev-encrypted-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-ES (SEV Encrypted State)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-snp-sev-secure-nested-paging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-SNP (SEV Secure Nested Paging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asid-address-space-identifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASID (Address Space Identifier，地址空间标识符)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmp-reverse-map-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMP (Reverse Map Table，反向映射表)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pvalidate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PVALIDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpl-virtual-machine-privilege-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPL (Virtual Machine Privilege Level，虚拟机特权级)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#svsm-secure-vm-service-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SVSM (Secure VM Service Module)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmsa-vm-save-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMSA (VM Save Area)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghcb-guest-hypervisor-communication-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GHCB (Guest-Hypervisor Communication Block)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vc-vmm-communication-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        #VC (VMM Communication Exception)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psp-asp-platform-security-processor-amd-secure-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PSP / ASP (Platform Security Processor / AMD Secure Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcek-versioned-chip-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VCEK (Versioned Chip Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vlek-versioned-loaded-endorsement-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VLEK (Versioned Loaded Endorsement Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmpck-vm-platform-communication-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VMPCK (VM Platform Communication Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ark-ask-amd-root-key-amd-sev-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ARK / ASK (AMD Root Key / AMD SEV Signing Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kds-key-distribution-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KDS (Key Distribution Service，密钥分发服务)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ma_report_id-migration-agent-report-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MA_REPORT_ID (Migration Agent Report ID)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx-sgx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX 与 SGX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX 与 SGX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdx-trust-domain-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX (Trust Domain Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD (Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seam-secure-arbitration-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAM (Secure Arbitration Mode，安全仲裁模式)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdx-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDX Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seamcall-tdcall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEAMCALL / TDCALL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SHARED bit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-ept-secure-extended-page-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure EPT (Secure Extended Page Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mktme-multi-key-total-memory-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MKTME (Multi-Key Total Memory Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mrtd-measurement-register-for-trust-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRTD (Measurement Register for Trust Domain)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rtmr0-3-runtime-measurement-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RTMR0-3 (Runtime Measurement Registers，运行时度量寄存器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdreport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDREPORT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#td-quote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TD Quote
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qe-quoting-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QE (Quoting Enclave)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcap-data-center-attestation-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DCAP (Data Center Attestation Primitives)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcs-pccs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCS / PCCS (配置证明服务 / 缓存服务)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pck-provisioning-certification-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCK (Provisioning Certification Key)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmspc-family-model-stepping-platform-customsku" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FMSPC (Family-Model-Stepping-Platform-CustomSKU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgx-software-guard-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SGX (Software Guard Extensions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epc-enclave-page-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EPC (Enclave Page Cache)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 其他 TEE 架构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 其他 TEE 架构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cca-confidential-compute-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CCA (Confidential Compute Architecture)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rmm-realm-management-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RMM (Realm Management Monitor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-granule-protection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT (Granule Protection Table)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cove-confidential-vm-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoVE (Confidential VM Extension)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 证明与证据
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 证明与证据">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rats-remote-attestation-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RATS (Remote ATtestation procedureS，远程证明流程)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attester-verifier-relying-party" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attester / Verifier / Relying Party（证明方 / 验证方 / 依赖方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endorser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endorser（背书方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-value-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference Value Provider（参考值提供方）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passport 模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#background-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background-Check 模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#launch-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launch Measurement（启动度量）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Measurement（运行时度量）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcr-platform-configuration-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCR (Platform Configuration Register，平台配置寄存器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event Log（事件日志）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report_data-reportdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REPORT_DATA / REPORTDATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HOST_DATA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcb_version-svn-security-version-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCB_VERSION / SVN (Security Version Number，安全版本号)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat-entity-attestation-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EAT (Entity Attestation Token，实体证明令牌)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corim-concise-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoRIM (Concise Reference Integrity Manifest)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coswid-concise-software-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoSWID (Concise Software Identification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ra-tls-remote-attestation-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RA-TLS (Remote Attestation TLS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dm-verity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dm-verity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-closed-fail-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail-Closed / Fail-Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 密码学与密钥管理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 密码学与密钥管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aes-xts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-XTS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aes-gcm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AES-GCM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kek-dek" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEK / DEK (密钥加密密钥 / 数据加密密钥)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skr-secure-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKR (Secure Key Release，安全密钥释放)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hpke-hybrid-public-key-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HPKE (Hybrid Public Key Encryption，混合公钥加密)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spdm-security-protocol-and-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPDM (Security Protocol and Data Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ide-integrity-and-data-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDE (Integrity and Data Encryption)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdisp-tee-device-interface-security-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDISP (TEE Device Interface Security Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ciphertext-side-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ciphertext Side Channel（密文侧信道）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 机密 GPU
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 机密 GPU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cc-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CC mode（机密计算模式）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        受保护区 / 非保护区
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounce-buffer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounce Buffer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gsp-gpu-system-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GSP (GPU System Processor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rim-reference-integrity-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RIM (Reference Integrity Manifest，参考完整性清单)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nras-nvidia-remote-attestation-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NRAS (NVIDIA Remote Attestation Service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Attestation（复合证明）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spt-single-gpu-passthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPT (Single GPU Passthrough，单卡直通)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protected-nvlink-nvlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protected NVLink（受保护 NVLink）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sev-tio-sev-trusted-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEV-TIO (SEV Trusted I/O)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-persistenced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvidia-persistenced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-ready-stategpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU Ready State（GPU 就绪状态）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-launcher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container Launcher（容器启动器）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbgstat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dbgstat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hwmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hwmodel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swname-swversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        swname / swversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eat_nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eat_nonce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wif-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WIF (Workload Identity Federation，工作负载身份联合)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cmek-customer-managed-encryption-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMEK (Customer-Managed Encryption Keys，客户管理的加密密钥)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ekm-external-key-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EKM (External Key Manager，外部密钥管理器)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shielded-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shielded VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-sc-vpc-service-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC-SC (VPC Service Controls)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. 与 LLM 服务的交叉
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. 与 LLM 服务的交叉">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kv-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KV cache（键值缓存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Caching（前缀缓存）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Batching（连续批处理）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaggregated-prefilldecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaggregated Prefill/Decode（分离式预填充/解码）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttft-tpot-token-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTFT / TPOT (首 token 时延 / 每输出 token 时延)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-intensity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Intensity（算术强度）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attested-ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attested Ingress（已证明入口）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maas-3p-maas-model-as-a-service-maas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MaaS / 3P MaaS (Model-as-a-Service / 第三方 MaaS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcc-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCC (Private Cloud Compute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="a">附录 A: 术语总表<a class="headerlink" href="#a" title="Permanent link">&para;</a></h1>
+<p>本书用到的全部缩写与术语，按领域分组。每条给出全称、一句话定义，以及它在哪里展开。</p>
+<hr />
+<h2 id="1">1. 核心概念与威胁建模<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="tee-trusted-execution-environment"><code>TEE</code> (Trusted Execution Environment，可信执行环境)<a class="headerlink" href="#tee-trusted-execution-environment" title="Permanent link">&para;</a></h3>
+<p>一块由硬件强制保护、其内容不被更高特权软件读取的区域。<strong>只有与证明结合才有意义。</strong> → 模块 1 §1.3</p>
+<h3 id="tcb-trusted-computing-base"><code>TCB</code> (Trusted Computing Base，可信计算基)<a class="headerlink" href="#tcb-trusted-computing-base" title="Permanent link">&para;</a></h3>
+<p>一旦被攻破即致命的组件集合。VM TEE 用一个大 TCB（整个 guest OS）换来了零移植成本。→ 模块 1 §2.3</p>
+<h3 id="rot-root-of-trust"><code>RoT</code> (Root of Trust，信任根)<a class="headerlink" href="#rot-root-of-trust" title="Permanent link">&para;</a></h3>
+<p>制造时熔进硅片的不可导出秘密，加上不可变启动代码，并由厂商证书链背书。→ 模块 1 §3.1</p>
+<h3 id="ccc-confidential-computing-consortium"><code>CCC</code> (Confidential Computing Consortium，机密计算联盟)<a class="headerlink" href="#ccc-confidential-computing-consortium" title="Permanent link">&para;</a></h3>
+<p>Linux 基金会下的组织，其定义——在基于硬件的、<strong>已证明的</strong> TEE 中保护使用中的数据——是本领域的参考表述。→ 模块 1 §1.3</p>
+<h3 id="data-in-use">Data in Use（使用中的数据）<a class="headerlink" href="#data-in-use" title="Permanent link">&para;</a></h3>
+<p>计算期间位于 DRAM、寄存器或 GPU HBM 中的明文数据。磁盘与传输加密留下不保护的那个状态。→ 模块 1 §1.1</p>
+<h3 id="vs">控制权 vs 机密性<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h3>
+<p>VM TEE 的定义性不对称：hypervisor 保有对 guest 的完整资源控制权，同时被挡在其数据之外。→ 模块 1 §2.2</p>
+<h3 id="sealing">Sealing（封存）<a class="headerlink" href="#sealing" title="Permanent link">&para;</a></h3>
+<p>从信任根<strong>并且</strong>当前度量值派生加密密钥，使得被某个代码版本封存的数据无法被不同的代码解封。→ 模块 1 §3.5</p>
+<h3 id="toctou-time-of-check-to-time-of-use"><code>TOCTOU</code> (Time of Check to Time of Use，检查时刻与使用时刻之差)<a class="headerlink" href="#toctou-time-of-check-to-time-of-use" title="Permanent link">&para;</a></h3>
+<p>证明是一次快照，执行在此之后继续。靠不可变性缓解，而不是靠反复检查。→ 模块 3 §2.3</p>
+<h3 id="dma-direct-memory-access"><code>DMA</code> (Direct Memory Access，直接内存访问)<a class="headerlink" href="#dma-direct-memory-access" title="Permanent link">&para;</a></h3>
+<p>设备不经 CPU 访问内存。在 TEE 中，DMA 目标必须是共享（未加密）页，这正是 bounce buffer 存在的原因。→ 模块 2 §4.2.4</p>
+<h3 id="iommu"><code>IOMMU</code> (输入输出内存管理单元)<a class="headerlink" href="#iommu" title="Permanent link">&para;</a></h3>
+<p>翻译并限制设备内存访问的硬件。由 hypervisor 编程，因此它在 TEE 中<strong>不是</strong>一项机密性控制。</p>
+<hr />
+<h2 id="2-amd-sev-sev-snp">2. AMD SEV 与 SEV-SNP<a class="headerlink" href="#2-amd-sev-sev-snp" title="Permanent link">&para;</a></h2>
+<h3 id="sev-secure-encrypted-virtualization"><code>SEV</code> (Secure Encrypted Virtualization)<a class="headerlink" href="#sev-secure-encrypted-virtualization" title="Permanent link">&para;</a></h3>
+<p>AMD 第一代 VM 内存加密。<strong>仅机密性</strong>——无完整性，且 <code>VMEXIT</code> 时寄存器状态是明文。→ 模块 2 §1.1</p>
+<h3 id="sev-es-sev-encrypted-state"><code>SEV-ES</code> (SEV Encrypted State)<a class="headerlink" href="#sev-es-sev-encrypted-state" title="Permanent link">&para;</a></h3>
+<p>增加 <code>VMSA</code> 加密，使寄存器状态在世界切换中保持机密。<strong>仍无内存完整性。</strong> → 模块 2 §1.2</p>
+<h3 id="sev-snp-sev-secure-nested-paging"><code>SEV-SNP</code> (SEV Secure Nested Paging)<a class="headerlink" href="#sev-snp-sev-secure-nested-paging" title="Permanent link">&para;</a></h3>
+<p>经由 <code>RMP</code> 增加内存<strong>完整性</strong>，挫败重放、重映射与别名。<strong>第一代能防住主动作恶 hypervisor 的实现。</strong> → 模块 2 §1.3</p>
+<h3 id="c-bit"><code>C-bit</code><a class="headerlink" href="#c-bit" title="Permanent link">&para;</a></h3>
+<p>guest 页表中标记页面已加密的一个物理地址位。置位 = 加密（与 TDX 的 SHARED 位相反）。→ 模块 2 §1.1</p>
+<h3 id="asid-address-space-identifier"><code>ASID</code> (Address Space Identifier，地址空间标识符)<a class="headerlink" href="#asid-address-space-identifier" title="Permanent link">&para;</a></h3>
+<p>标识一台机密 VM；内存控制器为每个 ASID 持有一把 AES 密钥。→ 模块 2 §1.1</p>
+<h3 id="rmp-reverse-map-table"><code>RMP</code> (Reverse Map Table，反向映射表)<a class="headerlink" href="#rmp-reverse-map-table" title="Permanent link">&para;</a></h3>
+<p>全系统唯一的表，每 4 KB 页一条表项，记录归属以及该页被允许承载的 guest 物理地址。<strong>hypervisor 不可写。</strong> SNP 完整性的核心。→ 模块 2 §1.3</p>
+<h3 id="pvalidate"><code>PVALIDATE</code><a class="headerlink" href="#pvalidate" title="Permanent link">&para;</a></h3>
+<p>guest 用来接受某页作为私有内存的指令。<strong>一次性且由硬件追踪</strong>，从而封死重放攻击。→ 模块 2 §1.3</p>
+<h3 id="vmpl-virtual-machine-privilege-level"><code>VMPL</code> (Virtual Machine Privilege Level，虚拟机特权级)<a class="headerlink" href="#vmpl-virtual-machine-privilege-level" title="Permanent link">&para;</a></h3>
+<p>SNP guest <strong>内部</strong>的四个特权级（VMPL0 最高），使 paravisor 或 SVSM 得以提供 guest kernel 不应自行实现的服务。→ 模块 2 §1.3</p>
+<h3 id="svsm-secure-vm-service-module"><code>SVSM</code> (Secure VM Service Module)<a class="headerlink" href="#svsm-secure-vm-service-module" title="Permanent link">&para;</a></h3>
+<p>运行在 VMPL0 的可信软件，提供 guest 内服务——最重要的是一个 hypervisor 无法伪造的 vTPM。→ 模块 2 §1.3</p>
+<h3 id="vmsa-vm-save-area"><code>VMSA</code> (VM Save Area)<a class="headerlink" href="#vmsa-vm-save-area" title="Permanent link">&para;</a></h3>
+<p>跨世界切换保存 guest 寄存器状态的加密且带完整性校验的区域。<strong>它的密文正是 CipherLeaks 所观测的东西。</strong> → 模块 2 §1.2</p>
+<h3 id="ghcb-guest-hypervisor-communication-block"><code>GHCB</code> (Guest-Hypervisor Communication Block)<a class="headerlink" href="#ghcb-guest-hypervisor-communication-block" title="Permanent link">&para;</a></h3>
+<p>一个共享页，guest 通过它<strong>刻意</strong>披露 hypervisor 做 I/O 模拟所需的信息。→ 模块 2 §1.2</p>
+<h3 id="vc-vmm-communication-exception"><code>#VC</code> (VMM Communication Exception)<a class="headerlink" href="#vc-vmm-communication-exception" title="Permanent link">&para;</a></h3>
+<p>需要 hypervisor 参与的操作在 guest 内抛出的异常，使披露变成显式且由 guest 控制。→ 模块 2 §1.2</p>
+<h3 id="psp-asp-platform-security-processor-amd-secure-processor"><code>PSP</code> / <code>ASP</code> (Platform Security Processor / AMD Secure Processor)<a class="headerlink" href="#psp-asp-platform-security-processor-amd-secure-processor" title="Permanent link">&para;</a></h3>
+<p>片上协处理器，AMD 的信任根：持有密钥、计算 launch measurement、签名证明报告。→ 模块 2 §1.1</p>
+<h3 id="vcek-versioned-chip-endorsement-key"><code>VCEK</code> (Versioned Chip Endorsement Key)<a class="headerlink" href="#vcek-versioned-chip-endorsement-key" title="Permanent link">&para;</a></h3>
+<p>报告签名密钥，由芯片唯一秘密<strong>与当前 TCB 版本</strong>派生——<strong>这正是固件更新会让缓存证书失效的原因。</strong> → 模块 2 §1.4</p>
+<h3 id="vlek-versioned-loaded-endorsement-key"><code>VLEK</code> (Versioned Loaded Endorsement Key)<a class="headerlink" href="#vlek-versioned-loaded-endorsement-key" title="Permanent link">&para;</a></h3>
+<p>VCEK 的替代方案，绑定到云服务商而非单颗芯片；报告不再能给特定机器打指纹。→ 模块 3 §3.2</p>
+<h3 id="vmpck-vm-platform-communication-key"><code>VMPCK</code> (VM Platform Communication Key)<a class="headerlink" href="#vmpck-vm-platform-communication-key" title="Permanent link">&para;</a></h3>
+<p>启动时建立，仅 guest 与 AMD 安全处理器知晓；保护 guest 的证明请求通道。→ 模块 2 §1.4</p>
+<h3 id="ark-ask-amd-root-key-amd-sev-signing-key"><code>ARK</code> / <code>ASK</code> (AMD Root Key / AMD SEV Signing Key)<a class="headerlink" href="#ark-ask-amd-root-key-amd-sev-signing-key" title="Permanent link">&para;</a></h3>
+<p>锚定 VCEK/VLEK 签名的证书链。<strong>ARK 是该钉死的信任锚。</strong> → 模块 3 §3.2</p>
+<h3 id="kds-key-distribution-service"><code>KDS</code> (Key Distribution Service，密钥分发服务)<a class="headerlink" href="#kds-key-distribution-service" title="Permanent link">&para;</a></h3>
+<p>AMD 用于取回 VCEK 证书与 CA 链的服务。验证路径上的一个运行时依赖。→ 模块 3 §3.2</p>
+<h3 id="ma_report_id-migration-agent-report-id"><code>MA_REPORT_ID</code> (Migration Agent Report ID)<a class="headerlink" href="#ma_report_id-migration-agent-report-id" title="Permanent link">&para;</a></h3>
+<p>在启用迁移时，把证明报告与其迁移代理的报告关联起来。→ 模块 2 §1.4</p>
+<hr />
+<h2 id="3-intel-tdx-sgx">3. Intel TDX 与 SGX<a class="headerlink" href="#3-intel-tdx-sgx" title="Permanent link">&para;</a></h2>
+<h3 id="tdx-trust-domain-extensions"><code>TDX</code> (Trust Domain Extensions)<a class="headerlink" href="#tdx-trust-domain-extensions" title="Permanent link">&para;</a></h3>
+<p>Intel 的虚拟机级 TEE。通过一个新 CPU 模式与一个 Intel 签名的软件模块，达成与 SEV-SNP 相同的保证。→ 模块 2 §2</p>
+<h3 id="td-trust-domain"><code>TD</code> (Trust Domain)<a class="headerlink" href="#td-trust-domain" title="Permanent link">&para;</a></h3>
+<p>一个 TDX 机密 guest。</p>
+<h3 id="seam-secure-arbitration-mode"><code>SEAM</code> (Secure Arbitration Mode，安全仲裁模式)<a class="headerlink" href="#seam-secure-arbitration-mode" title="Permanent link">&para;</a></h3>
+<p>比 VMX root 更高特权的 CPU 模式，其中只运行 TDX Module。→ 模块 2 §2.1</p>
+<h3 id="tdx-module"><code>TDX Module</code><a class="headerlink" href="#tdx-module" title="Permanent link">&para;</a></h3>
+<p>运行在 SEAM 模式下的 Intel 签名软件，仲裁进出 TD 的每一次转换。给 TCB 增加约 10⁵ 行代码，换来可打补丁性。→ 模块 2 §2.1</p>
+<h3 id="seamcall-tdcall"><code>SEAMCALL</code> / <code>TDCALL</code><a class="headerlink" href="#seamcall-tdcall" title="Permanent link">&para;</a></h3>
+<p>hypervisor 与 guest 分别向 TDX Module 请求服务的接口。→ 模块 2 §2.1</p>
+<h3 id="shared-bit"><code>SHARED bit</code><a class="headerlink" href="#shared-bit" title="Permanent link">&para;</a></h3>
+<p>guest 物理地址的最高位。置位 = 共享且明文；清零 = 私有、加密、带完整性保护。<strong>与 AMD C-bit 约定相反。</strong> → 模块 2 §2.2</p>
+<h3 id="secure-ept-secure-extended-page-table"><code>Secure EPT</code> (Secure Extended Page Table)<a class="headerlink" href="#secure-ept-secure-extended-page-table" title="Permanent link">&para;</a></h3>
+<p>TD 私有内存的二级页表，由 <strong>TDX Module</strong> 而非 hypervisor 拥有。TDX 版的 RMP 不变式。→ 模块 2 §2.2</p>
+<h3 id="mktme-multi-key-total-memory-encryption"><code>MKTME</code> (Multi-Key Total Memory Encryption)<a class="headerlink" href="#mktme-multi-key-total-memory-encryption" title="Permanent link">&para;</a></h3>
+<p>提供每 TD 一把密钥的内存加密引擎。→ 模块 2 §2.2</p>
+<h3 id="mrtd-measurement-register-for-trust-domain"><code>MRTD</code> (Measurement Register for Trust Domain)<a class="headerlink" href="#mrtd-measurement-register-for-trust-domain" title="Permanent link">&para;</a></h3>
+<p>构建期 launch measurement，在 TD 构造完成时 finalize，此后不可变。→ 模块 2 §2.3</p>
+<h3 id="rtmr0-3-runtime-measurement-registers"><code>RTMR0-3</code> (Runtime Measurement Registers，运行时度量寄存器)<a class="headerlink" href="#rtmr0-3-runtime-measurement-registers" title="Permanent link">&para;</a></h3>
+<p>四个只可扩展的寄存器，行为类似 TPM PCR，覆盖内核、initrd、rootfs 与工作负载。<strong>TDX 相对 SEV-SNP 的架构优势。</strong> → 模块 2 §2.3</p>
+<h3 id="tdreport"><code>TDREPORT</code><a class="headerlink" href="#tdreport" title="Permanent link">&para;</a></h3>
+<p>用 CPU 本地密钥做 MAC 的本地证据。<strong>不可远程验证</strong>——必须转换成 Quote。→ 模块 2 §2.4</p>
+<h3 id="td-quote"><code>TD Quote</code><a class="headerlink" href="#td-quote" title="Permanent link">&para;</a></h3>
+<p>由 TD Quoting Enclave 从 TDREPORT 产出的、可远程验证的非对称签名证明。→ 模块 2 §2.4</p>
+<h3 id="qe-quoting-enclave"><code>QE</code> (Quoting Enclave)<a class="headerlink" href="#qe-quoting-enclave" title="Permanent link">&para;</a></h3>
+<p>一个 SGX enclave，校验 TDREPORT 的 MAC 并用证明密钥重新签名。<strong>SGX 存活下来的那份工作。</strong> → 模块 2 §2.4</p>
+<h3 id="dcap-data-center-attestation-primitives"><code>DCAP</code> (Data Center Attestation Primitives)<a class="headerlink" href="#dcap-data-center-attestation-primitives" title="Permanent link">&para;</a></h3>
+<p>Intel 的库与 collateral 模型，使第三方验证无需每次都联系 Intel 在线服务。→ 模块 3 §3.3</p>
+<h3 id="pcs-pccs"><code>PCS</code> / <code>PCCS</code> (配置证明服务 / 缓存服务)<a class="headerlink" href="#pcs-pccs" title="Permanent link">&para;</a></h3>
+<p>Intel 验证 collateral 的来源，以及你在生产中运行的本地缓存。→ 模块 3 §3.3</p>
+<h3 id="pck-provisioning-certification-key"><code>PCK</code> (Provisioning Certification Key)<a class="headerlink" href="#pck-provisioning-certification-key" title="Permanent link">&para;</a></h3>
+<p>Intel 链中标识特定 CPU 封装与 TCB 层级的证书。→ 模块 3 §3.3</p>
+<h3 id="fmspc-family-model-stepping-platform-customsku"><code>FMSPC</code> (Family-Model-Stepping-Platform-CustomSKU)<a class="headerlink" href="#fmspc-family-model-stepping-platform-customsku" title="Permanent link">&para;</a></h3>
+<p>Intel 发布 TCB info 时所依据的平台标识符。→ 模块 3 §3.3</p>
+<h3 id="sgx-software-guard-extensions"><code>SGX</code> (Software Guard Extensions)<a class="headerlink" href="#sgx-software-guard-extensions" title="Permanent link">&para;</a></h3>
+<p>Intel 的进程级 enclave TEE。因内存限制与无法访问设备而在模型服务上出局；以 TDX Quoting Enclave 的形式存活。→ 模块 1 §4.1</p>
+<h3 id="epc-enclave-page-cache"><code>EPC</code> (Enclave Page Cache)<a class="headerlink" href="#epc-enclave-page-cache" title="Permanent link">&para;</a></h3>
+<p>支撑 SGX enclave 的受限加密内存区——正是这个约束把 SGX 挡在 LLM 权重之外。</p>
+<hr />
+<h2 id="4-tee">4. 其他 TEE 架构<a class="headerlink" href="#4-tee" title="Permanent link">&para;</a></h2>
+<h3 id="cca-confidential-compute-architecture"><code>CCA</code> (Confidential Compute Architecture)<a class="headerlink" href="#cca-confidential-compute-architecture" title="Permanent link">&para;</a></h3>
+<p>ARM 的虚拟机级 TEE，引入 Realm。→ 模块 2 §3</p>
+<h3 id="rmm-realm-management-monitor"><code>RMM</code> (Realm Management Monitor)<a class="headerlink" href="#rmm-realm-management-monitor" title="Permanent link">&para;</a></h3>
+<p>ARM CCA 中管理 Realm 的可信组件；TDX Module 的对应物。→ 模块 2 §3</p>
+<h3 id="gpt-granule-protection-table"><code>GPT</code> (Granule Protection Table)<a class="headerlink" href="#gpt-granule-protection-table" title="Permanent link">&para;</a></h3>
+<p>ARM CCA 的页归属表；AMD RMP 的对应物。→ 模块 2 §3</p>
+<h3 id="cove-confidential-vm-extension"><code>CoVE</code> (Confidential VM Extension)<a class="headerlink" href="#cove-confidential-vm-extension" title="Permanent link">&para;</a></h3>
+<p>RISC-V 的机密计算标准，其 TEE Security Manager 扮演 TDX Module 的角色。<strong>作为一个开放 TEE 而值得关注。</strong> → 模块 2 §3</p>
+<hr />
+<h2 id="5">5. 证明与证据<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="rats-remote-attestation-procedures"><code>RATS</code> (Remote ATtestation procedureS，远程证明流程)<a class="headerlink" href="#rats-remote-attestation-procedures" title="Permanent link">&para;</a></h3>
+<p>IETF 架构（RFC 9334），定义 Attester、Verifier、Relying Party、Endorser 与 Reference Value Provider。→ 模块 3 §1.1</p>
+<h3 id="attester-verifier-relying-party">Attester / Verifier / Relying Party（证明方 / 验证方 / 依赖方）<a class="headerlink" href="#attester-verifier-relying-party" title="Permanent link">&para;</a></h3>
+<p>产出证据的实体；评估证据的实体；据结果行动的实体。<strong>谁来扮演验证方，是一份机密设计中后果最重大的决定。</strong> → 模块 3 §1.3</p>
+<h3 id="endorser">Endorser（背书方）<a class="headerlink" href="#endorser" title="Permanent link">&para;</a></h3>
+<p>经由证书链担保硬件为真品的一方——AMD、Intel、NVIDIA。→ 模块 3 §1.1</p>
+<h3 id="reference-value-provider">Reference Value Provider（参考值提供方）<a class="headerlink" href="#reference-value-provider" title="Permanent link">&para;</a></h3>
+<p>发布度量值<strong>应该</strong>是什么的一方。通常是最薄弱的一环。→ 模块 3 §7</p>
+<h3 id="passport">Passport 模型<a class="headerlink" href="#passport" title="Permanent link">&para;</a></h3>
+<p>证明方取得一次证明结果，然后出示给各依赖方。GCP 采用的模型。→ 模块 3 §1.2</p>
+<h3 id="background-check">Background-Check 模型<a class="headerlink" href="#background-check" title="Permanent link">&para;</a></h3>
+<p>依赖方自己把证据转发给验证方。AWS Nitro 的模型；天然更新鲜。→ 模块 3 §1.2</p>
+<h3 id="launch-measurement">Launch Measurement（启动度量）<a class="headerlink" href="#launch-measurement" title="Permanent link">&para;</a></h3>
+<p>在执行之前计算的初始 guest 镜像与 vCPU 状态哈希，不可变。SNP 上是 <code>MEASUREMENT</code>，TDX 上是 <code>MRTD</code>。→ 模块 1 §3.2</p>
+<h3 id="runtime-measurement">Runtime Measurement（运行时度量）<a class="headerlink" href="#runtime-measurement" title="Permanent link">&para;</a></h3>
+<p>覆盖启动之后所加载内容的只可扩展寄存器。TDX 上是 <code>RTMR</code>；SEV-SNP 上是 vTPM PCR。→ 模块 1 §3.2</p>
+<h3 id="pcr-platform-configuration-register"><code>PCR</code> (Platform Configuration Register，平台配置寄存器)<a class="headerlink" href="#pcr-platform-configuration-register" title="Permanent link">&para;</a></h3>
+<p>只可扩展、不可设置的 TPM 寄存器：<code>PCR_new = H(PCR_old ‖ measurement)</code>。→ 模块 1 §3.2</p>
+<h3 id="event-log">Event Log（事件日志）<a class="headerlink" href="#event-log" title="Permanent link">&para;</a></h3>
+<p>被度量内容的有序记录，使验证方能够重放并<strong>解释</strong> PCR 值，而不是只能与一个不透明的黄金哈希比对。→ 模块 3 §3.1</p>
+<h3 id="report_data-reportdata"><code>REPORT_DATA</code> / <code>REPORTDATA</code><a class="headerlink" href="#report_data-reportdata" title="Permanent link">&para;</a></h3>
+<p>证明报告中由调用方提供的 64 字节。承载 nonce 和/或 TLS 公钥哈希。<strong>RA-TLS 的基础。</strong> → 模块 1 §3.4</p>
+<h3 id="host_data"><code>HOST_DATA</code><a class="headerlink" href="#host_data" title="Permanent link">&para;</a></h3>
+<p>由 <strong>hypervisor</strong> 在启动时提供的 32 字节。按构造即不可信——可用于关联，<strong>绝不可用于安全判定</strong>。→ 模块 2 §1.4</p>
+<h3 id="tcb_version-svn-security-version-number"><code>TCB_VERSION</code> / <code>SVN</code> (Security Version Number，安全版本号)<a class="headerlink" href="#tcb_version-svn-security-version-number" title="Permanent link">&para;</a></h3>
+<p>报告中的固件组件安全版本。<strong>钉一个下限，绝不钉死具体值。</strong> → 模块 3 §4.2</p>
+<h3 id="eat-entity-attestation-token"><code>EAT</code> (Entity Attestation Token，实体证明令牌)<a class="headerlink" href="#eat-entity-attestation-token" title="Permanent link">&para;</a></h3>
+<p>RFC 9711 的标准证明声明格式。这正是 GCP 令牌里有 <code>eat_nonce</code>、<code>dbgstat</code>、<code>hwmodel</code> 这些声明名的原因。→ 模块 3 §3.4</p>
+<h3 id="corim-concise-reference-integrity-manifest"><code>CoRIM</code> (Concise Reference Integrity Manifest)<a class="headerlink" href="#corim-concise-reference-integrity-manifest" title="Permanent link">&para;</a></h3>
+<p>发布参考值的标准格式。→ 模块 3 §3.4</p>
+<h3 id="coswid-concise-software-identification"><code>CoSWID</code> (Concise Software Identification)<a class="headerlink" href="#coswid-concise-software-identification" title="Permanent link">&para;</a></h3>
+<p>软件标识标签，把参考值绑定到可识别的软件。→ 模块 3 §3.4</p>
+<h3 id="ra-tls-remote-attestation-tls"><code>RA-TLS</code> (Remote Attestation TLS)<a class="headerlink" href="#ra-tls-remote-attestation-tls" title="Permanent link">&para;</a></h3>
+<p>把公钥哈希嵌入报告的调用方数据，从而将证明报告绑定到一条 TLS 会话上。<strong>给客户端端到端保证的唯一干净做法。</strong> → 模块 3 §6</p>
+<h3 id="dm-verity"><code>dm-verity</code><a class="headerlink" href="#dm-verity" title="Permanent link">&para;</a></h3>
+<p>在只读文件系统上建立的 Merkle 树，其根哈希被度量，读取时逐块校验。<strong>它让"被度量的 rootfs"在运行期仍然有意义。</strong> → 模块 3 §2.2</p>
+<h3 id="fail-closed-fail-open">Fail-Closed / Fail-Open<a class="headerlink" href="#fail-closed-fail-open" title="Permanent link">&para;</a></h3>
+<p>验证方不可达或 collateral 陈旧时，是阻断运行还是忽略。<strong>靠意外来选就等于选了 fail-open。</strong> → 模块 3 §3.3</p>
+<hr />
+<h2 id="6">6. 密码学与密钥管理<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<h3 id="aes-xts"><code>AES-XTS</code><a class="headerlink" href="#aes-xts" title="Permanent link">&para;</a></h3>
+<p>用于内存加密的保长、以地址为 tweak 的<strong>确定性</strong>模式。<strong>它的确定性就是密文侧信道。</strong> → 模块 1 §3.3</p>
+<h3 id="aes-gcm"><code>AES-GCM</code><a class="headerlink" href="#aes-gcm" title="Permanent link">&para;</a></h3>
+<p>带认证、非确定性的模式，用于 GPU PCIe 路径——在那里 nonce 与 tag 的膨胀负担得起。→ 模块 4 §2.2</p>
+<h3 id="kek-dek"><code>KEK</code> / <code>DEK</code> (密钥加密密钥 / 数据加密密钥)<a class="headerlink" href="#kek-dek" title="Permanent link">&para;</a></h3>
+<p>信封加密：大块数据用 DEK 加密，DEK 再用 KEK 封装。<strong>轮转 KEK 很便宜；轮转 DEK 意味着重新加密模型。</strong> → 模块 6 §3.2</p>
+<h3 id="skr-secure-key-release"><code>SKR</code> (Secure Key Release，安全密钥释放)<a class="headerlink" href="#skr-secure-key-release" title="Permanent link">&para;</a></h3>
+<p>仅向证明满足策略的环境释放密钥材料。→ 模块 3 §5</p>
+<h3 id="hpke-hybrid-public-key-encryption"><code>HPKE</code> (Hybrid Public Key Encryption，混合公钥加密)<a class="headerlink" href="#hpke-hybrid-public-key-encryption" title="Permanent link">&para;</a></h3>
+<p>RFC 9180 的公钥加密，可用于客户端把载荷加密给一把已证明的公钥。→ 模块 6 §5.2</p>
+<h3 id="spdm-security-protocol-and-data-model"><code>SPDM</code> (Security Protocol and Data Model)<a class="headerlink" href="#spdm-security-protocol-and-data-model" title="Permanent link">&para;</a></h3>
+<p>DMTF 标准，用于与设备做双向认证的密钥交换，建立 CPU TEE 到 GPU 的会话。→ 模块 4 §2.3</p>
+<h3 id="ide-integrity-and-data-encryption"><code>IDE</code> (Integrity and Data Encryption)<a class="headerlink" href="#ide-integrity-and-data-encryption" title="Permanent link">&para;</a></h3>
+<p>给 PCIe 总线流量做加密与完整性保护的链路层标准。→ 模块 4 §2.3</p>
+<h3 id="tdisp-tee-device-interface-security-protocol"><code>TDISP</code> (TEE Device Interface Security Protocol)<a class="headerlink" href="#tdisp-tee-device-interface-security-protocol" title="Permanent link">&para;</a></h3>
+<p>把设备接口直接指派进 TEE 的 PCIe 标准。广泛实现后将消除 bounce buffer。→ 模块 4 §6.2</p>
+<h3 id="ciphertext-side-channel">Ciphertext Side Channel（密文侧信道）<a class="headerlink" href="#ciphertext-side-channel" title="Permanent link">&para;</a></h3>
+<p>通过观测确定性密文来推断明文变化。<strong>架构性的，不是 bug。</strong> CipherLeaks 及其后继工作。→ 模块 2 §5.1</p>
+<hr />
+<h2 id="7-gpu">7. 机密 GPU<a class="headerlink" href="#7-gpu" title="Permanent link">&para;</a></h2>
+<h3 id="cc-mode"><code>CC mode</code>（机密计算模式）<a class="headerlink" href="#cc-mode" title="Permanent link">&para;</a></h3>
+<p>NVIDIA GPU 的设备状态：<code>OFF</code>、<code>ON</code>（保护生效，profiling 禁用）、<code>DEVTOOLS</code>（<strong>不是安全模式</strong>）。→ 模块 4 §2.1</p>
+<h3 id="_1">受保护区 / 非保护区<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>HBM 的划分：受保护区存放权重、KV cache 与激活值；非保护区是密文 bounce 的着陆区。→ 模块 4 §2.2</p>
+<h3 id="bounce-buffer">Bounce Buffer<a class="headerlink" href="#bounce-buffer" title="Permanent link">&para;</a></h3>
+<p>一块共享、宿主可见的暂存缓冲区，加密数据经由它跨越 PCIe 边界。<strong>CC 开销的主要来源。</strong> → 模块 4 §2.2</p>
+<h3 id="gsp-gpu-system-processor"><code>GSP</code> (GPU System Processor)<a class="headerlink" href="#gsp-gpu-system-processor" title="Permanent link">&para;</a></h3>
+<p>GPU 的片上微控制器，其固件作为 GPU 证明的一部分被度量。→ 模块 4 §2.2</p>
+<h3 id="rim-reference-integrity-manifest"><code>RIM</code> (Reference Integrity Manifest，参考完整性清单)<a class="headerlink" href="#rim-reference-integrity-manifest" title="Permanent link">&para;</a></h3>
+<p>NVIDIA 针对某个固件与驱动版本签名发布的期望度量值。<strong>GPU 侧对参考值问题的回答。</strong> → 模块 4 §3.1</p>
+<h3 id="nras-nvidia-remote-attestation-service"><code>NRAS</code> (NVIDIA Remote Attestation Service)<a class="headerlink" href="#nras-nvidia-remote-attestation-service" title="Permanent link">&para;</a></h3>
+<p>NVIDIA 托管的验证方。方便；但增加依赖并暴露你的机群情况。本地验证方是替代方案。→ 模块 4 §3.1</p>
+<h3 id="nvtrust"><code>nvtrust</code><a class="headerlink" href="#nvtrust" title="Permanent link">&para;</a></h3>
+<p>NVIDIA 的开源 GPU 证明与验证工具链。→ 模块 4 实验</p>
+<h3 id="composite-attestation">Composite Attestation（复合证明）<a class="headerlink" href="#composite-attestation" title="Permanent link">&para;</a></h3>
+<p>针对<strong>被绑定的</strong> CPU TEE、GPU 与工作负载镜像证据的<strong>单一</strong>策略决策。分开验证证明不了多少。→ 模块 4 §3.2</p>
+<h3 id="spt-single-gpu-passthrough"><code>SPT</code> (Single GPU Passthrough，单卡直通)<a class="headerlink" href="#spt-single-gpu-passthrough" title="Permanent link">&para;</a></h3>
+<p>Hopper 世代的机密 GPU 模式：每台机密 VM 一块 GPU，无受保护互联。在 GCP 令牌中以 <code>cc_feature</code> 出现。→ 模块 4 §4.1</p>
+<h3 id="protected-nvlink-nvlink">Protected NVLink（受保护 NVLink）<a class="headerlink" href="#protected-nvlink-nvlink" title="Permanent link">&para;</a></h3>
+<p>Blackwell 世代硬件加密的 GPU 间互联，支持 1/2/4/8 卡机密分组，从而使 TEE 内张量并行成为可能。→ 模块 4 §4.2</p>
+<h3 id="sev-tio-sev-trusted-io"><code>SEV-TIO</code> (SEV Trusted I/O)<a class="headerlink" href="#sev-tio-sev-trusted-io" title="Permanent link">&para;</a></h3>
+<p>AMD 的可信设备指派，把 Instinct 加速器与 SEV-SNP 配对。→ 模块 4 §6.1</p>
+<h3 id="nvidia-persistenced"><code>nvidia-persistenced</code><a class="headerlink" href="#nvidia-persistenced" title="Permanent link">&para;</a></h3>
+<p>保持驱动加载的守护进程，避免每次进程退出都触发 CC 会话重协商与重新证明。<strong>CC 模式下必需。</strong> → 模块 4 §2.4</p>
+<h3 id="gpu-ready-stategpu">GPU Ready State（GPU 就绪状态）<a class="headerlink" href="#gpu-ready-stategpu" title="Permanent link">&para;</a></h3>
+<p>在证明成功前拒绝计算的硬件门（<code>nvidia-smi conf-compute -srs 1</code>）。<strong>按设计把证明放在冷启动关键路径上。</strong> → 模块 4 §2.4</p>
+<hr />
+<h2 id="8-google-cloud">8. Google Cloud<a class="headerlink" href="#8-google-cloud" title="Permanent link">&para;</a></h2>
+<h3 id="confidential-vm">Confidential VM<a class="headerlink" href="#confidential-vm" title="Permanent link">&para;</a></h3>
+<p>基础产品。<code>--confidential-compute-type=SEV | SEV_SNP | TDX</code>。<strong>纯 SEV 没有内存完整性。</strong> → 模块 5 §1</p>
+<h3 id="confidential-gke-nodes">Confidential GKE Nodes<a class="headerlink" href="#confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p>其 VM 为 Confidential VM 的节点池。<code>--confidential-node-type=sev|sev_snp|tdx</code>。<strong>不覆盖 Google 运营的控制面。</strong> → 模块 5 §2</p>
+<h3 id="confidential-space">Confidential Space<a class="headerlink" href="#confidential-space" title="Permanent link">&para;</a></h3>
+<p>一个加固的、被度量的镜像，只跑一个容器并产出证明令牌。分离工作负载作者、工作负载运营方与数据协作方——<strong>运营方拥有完整项目管理员权限，却仍然读不到数据。</strong> → 模块 5 §3</p>
+<h3 id="container-launcher">Container Launcher（容器启动器）<a class="headerlink" href="#container-launcher" title="Permanent link">&para;</a></h3>
+<p>Confidential Space 中启动工作负载并经 <code>/run/container_launcher/teeserver.sock</code> 提供证明令牌的组件。→ 模块 5 §4.1</p>
+<h3 id="google-cloud-attestation">Google Cloud Attestation<a class="headerlink" href="#google-cloud-attestation" title="Permanent link">&para;</a></h3>
+<p>GCP 的验证方，签发 OIDC JWT 证明令牌。注意：对一个包含 Google 的威胁模型，<strong>由 Google 签名的结果是被怀疑方作出的声明</strong>。→ 模块 5 §4.1</p>
+<h3 id="dbgstat"><code>dbgstat</code><a class="headerlink" href="#dbgstat" title="Permanent link">&para;</a></h3>
+<p>表示调试状态的令牌声明：<code>disabled-since-boot</code> 或 <code>enabled</code>。<strong>最重要的那一条必须断言的声明。</strong> → 模块 5 §3.3</p>
+<h3 id="hwmodel"><code>hwmodel</code><a class="headerlink" href="#hwmodel" title="Permanent link">&para;</a></h3>
+<p>标识硬件的令牌声明：<code>GCP_AMD_SEV</code>、<code>GCP_AMD_SEV_ES</code>、<code>GCP_INTEL_TDX</code> 或 <code>GCP_SHIELDED_VM</code>。<strong>断言你期望的那个——Shielded VM 不是 TEE。</strong> → 模块 5 §4.2</p>
+<h3 id="swname-swversion"><code>swname</code> / <code>swversion</code><a class="headerlink" href="#swname-swversion" title="Permanent link">&para;</a></h3>
+<p><code>CONFIDENTIAL_SPACE</code> 或 <code>GCE</code>，以及镜像版本。用于区分 Confidential Space 镜像与裸机密 VM。→ 模块 5 §4.2</p>
+<h3 id="submods"><code>submods</code><a class="headerlink" href="#submods" title="Permanent link">&para;</a></h3>
+<p>令牌的嵌套声明结构：<code>submods.container</code>（镜像摘要、签名、args、env）、<code>submods.gce</code>（project、zone、instance）、<code>submods.confidential_space</code>（支持属性、监控）、<code>submods.nvidia_gpu</code>（<code>cc_mode</code>、逐 GPU 型号、驱动、VBIOS）。→ 模块 3 §5.2</p>
+<h3 id="eat_nonce"><code>eat_nonce</code><a class="headerlink" href="#eat_nonce" title="Permanent link">&para;</a></h3>
+<p>令牌中由调用方提供的新鲜性值。<strong>用它；只靠 <code>exp</code> 等于接受一个重放窗口。</strong> → 模块 3 §4.1</p>
+<h3 id="wif-workload-identity-federation"><code>WIF</code> (Workload Identity Federation，工作负载身份联合)<a class="headerlink" href="#wif-workload-identity-federation" title="Permanent link">&para;</a></h3>
+<p>把证明令牌换成 Google 凭据的机制，其针对令牌声明的 CEL <strong>属性条件</strong>充当释放策略。→ 模块 5 §4.2</p>
+<h3 id="cmek-customer-managed-encryption-keys"><code>CMEK</code> (Customer-Managed Encryption Keys，客户管理的加密密钥)<a class="headerlink" href="#cmek-customer-managed-encryption-keys" title="Permanent link">&para;</a></h3>
+<p>你在 Cloud KMS 中控制的加密密钥。比 Google 托管更好，但<strong>仍然不是由证明门控的</strong>。→ 模块 5 §1.3</p>
+<h3 id="ekm-external-key-manager"><code>EKM</code> (External Key Manager，外部密钥管理器)<a class="headerlink" href="#ekm-external-key-manager" title="Permanent link">&para;</a></h3>
+<p>由 Google <strong>之外</strong>的密钥管理器支撑的 Cloud KMS。对模型提供方的权重 KEK 来说，这是那个<strong>质上不同</strong>的选项。→ 模块 5 §4.3</p>
+<h3 id="shielded-vm">Shielded VM<a class="headerlink" href="#shielded-vm" title="Permanent link">&para;</a></h3>
+<p>安全启动、vTPM 与完整性监控。<strong>不是机密计算</strong>——内存没有被加密。→ 模块 5 §5.3</p>
+<h3 id="binary-authorization">Binary Authorization<a class="headerlink" href="#binary-authorization" title="Permanent link">&para;</a></h3>
+<p>阻止未签名或未证明镜像被部署的 GKE 准入控制。它阻止<strong>部署</strong>；证明策略阻止<strong>密钥释放</strong>。→ 模块 5 §5.1</p>
+<h3 id="vpc-sc-vpc-service-controls"><code>VPC-SC</code> (VPC Service Controls)<a class="headerlink" href="#vpc-sc-vpc-service-controls" title="Permanent link">&para;</a></h3>
+<p>针对数据外泄的边界控制——<strong>少数几个 TEE 之外的控制确实有用的场合</strong>，因为威胁就是工作负载本身。→ 模块 5 §5.3</p>
+<hr />
+<h2 id="9-llm">9. 与 LLM 服务的交叉<a class="headerlink" href="#9-llm" title="Permanent link">&para;</a></h2>
+<h3 id="kv-cache"><code>KV cache</code>（键值缓存）<a class="headerlink" href="#kv-cache" title="Permanent link">&para;</a></h3>
+<p>缓存的 attention key 与 value。<strong>是模型被告知的一切的高保真编码</strong>——请以对待 prompt 本身的敏感度对待它。→ 模块 6 §6.1</p>
+<h3 id="prefix-caching">Prefix Caching（前缀缓存）<a class="headerlink" href="#prefix-caching" title="Permanent link">&para;</a></h3>
+<p>跨请求复用共享 prompt 前缀已算好的 KV 块。<strong>跨租户时这是一台针对其他租户 prompt 内容的时序预言机</strong>，而内存加密帮不上忙。→ 模块 6 §6.2</p>
+<h3 id="continuous-batching">Continuous Batching（连续批处理）<a class="headerlink" href="#continuous-batching" title="Permanent link">&para;</a></h3>
+<p>迭代级调度，把多个租户的请求混进同一次前向。<strong>它们之间的隔离是软件的，不是硬件的。</strong> → 模块 6 §7.2</p>
+<h3 id="disaggregated-prefilldecode">Disaggregated Prefill/Decode（分离式预填充/解码）<a class="headerlink" href="#disaggregated-prefilldecode" title="Permanent link">&para;</a></h3>
+<p>把两个阶段拆到不同机器上，并在其间搬运 KV cache。在机密设计中需要双向证明的加密传输。→ 模块 6 §6.3</p>
+<h3 id="ttft-tpot-token-token"><code>TTFT</code> / <code>TPOT</code> (首 token 时延 / 每输出 token 时延)<a class="headerlink" href="#ttft-tpot-token-token" title="Permanent link">&para;</a></h3>
+<p>分别由 prefill 和 decode 主导的延迟指标。<strong>TPOT 受机密计算影响最小。</strong> → 模块 7 §1.3</p>
+<h3 id="arithmetic-intensity">Arithmetic Intensity（算术强度）<a class="headerlink" href="#arithmetic-intensity" title="Permanent link">&para;</a></h3>
+<p>每传输字节对应的 FLOPs。CC 只对分母征税，因此相对开销按 <span class="arithmatex">\(1/I\)</span> 缩放——<strong>这正是它随模型规模、批大小与序列长度增大而缩小的原因。</strong> → 模块 4 §5.2</p>
+<h3 id="attested-ingress">Attested Ingress（已证明入口）<a class="headerlink" href="#attested-ingress" title="Permanent link">&para;</a></h3>
+<p>在 TEE <strong>内部</strong>终结 TLS 或解密载荷。<strong>托管 L7 负载均衡器持有明文 prompt，会作废整个保证。</strong> → 模块 6 §5</p>
+<h3 id="maas-3p-maas-model-as-a-service-maas"><code>MaaS</code> / <code>3P MaaS</code> (Model-as-a-Service / 第三方 MaaS)<a class="headerlink" href="#maas-3p-maas-model-as-a-service-maas" title="Permanent link">&para;</a></h3>
+<p>在你的基础设施上托管别人的模型。<strong>驱动整本书的那个三方信任冲突。</strong> → 索引页</p>
+<h3 id="pcc-private-cloud-compute"><code>PCC</code> (Private Cloud Compute)<a class="headerlink" href="#pcc-private-cloud-compute" title="Permanent link">&para;</a></h3>
+<p>Apple 的机密推理架构：无状态计算、可强制执行的保证、无特权运行时访问、不可定向、可验证透明性。<strong>该对标的标尺。</strong> → 模块 7 §6.2</p>
+<hr />
+<p>返回<a href="../">课程索引</a>，或继续阅读<a href="../appendix_reading_list/">附录 B: 一手资料阅读清单</a>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

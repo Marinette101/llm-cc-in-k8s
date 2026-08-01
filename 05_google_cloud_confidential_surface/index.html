@@ -1,0 +1,2177 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../04_confidential_gpus_and_accelerators/">
+      
+      
+        <link rel="next" href="../06_designing_confidential_llm_serving_on_gke/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/05_google_cloud_confidential_surface/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 5 - The Google Cloud Confidential Surface - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-5-the-google-cloud-confidential-surface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 5 - The Google Cloud Confidential Surface
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/05_google_cloud_confidential_surface/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Confidential VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Confidential VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-product-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Product Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-practical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The Practical Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-storage-and-keys-around-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Storage and Keys Around the VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Confidential GKE Nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-gpu-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The GPU Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-confidential-gke-nodes-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What Confidential GKE Nodes Does Not Cover
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-other-limitations-worth-knowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Other Limitations Worth Knowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Confidential Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Confidential Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-a-different-product-answering-a-different-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 A Different Product Answering a Different Question
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-three-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The Three Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-debug-versus-production-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 DEBUG versus Production Images
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-the-observability-tension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 The Observability Tension
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-the-limitation-for-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 The Limitation for Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-attestation-and-key-release-on-gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Attestation and Key Release on GCP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Attestation and Key Release on GCP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-token-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Token Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-policy-as-a-workload-identity-federation-attribute-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Policy as a Workload Identity Federation Attribute Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-key-store-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Key Store Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-supporting-cast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Supporting Cast
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Supporting Cast">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-image-signing-and-binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Image Signing and Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-gvisor-is-not-a-weaker-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 gVisor Is Not a Weaker TEE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-shielded-vm-workload-identity-and-the-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Shielded VM, Workload Identity, and the Rest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-confidential-space-versus-confidential-gke-for-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Confidential Space versus Confidential GKE for Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Confidential Space versus Confidential GKE for Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-head-to-head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Head-to-Head
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-the-recommendation-with-its-cost-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 The Recommendation, With Its Cost Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-hybrid-that-usually-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The Hybrid That Usually Wins
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-deploy-to-confidential-space-and-break-the-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Deploy to Confidential Space and Break the Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Deploy to Confidential Space and Break the Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-build-a-workload-that-shows-its-own-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Build a workload that shows its own token
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-set-up-the-key-and-the-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Set up the key and the policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-run-it-on-a-confidential-space-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Run it on a Confidential Space image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-break-it-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Break it, three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-compare-against-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Compare against Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-gcp-confidential-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The GCP Confidential Surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Confidential VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Confidential VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-product-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Product Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-practical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The Practical Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-storage-and-keys-around-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Storage and Keys Around the VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Confidential GKE Nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-gpu-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The GPU Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-confidential-gke-nodes-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What Confidential GKE Nodes Does Not Cover
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-other-limitations-worth-knowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Other Limitations Worth Knowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Confidential Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Confidential Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-a-different-product-answering-a-different-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 A Different Product Answering a Different Question
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-three-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The Three Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-debug-versus-production-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 DEBUG versus Production Images
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-the-observability-tension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 The Observability Tension
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-the-limitation-for-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 The Limitation for Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-attestation-and-key-release-on-gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Attestation and Key Release on GCP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Attestation and Key Release on GCP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-token-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Token Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-policy-as-a-workload-identity-federation-attribute-condition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Policy as a Workload Identity Federation Attribute Condition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-key-store-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Key Store Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-supporting-cast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Supporting Cast
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Supporting Cast">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-image-signing-and-binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Image Signing and Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-gvisor-is-not-a-weaker-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 gVisor Is Not a Weaker TEE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-shielded-vm-workload-identity-and-the-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Shielded VM, Workload Identity, and the Rest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-confidential-space-versus-confidential-gke-for-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Confidential Space versus Confidential GKE for Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Confidential Space versus Confidential GKE for Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-head-to-head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Head-to-Head
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-the-recommendation-with-its-cost-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 The Recommendation, With Its Cost Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-hybrid-that-usually-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The Hybrid That Usually Wins
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-deploy-to-confidential-space-and-break-the-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Deploy to Confidential Space and Break the Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Deploy to Confidential Space and Break the Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-build-a-workload-that-shows-its-own-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Build a workload that shows its own token
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-set-up-the-key-and-the-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Set up the key and the policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-run-it-on-a-confidential-space-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Run it on a Confidential Space image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-break-it-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Break it, three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-compare-against-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Compare against Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-gcp-confidential-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The GCP Confidential Surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-5-the-google-cloud-confidential-surface">Module 5: The Google Cloud Confidential Surface<a class="headerlink" href="#module-5-the-google-cloud-confidential-surface" title="Permanent link">&para;</a></h1>
+<p>Modules 1 through 4 built the mechanisms. This module is about what Google Cloud actually sells, which of those mechanisms each product exposes, and — the question that decides your architecture — which of Google's two quite different confidential offerings a third-party model serving workload should be built on. They are not variants of each other. They embody different answers to "who is in the trust boundary," and choosing the convenient one costs you a security property that is hard to add back later.</p>
+<p>This module covers <strong>Confidential VM machine families</strong>, <strong>Confidential GKE Nodes and what they do not cover</strong>, <strong>Confidential Space and its three-role separation</strong>, <strong>the GCP attestation and key-release surface</strong>, <strong>the supporting cast of adjacent products</strong>, and <strong>a head-to-head decision for inference</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Product surfaces move fast</p>
+<p>Machine-type availability, regional coverage, and GPU support in this area change on a scale of months. Every product claim in this module should be re-verified against current Google Cloud documentation before it enters a design document. The <em>architecture</em> is stable; the <em>availability matrix</em> is not.</p>
+</div>
+<hr />
+<h2 id="part-1-confidential-vm">Part 1: Confidential VM<a class="headerlink" href="#part-1-confidential-vm" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-product-matrix">1.1 The Product Matrix<a class="headerlink" href="#11-the-product-matrix" title="Permanent link">&para;</a></h3>
+<p>Confidential VM is the base layer — everything else in this module is built on it.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Confidential VM&lt;br&gt;--confidential-compute-type"] --&gt; B["SEV&lt;br&gt;memory encryption only&lt;br&gt;no integrity"]
+    A --&gt; C["SEV_SNP&lt;br&gt;+ RMP integrity&lt;br&gt;+ rich attestation report"]
+    A --&gt; D["TDX&lt;br&gt;+ secure EPT integrity&lt;br&gt;+ native RTMR runtime measurement"]
+
+    B --&gt; B1["N2D, C2D, C3D, C4D families&lt;br&gt;✅ live migration supported"]
+    C --&gt; C1["N2D with AMD Milan&lt;br&gt;❌ maintenance-policy=TERMINATE"]
+    D --&gt; D1["C3 family, and the A3&lt;br&gt;confidential-GPU path&lt;br&gt;❌ maintenance-policy=TERMINATE"]</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>SEV</strong></th>
+<th style="text-align: left;"><strong>SEV-SNP</strong></th>
+<th style="text-align: left;"><strong>TDX</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Memory confidentiality</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Memory integrity</td>
+<td style="text-align: left;"><strong>No</strong></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Native runtime measurement</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No — needs a vTPM</td>
+<td style="text-align: left;"><strong>Yes</strong> (<code>RTMR0-3</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Live migration</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">No</td>
+</tr>
+<tr>
+<td style="text-align: left;">Machine families (verify currency)</td>
+<td style="text-align: left;">N2D, C2D, C3D, C4D</td>
+<td style="text-align: left;">N2D (AMD Milan)</td>
+<td style="text-align: left;">C3, plus the confidential-GPU A3 path</td>
+</tr>
+<tr>
+<td style="text-align: left;">Confidential GPU support</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">See §2.2</td>
+<td style="text-align: left;"><strong>Yes</strong> — the documented GPU path</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The row that should drive your choice is memory integrity.</strong> Plain SEV gives confidentiality without integrity, which Module 1, §3.3 established is insufficient against an actively malicious hypervisor — replay and remap attacks work. SEV is the widest-available and cheapest option and it is the wrong one for a workload whose threat model includes adversary A2 or A3. If a design document says "Confidential VM" without saying which technology, it has not made the decision that matters.</p>
+<h3 id="12-the-practical-constraints">1.2 The Practical Constraints<a class="headerlink" href="#12-the-practical-constraints" title="Permanent link">&para;</a></h3>
+<p>Three that will shape your capacity planning:</p>
+<ol>
+<li><strong><code>--maintenance-policy=TERMINATE</code> for SEV-SNP and TDX.</strong> No live migration (Module 2, §4.2.1). Host maintenance stops the instance. For an inference node with a multi-minute cold start, this is a real availability input, not a footnote.</li>
+<li><strong>Regional availability is narrow.</strong> Confidential offerings — especially TDX and confidential GPUs — are available in a small subset of regions. This interacts badly with data-residency requirements: a customer who needs their data in a specific region may find the confidential option is not offered there, and the resulting conversation is uncomfortable because the two requirements are both security requirements.</li>
+<li><strong>Capacity, not just availability.</strong> A3 confidential capacity is constrained. Reservations matter.</li>
+</ol>
+<h3 id="13-storage-and-keys-around-the-vm">1.3 Storage and Keys Around the VM<a class="headerlink" href="#13-storage-and-keys-around-the-vm" title="Permanent link">&para;</a></h3>
+<p>Confidential VM protects memory. It says nothing about disk, and the surrounding storage story has to be built deliberately:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Concern</th>
+<th style="text-align: left;">Mechanism</th>
+<th style="text-align: left;">Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Boot and data disks</td>
+<td style="text-align: left;">Google-managed encryption, CMEK, or Confidential Hyperdisk</td>
+<td style="text-align: left;">CMEK means <em>you</em> control the KEK in Cloud KMS — better, and still Google-operated</td>
+</tr>
+<tr>
+<td style="text-align: left;">Model weights at rest</td>
+<td style="text-align: left;">Application-level envelope encryption (Module 3, §5)</td>
+<td style="text-align: left;"><strong>Do not rely on disk encryption for this.</strong> The decryption must be gated on attestation, which disk encryption is not</td>
+</tr>
+<tr>
+<td style="text-align: left;">Secrets</td>
+<td style="text-align: left;">Attested key release, not Secret Manager IAM</td>
+<td style="text-align: left;">Secret Manager releases on <em>identity</em>; you need release on <em>measurement</em></td>
+</tr>
+</tbody>
+</table>
+<p>The middle row is the one that matters and the one most often done wrong. Encrypting the weights on disk with CMEK protects them from someone who steals the disk. It does not protect them from the cloud operator, because the operator's platform can read the disk and holds the path to the key. Only attestation-gated release does that.</p>
+<hr />
+<h2 id="part-2-confidential-gke-nodes">Part 2: Confidential GKE Nodes<a class="headerlink" href="#part-2-confidential-gke-nodes" title="Permanent link">&para;</a></h2>
+<h3 id="21-what-it-is">2.1 What It Is<a class="headerlink" href="#21-what-it-is" title="Permanent link">&para;</a></h3>
+<p>Confidential GKE Nodes is, essentially, "run my node pool's VMs as Confidential VMs." The kubelet, the container runtime, and your pods all run inside the TEE.</p>
+<p>Enable at cluster level (Autopilot or Standard):</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>clusters<span class="w"> </span>create-auto<span class="w"> </span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>CONFIDENTIAL_COMPUTE_TECHNOLOGY<span class="w">   </span><span class="c1"># sev | sev_snp | tdx</span>
+</code></pre></div>
+<p>Or at node-pool level (Standard only):</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>NODE_POOL_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>MACHINE_TYPE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>ZONE1,ZONE2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>CONFIDENTIAL_COMPUTE_TECHNOLOGY
+</code></pre></div>
+<p><strong>Cluster-level enablement is irreversible.</strong> You cannot turn it off on an existing cluster. Node-pool-level enablement is the flexible path and is what you want while iterating.</p>
+<h3 id="22-the-gpu-configuration">2.2 The GPU Configuration<a class="headerlink" href="#22-the-gpu-configuration" title="Permanent link">&para;</a></h3>
+<p>The confidential GPU path, from Module 4, §4.1, expressed as a node pool:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-gpu-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>ZONE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>tdx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>a3-highgpu-1g<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--accelerator<span class="o">=</span><span class="nv">type</span><span class="o">=</span>nvidia-h100-80gb,count<span class="o">=</span><span class="m">1</span>,gpu-driver-version<span class="o">=</span>latest
+</code></pre></div>
+<p>The constraints are worth restating because they are the hard boundary on what you can serve:</p>
+<ul>
+<li>One H100 80 GB per node, <code>a3-highgpu-1g</code>.</li>
+<li>Intel TDX.</li>
+<li><strong>No GPU sharing</strong> — no time-sharing, no multi-instance GPU.</li>
+<li>Minimum GKE versions apply and differ depending on whether you use manual or automatic driver installation, and on whether you use ComputeClasses or flex-start.</li>
+</ul>
+<h3 id="23-what-confidential-gke-nodes-does-not-cover">2.3 What Confidential GKE Nodes Does <em>Not</em> Cover<a class="headerlink" href="#23-what-confidential-gke-nodes-does-not-cover" title="Permanent link">&para;</a></h3>
+<p>This section is the reason this module exists, and it is the most important thing to take from it.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph OUT ["❌ OUTSIDE your TEE"]
+        CP["Kubernetes Control Plane&lt;br&gt;API server, scheduler, etcd&lt;br&gt;Google-operated"]
+        CP2["Google's documentation is explicit:&lt;br&gt;Confidential GKE Nodes does not change&lt;br&gt;the security measures applied to&lt;br&gt;cluster control planes."]
+    end
+
+    subgraph IN ["🔒 INSIDE your TEE — all of it"]
+        K["kubelet"]
+        CR["Container runtime"]
+        P1["Your inference pod"]
+        P2["⚠️ Any OTHER pod the control plane schedules here"]
+        DS["⚠️ Any DaemonSet, including debug and logging agents"]
+    end
+
+    CP --&gt;|"schedules whatever it wants"| K
+    K --&gt; P1
+    K --&gt; P2
+    K --&gt; DS</code></pre>
+<p>Follow the implication carefully:</p>
+<ol>
+<li>The control plane is outside your TEE and is operated by Google.</li>
+<li>The kubelet is <em>inside</em> your TEE and obeys the control plane.</li>
+<li>Therefore anyone with sufficient control-plane access can cause arbitrary code to run <strong>inside your trust boundary</strong>.</li>
+</ol>
+<p>That includes <code>kubectl exec</code> into your inference pod, scheduling a privileged debug pod on the node, or adding a DaemonSet that reads process memory. The memory encryption is doing its job perfectly the entire time — it is protecting that attacker's code from the hypervisor.</p>
+<p><strong>The honest characterization</strong>: Confidential GKE Nodes removes the hypervisor and the physical layer from your TCB (adversaries A2 and A4, and much of A3). It does <strong>not</strong> remove the Kubernetes control plane, and on GKE the control plane is operated by Google. If your threat model's headline adversary is "Google," Confidential GKE Nodes alone does not fully address it.</p>
+<p>This is not a criticism of the product — it is a correct reading of what it is for. But it must be stated explicitly in any design document that claims protection against a cloud insider, because a model provider's security team will find it.</p>
+<h3 id="24-other-limitations-worth-knowing">2.4 Other Limitations Worth Knowing<a class="headerlink" href="#24-other-limitations-worth-knowing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Not compatible with sole-tenant nodes.</li>
+<li>Windows node pools unsupported.</li>
+<li>Local SSD supported only for ephemeral storage.</li>
+<li>Node auto-provisioning supports SEV and SEV-SNP, but not TDX — which matters, because TDX is the confidential-GPU path.</li>
+<li>Maintenance events cause disruption where live migration is unavailable.</li>
+</ul>
+<hr />
+<h2 id="part-3-confidential-space">Part 3: Confidential Space<a class="headerlink" href="#part-3-confidential-space" title="Permanent link">&para;</a></h2>
+<h3 id="31-a-different-product-answering-a-different-question">3.1 A Different Product Answering a Different Question<a class="headerlink" href="#31-a-different-product-answering-a-different-question" title="Permanent link">&para;</a></h3>
+<p>Confidential Space is not "Confidential VM with extras." It is a purpose-built answer to the multi-party trust problem — which is to say, it is a product built for exactly the scenario in Module 1, §5.1.</p>
+<p>The core idea: a hardened, Google-published, measured image whose entire job is to launch <strong>one</strong> container and produce an attestation token describing it. No SSH. No interactive access. No arbitrary workload scheduling. The image is based on Container-Optimized OS and is hardened for this single purpose.</p>
+<h3 id="32-the-three-roles">3.2 The Three Roles<a class="headerlink" href="#32-the-three-roles" title="Permanent link">&para;</a></h3>
+<p>This separation is the product's actual contribution, and it maps directly onto the three-party diagram from the curriculum index.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph WA ["✍️ Workload Author"]
+        WA1["Writes and publishes&lt;br&gt;the container image"]
+        WA2["❌ Cannot access the data&lt;br&gt;❌ Cannot access the results&lt;br&gt;❌ Cannot control who accesses them"]
+    end
+
+    subgraph WO ["🔧 Workload Operator"]
+        WO1["Runs the workload;&lt;br&gt;has full project-level&lt;br&gt;administrative privileges"]
+        WO2["❌ Cannot access the data&lt;br&gt;❌ Cannot modify the workload code&lt;br&gt;or the execution environment"]
+    end
+
+    subgraph DC ["🔐 Data Collaborators"]
+        DC1["Own the protected resources&lt;br&gt;and set the release policy"]
+        DC2["❌ Cannot access each other's data&lt;br&gt;❌ Cannot modify the workload code"]
+    end
+
+    WA1 --&gt;|"signed image + digest"| CS["🔒 Confidential Space&lt;br&gt;hardened image + launcher&lt;br&gt;runs exactly ONE container&lt;br&gt;emits an attestation token"]
+    WO1 --&gt;|"provisions and operates"| CS
+    DC1 --&gt;|"KMS policy over&lt;br&gt;attestation claims"| CS
+    CS --&gt;|"attestation token"| KMS["Cloud KMS / EKM&lt;br&gt;releases the key only&lt;br&gt;if the policy passes"]</code></pre>
+<p>The sentence to internalize: <strong>the workload operator has full project-level administrative privileges and still cannot read the data.</strong> That is the property Confidential GKE Nodes does not give you, and it is exactly the property a 3P MaaS design needs. Map it onto the real parties:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Confidential Space role</th>
+<th style="text-align: left;">3P MaaS party</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Workload author</td>
+<td style="text-align: left;">The party that builds the inference image (model provider, or a jointly-audited build)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Workload operator</td>
+<td style="text-align: left;">Google / the platform team running the service</td>
+</tr>
+<tr>
+<td style="text-align: left;">Data collaborator (weights)</td>
+<td style="text-align: left;">The model provider, holding the weight KEK</td>
+</tr>
+<tr>
+<td style="text-align: left;">Data collaborator (prompts)</td>
+<td style="text-align: left;">The end customer, if prompt keys are also attestation-gated</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-debug-versus-production-images">3.3 DEBUG versus Production Images<a class="headerlink" href="#33-debug-versus-production-images" title="Permanent link">&para;</a></h3>
+<p>Google publishes both debug and production variants of the Confidential Space image. The difference shows up in the attestation token:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Production image</th>
+<th style="text-align: left;">Debug image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>dbgstat</code> claim</td>
+<td style="text-align: left;"><code>disabled-since-boot</code></td>
+<td style="text-align: left;"><code>enabled</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Interactive access</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: left;">Available for troubleshooting</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fit for real data</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;"><strong>No</strong></td>
+</tr>
+</tbody>
+</table>
+<p>This is the concrete realization of Module 3's <code>dbgstat</code> check. A relying party that does not assert <code>dbgstat == "disabled-since-boot"</code> will happily release production keys to a debug image where the operator can inspect the workload. It is a one-line policy omission with total consequences, and it is the most valuable single check in the entire release policy.</p>
+<p>Image versions also carry <code>support_attributes</code> (<code>STABLE</code>, <code>LATEST</code>, <code>USABLE</code>, <code>EXPERIMENTAL</code>). A production release policy should pin acceptable values rather than accept anything, for the same reason you pin a TCB floor.</p>
+<h3 id="34-the-observability-tension">3.4 The Observability Tension<a class="headerlink" href="#34-the-observability-tension" title="Permanent link">&para;</a></h3>
+<p>Confidential Space's strength — nothing gets in, nothing gets out except what the workload deliberately emits — is also its operational cost. You cannot SSH in. You cannot attach a debugger. If the container crashes on startup, you have very little to work with.</p>
+<p>Google provides opt-in mechanisms to surface logs and memory monitoring, and the attestation token reflects whether they are enabled (there is a <code>monitoring_enabled</code> structure under the Confidential Space submodule). <strong>The fact that this is reflected in the token is the important design detail</strong>: a data collaborator can write a policy that refuses to release keys to an instance with memory monitoring enabled. That is the right shape — the observability decision becomes a negotiated, attested property rather than something the operator toggles unilaterally.</p>
+<p>The tension is real and does not have a clean resolution: every diagnostic capability you add is a channel out of the trust boundary. Module 7, §3 is about working within that constraint.</p>
+<h3 id="35-the-limitation-for-inference">3.5 The Limitation for Inference<a class="headerlink" href="#35-the-limitation-for-inference" title="Permanent link">&para;</a></h3>
+<p>Confidential Space runs one container per VM instance. It is not Kubernetes. There is no horizontal pod autoscaler, no service mesh, no rolling deployment primitive, no pod-level scheduling.</p>
+<p>For an inference <em>service</em> — which needs autoscaling, load balancing, rolling upgrades, and health-based replacement — you are rebuilding a meaningful fraction of what Kubernetes gives you. This is the central tradeoff of §6, and it is a genuine engineering cost, not a formality.</p>
+<hr />
+<h2 id="part-4-attestation-and-key-release-on-gcp">Part 4: Attestation and Key Release on GCP<a class="headerlink" href="#part-4-attestation-and-key-release-on-gcp" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-token-path">4.1 The Token Path<a class="headerlink" href="#41-the-token-path" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    A["🔒 Workload in Confidential Space"] --&gt;|"1 request a token"| L["Container launcher&lt;br&gt;unix socket:&lt;br&gt;/run/container_launcher/teeserver.sock"]
+    L --&gt;|"2 hardware evidence&lt;br&gt;SNP report / TD quote + GPU evidence"| GCA["Google Cloud Attestation&lt;br&gt;(the Verifier)"]
+    GCA --&gt;|"3 signed OIDC JWT&lt;br&gt;with EAT-style claims"| A
+    A --&gt;|"4 present the token"| STS["Security Token Service&lt;br&gt;Workload Identity Federation"]
+    STS --&gt;|"5 attribute condition&lt;br&gt;evaluated over the claims"| STS
+    STS --&gt;|"6 federated credential"| A
+    A --&gt;|"7 decrypt with the credential"| KMS["Cloud KMS / Cloud HSM / Cloud EKM"]</code></pre>
+<p>This is the passport model from Module 3, §1.2. Note step 2: <strong>Google Cloud Attestation is the verifier.</strong> Module 3, §1.3 explained why that is a design decision and not a detail — for a model provider whose threat model includes Google, an attestation result signed by Google is a statement by the party being distrusted. The mitigations are in §4.3 below.</p>
+<h3 id="42-policy-as-a-workload-identity-federation-attribute-condition">4.2 Policy as a Workload Identity Federation Attribute Condition<a class="headerlink" href="#42-policy-as-a-workload-identity-federation-attribute-condition" title="Permanent link">&para;</a></h3>
+<p>The policy is a CEL expression evaluated over the token's claims:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>PROVIDER_ID<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>POOL_ID<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">    assertion.swname == &#39;CONFIDENTIAL_SPACE&#39;</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39;</span>
+<span class="s2">    &amp;&amp; assertion.hwmodel == &#39;GCP_INTEL_TDX&#39;</span>
+<span class="s2">    &amp;&amp; &#39;sha256:APPROVED_DIGEST&#39; in assertion.submods.container.image_digest</span>
+<span class="s2">    &amp;&amp; assertion.submods.nvidia_gpu.cc_mode == &#39;ON&#39;</span>
+<span class="s2">  &quot;</span>
+</code></pre></div>
+<p>Every clause here was earned in an earlier module:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Clause</th>
+<th style="text-align: left;">Established in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>swname == 'CONFIDENTIAL_SPACE'</code></td>
+<td style="text-align: left;">§3.1 — this is a Confidential Space image, not a bare GCE VM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dbgstat == 'disabled-since-boot'</code></td>
+<td style="text-align: left;">§3.3 and Module 3, §5.2 — the single most important check</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hwmodel == 'GCP_INTEL_TDX'</code></td>
+<td style="text-align: left;">Module 2, §4.1 — you want integrity, not just SEV confidentiality</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>image_digest</code> allowlist</td>
+<td style="text-align: left;">Module 3, §2 — the chain reaching the actual workload</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>nvidia_gpu.cc_mode == 'ON'</code></td>
+<td style="text-align: left;">Module 4, §2.1 and §3.2 — without it the weights land in plaintext HBM</td>
+</tr>
+</tbody>
+</table>
+<p>Where possible, prefer <code>submods.container.image_signatures[].key_id</code> over a digest allowlist. Digest allowlists must be edited on every release; a signature check survives releases and expresses the intent ("images signed by this key") rather than an enumeration of instances.</p>
+<h3 id="43-the-key-store-decision">4.3 The Key Store Decision<a class="headerlink" href="#43-the-key-store-decision" title="Permanent link">&para;</a></h3>
+<p>This is where the P3 (mutual verifiability) property is won or lost.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Key material lives</th>
+<th style="text-align: left;">Who can change the release policy</th>
+<th style="text-align: left;">Guarantee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Cloud KMS</strong></td>
+<td style="text-align: left;">Google infrastructure, Google-managed HSM backing</td>
+<td style="text-align: left;">Google Cloud IAM principals in the project</td>
+<td style="text-align: left;">Policy-level</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud HSM</strong></td>
+<td style="text-align: left;">FIPS-validated HSM, Google-operated</td>
+<td style="text-align: left;">Same</td>
+<td style="text-align: left;">Policy-level, better key custody</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud EKM</strong></td>
+<td style="text-align: left;"><strong>Your</strong> external key manager, outside Google</td>
+<td style="text-align: left;">You, in your own system</td>
+<td style="text-align: left;"><strong>Hardware-and-organizationally rooted</strong></td>
+</tr>
+</tbody>
+</table>
+<p>For a model provider's weight KEK, EKM is the qualitatively different option. With Cloud KMS, the answer to "what would Google have to do to get the plaintext key?" includes "change an IAM policy" — an internal operation. With EKM, the key never exists in Google's infrastructure, and the release decision is made by a system the model provider operates.</p>
+<p>Two caveats to state honestly:</p>
+<ul>
+<li>EKM adds a latency and availability dependency on the external key manager, on the cold-start path.</li>
+<li>Even with EKM, the model provider must verify the attestation evidence itself to gain the full property. If the external key manager simply trusts a Google-signed token, the verifier is still Google. Doing this properly means the provider's key manager validates the underlying hardware evidence against AMD/Intel/NVIDIA roots.</li>
+</ul>
+<hr />
+<h2 id="part-5-the-supporting-cast">Part 5: The Supporting Cast<a class="headerlink" href="#part-5-the-supporting-cast" title="Permanent link">&para;</a></h2>
+<h3 id="51-image-signing-and-binary-authorization">5.1 Image Signing and Binary Authorization<a class="headerlink" href="#51-image-signing-and-binary-authorization" title="Permanent link">&para;</a></h3>
+<p>Confidential computing shifts the security problem from isolation to supply chain (Module 1, §4.3). The tooling that matters:</p>
+<ul>
+<li><strong>Sigstore / cosign</strong> signatures on the container image, surfaced in the attestation token as <code>submods.container.image_signatures[]</code> with <code>key_id</code> and <code>signature_algorithm</code>. This is what lets a release policy say "signed by the model provider" rather than "digest equals X."</li>
+<li><strong>Binary Authorization</strong> — a GKE admission controller that blocks unsigned or unattested images from being deployed. Note the distinction: Binary Authorization prevents deployment; the attestation policy prevents <em>key release</em>. They are complementary, and only the second one is enforced by something outside Google's control plane.</li>
+</ul>
+<h3 id="52-gvisor-is-not-a-weaker-tee">5.2 gVisor Is Not a Weaker TEE<a class="headerlink" href="#52-gvisor-is-not-a-weaker-tee" title="Permanent link">&para;</a></h3>
+<p>This confusion appears in nearly every design review, so it is worth being blunt.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>gVisor / sandboxing</strong></th>
+<th style="text-align: left;"><strong>Confidential computing</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Protects</td>
+<td style="text-align: left;">The <em>host</em> from the <em>workload</em></td>
+<td style="text-align: left;">The <em>workload</em> from the <em>host</em></td>
+</tr>
+<tr>
+<td style="text-align: left;">Adversary</td>
+<td style="text-align: left;">Malicious or compromised container</td>
+<td style="text-align: left;">Malicious hypervisor, cloud insider, physical attacker</td>
+</tr>
+<tr>
+<td style="text-align: left;">Enforced by</td>
+<td style="text-align: left;">Software (a user-space kernel)</td>
+<td style="text-align: left;">Hardware</td>
+</tr>
+<tr>
+<td style="text-align: left;">Useful for a 3P MaaS design?</td>
+<td style="text-align: left;">Yes — for a different reason</td>
+<td style="text-align: left;">Yes — for the reason this book is about</td>
+</tr>
+</tbody>
+</table>
+<p>They are <strong>orthogonal</strong>, not alternatives. In fact both are relevant to 3P MaaS: confidential computing protects the model provider's weights from the platform, while sandboxing protects the platform from a model provider's container. A complete design may well use both, and saying so demonstrates that the threat model has been thought through in both directions.</p>
+<h3 id="53-shielded-vm-workload-identity-and-the-rest">5.3 Shielded VM, Workload Identity, and the Rest<a class="headerlink" href="#53-shielded-vm-workload-identity-and-the-rest" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Shielded VM</strong> provides secure boot, vTPM, and integrity monitoring. It is <em>not</em> confidential computing — memory is not encrypted, and the hypervisor can read it. Note that <code>GCP_SHIELDED_VM</code> is a possible value of the <code>hwmodel</code> claim, which is precisely why a release policy must assert the <code>hwmodel</code> it expects rather than merely checking that a token verifies.</li>
+<li><strong>Workload Identity</strong> binds a Kubernetes service account to a Google service account. It authenticates <em>who</em> the workload is, not <em>what code</em> it is running. It is not a substitute for attestation, and a design that uses Workload Identity to gate access to weights has an identity control where it needs a measurement control.</li>
+<li><strong>VPC Service Controls</strong> constrain data egress at the network perimeter. Relevant to Module 6, §8, where the question is how to prevent an in-TEE workload from exfiltrating prompts — one of the few places where a control <em>outside</em> the TEE genuinely helps, because the threat is the workload itself.</li>
+</ul>
+<hr />
+<h2 id="part-6-confidential-space-versus-confidential-gke-for-inference">Part 6: Confidential Space versus Confidential GKE for Inference<a class="headerlink" href="#part-6-confidential-space-versus-confidential-gke-for-inference" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-head-to-head">6.1 The Head-to-Head<a class="headerlink" href="#61-the-head-to-head" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;"><strong>Confidential GKE Nodes</strong></th>
+<th style="text-align: left;"><strong>Confidential Space</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Unit of confidentiality</td>
+<td style="text-align: left;">The node</td>
+<td style="text-align: left;">The VM instance running one container</td>
+</tr>
+<tr>
+<td style="text-align: left;">Kubelet in the TCB</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">N/A — no Kubernetes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Control plane can inject code into the boundary</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;"><strong>No</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Operator can access data</td>
+<td style="text-align: left;">Yes, with sufficient cluster access</td>
+<td style="text-align: left;"><strong>No, by design</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation identity</td>
+<td style="text-align: left;">Node image; workload identity requires extra work</td>
+<td style="text-align: left;">The container image digest, natively in the token</td>
+</tr>
+<tr>
+<td style="text-align: left;">Turnkey attestation token</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU support</td>
+<td style="text-align: left;">Yes — <code>a3-highgpu-1g</code>, one H100, TDX</td>
+<td style="text-align: left;">Yes — surfaced as <code>submods.nvidia_gpu</code> claims</td>
+</tr>
+<tr>
+<td style="text-align: left;">Autoscaling, rolling updates, service mesh</td>
+<td style="text-align: left;"><strong>Yes — native</strong></td>
+<td style="text-align: left;">No; you build it</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multi-container pods, sidecars</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">One container</td>
+</tr>
+<tr>
+<td style="text-align: left;">Operational familiarity</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Low</td>
+</tr>
+<tr>
+<td style="text-align: left;">Suits the 3P MaaS trust model</td>
+<td style="text-align: left;">Partially</td>
+<td style="text-align: left;"><strong>Yes — it was designed for it</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-the-recommendation-with-its-cost-stated">6.2 The Recommendation, With Its Cost Stated<a class="headerlink" href="#62-the-recommendation-with-its-cost-stated" title="Permanent link">&para;</a></h3>
+<p><strong>For a workload whose security claim is "the cloud operator cannot read the model weights or the customer prompts," Confidential Space is the architecturally correct primitive, and Confidential GKE Nodes alone is not sufficient.</strong></p>
+<p>The reason is §2.3: on Confidential GKE Nodes, the Google-operated control plane can schedule code inside your trust boundary. That single fact undermines the headline claim, and no amount of RBAC configuration fixes it, because RBAC is enforced by the control plane you are trying to exclude.</p>
+<p>The cost of that recommendation is real and should not be minimized. Choosing Confidential Space means giving up horizontal pod autoscaling, rolling deployments, service mesh, sidecars, and the entire GKE operational toolkit for the confidential portion of the system. For an inference service that needs to scale with traffic, that is a substantial engineering investment.</p>
+<h3 id="63-the-hybrid-that-usually-wins">6.3 The Hybrid That Usually Wins<a class="headerlink" href="#63-the-hybrid-that-usually-wins" title="Permanent link">&para;</a></h3>
+<p>In practice the workable architecture is neither/both — a split-plane design:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph NORM ["Regular GKE — no confidential data ever touches this"]
+        A["Ingress, routing, rate limiting"]
+        B["Auth, quota, billing, metering"]
+        C["Control plane for the fleet:&lt;br&gt;scaling decisions, health, rollout"]
+        D["Metrics and non-content logs"]
+    end
+
+    subgraph CONF ["🔒 Confidential Space instances — the only place plaintext exists"]
+        E["Inference workload&lt;br&gt;attested, one container"]
+        F["Weights decrypted only after&lt;br&gt;attested key release"]
+        G["TLS or payload decryption&lt;br&gt;terminated INSIDE"]
+    end
+
+    A --&gt;|"encrypted payload only —&lt;br&gt;never plaintext prompts"| E
+    C --&gt;|"lifecycle commands,&lt;br&gt;NOT data access"| E
+    E --&gt;|"encrypted responses,&lt;br&gt;content-free metrics"| D</code></pre>
+<p>The rule that makes this work: <strong>the regular GKE plane may orchestrate the confidential plane but must never see plaintext.</strong> Ingress forwards an encrypted payload; the control plane starts and stops instances; metrics carry counts and latencies but no content. The confidential plane is small, auditable, and does one thing.</p>
+<p>This is the architecture Module 6 develops in full, including the hardest part — how the prompt gets from the customer to the confidential plane without being decrypted at the boundary.</p>
+<hr />
+<h2 id="lab-deploy-to-confidential-space-and-break-the-policy">Lab: Deploy to Confidential Space and Break the Policy<a class="headerlink" href="#lab-deploy-to-confidential-space-and-break-the-policy" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> deploy a workload to Confidential Space, release a Cloud KMS secret to it gated on the attestation token, then change one byte of the image and watch the release fail. This is Module 3's lab made concrete on the real product surface.</p>
+<p><strong>Cost:</strong> one small confidential VM and a few KMS operations — well under a dollar. <strong>Status:</strong> commands follow Google Cloud documentation; <code>gcloud</code> syntax varies by CLI version, so verify with <code>--help</code> and the current Confidential Space docs.</p>
+<h3 id="step-1-build-a-workload-that-shows-its-own-token">Step 1 — Build a workload that shows its own token<a class="headerlink" href="#step-1-build-a-workload-that-shows-its-own-token" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span>
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>requests-unixsocket<span class="w"> </span>google-auth
+<span class="k">COPY</span><span class="w"> </span>main.py<span class="w"> </span>/main.py
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/main.py&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><code>main.py</code> should fetch the token from the launcher socket, print the decoded claims, exchange it via STS, and attempt a Cloud KMS decrypt. Push it to Artifact Registry and record the digest.</p>
+<h3 id="step-2-set-up-the-key-and-the-policy">Step 2 — Set up the key and the policy<a class="headerlink" href="#step-2-set-up-the-key-and-the-policy" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># A KMS key holding a test secret</span>
+gcloud<span class="w"> </span>kms<span class="w"> </span>keyrings<span class="w"> </span>create<span class="w"> </span>cc-lab<span class="w"> </span>--location<span class="o">=</span>global
+gcloud<span class="w"> </span>kms<span class="w"> </span>keys<span class="w"> </span>create<span class="w"> </span>weights-kek<span class="w"> </span>--location<span class="o">=</span>global<span class="w"> </span>--keyring<span class="o">=</span>cc-lab<span class="w"> </span>--purpose<span class="o">=</span>encryption
+
+<span class="c1"># A workload identity pool gated on the attestation claims</span>
+gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span>--location<span class="o">=</span>global
+
+gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>cc-lab-provider<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;assertion.swname == &#39;CONFIDENTIAL_SPACE&#39; \</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39; \</span>
+<span class="s2">    &amp;&amp; &#39;sha256:YOUR_DIGEST&#39; in assertion.submods.container.image_digest&quot;</span>
+</code></pre></div>
+<p>Grant the resulting principal <code>roles/cloudkms.cryptoKeyDecrypter</code> on the key.</p>
+<h3 id="step-3-run-it-on-a-confidential-space-image">Step 3 — Run it on a Confidential Space image<a class="headerlink" href="#step-3-run-it-on-a-confidential-space-image" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-space-lab<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>confidential-space-images<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>confidential-space<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metadata<span class="o">=</span><span class="s2">&quot;^~^tee-image-reference=REGION-docker.pkg.dev/PROJECT/REPO/IMAGE@sha256:DIGEST&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scopes<span class="o">=</span>cloud-platform<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--service-account<span class="o">=</span>YOUR_SA@PROJECT.iam.gserviceaccount.com
+</code></pre></div>
+<p>Check Cloud Logging for the workload's output. The decrypt should succeed.</p>
+<h3 id="step-4-break-it-three-ways">Step 4 — Break it, three ways<a class="headerlink" href="#step-4-break-it-three-ways" title="Permanent link">&para;</a></h3>
+<p>Predict each failure before running it.</p>
+<ol>
+<li><strong>Change the image.</strong> Add a comment to <code>main.py</code>, rebuild, push, redeploy with the new digest without updating the attribute condition. The token exchange fails on the digest clause.</li>
+<li><strong>Switch to the debug image family.</strong> Redeploy using the debug Confidential Space image. Observe <code>dbgstat</code> become <code>enabled</code> in the token and the condition fail. <strong>Then remove the <code>dbgstat</code> clause and redeploy.</strong> The decrypt now succeeds — on an image where the operator has interactive access. Sit with that result; it is the most instructive failure in the module.</li>
+<li><strong>Try it on a plain Confidential VM.</strong> Run the same container on an ordinary confidential VM rather than a Confidential Space image. Note that <code>swname</code> is now <code>GCE</code> rather than <code>CONFIDENTIAL_SPACE</code>, and the condition fails. This is why that clause is not redundant.</li>
+</ol>
+<h3 id="step-5-compare-against-confidential-gke-nodes">Step 5 — Compare against Confidential GKE Nodes<a class="headerlink" href="#step-5-compare-against-confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p>Deploy the same container to a Confidential GKE node pool:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>sev_snp<span class="w"> </span>--machine-type<span class="o">=</span>n2d-standard-4
+</code></pre></div>
+<p>Now try to obtain an equivalent workload-identity attestation token from inside the pod. You will find there is no turnkey equivalent of the launcher socket — and then, with your normal cluster credentials, run:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>POD_NAME<span class="w"> </span>--<span class="w"> </span>/bin/sh
+</code></pre></div>
+<p>You are now inside the trust boundary, on a node whose memory is hardware-encrypted, reading whatever the workload has in memory. <strong>That is §2.3, demonstrated in one command.</strong> Nothing is broken; the product is working exactly as designed. It simply does not defend against the adversary you thought it did.</p>
+<h3 id="step-6-clean-up">Step 6 — Clean up<a class="headerlink" href="#step-6-clean-up" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-space-lab<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>delete<span class="w"> </span>cc-lab-pool<span class="w"> </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span>--location<span class="o">=</span>LOCATION<span class="w"> </span>--quiet
+</code></pre></div>
+<hr />
+<h2 id="summary-the-gcp-confidential-surface">Summary: The GCP Confidential Surface<a class="headerlink" href="#summary-the-gcp-confidential-surface" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Answer</th>
+<th style="text-align: left;">Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Which Confidential VM technology?</td>
+<td style="text-align: left;">SEV-SNP or TDX, never plain SEV</td>
+<td style="text-align: left;">Plain SEV has no memory integrity</td>
+</tr>
+<tr>
+<td style="text-align: left;">Which technology for GPUs?</td>
+<td style="text-align: left;">TDX, <code>a3-highgpu-1g</code>, one H100</td>
+<td style="text-align: left;">Caps servable model size at 80 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Does Confidential GKE cover the control plane?</td>
+<td style="text-align: left;"><strong>No</strong> — Google's documentation says so explicitly</td>
+<td style="text-align: left;">Google-operated control plane can inject code into your TEE</td>
+</tr>
+<tr>
+<td style="text-align: left;">Can a Confidential Space operator read the data?</td>
+<td style="text-align: left;"><strong>No</strong> — even with full project admin</td>
+<td style="text-align: left;">This is the property 3P MaaS needs</td>
+</tr>
+<tr>
+<td style="text-align: left;">What gates key release?</td>
+<td style="text-align: left;">A CEL attribute condition over token claims, then IAM</td>
+<td style="text-align: left;">Every clause maps to a mechanism from Modules 2–4</td>
+</tr>
+<tr>
+<td style="text-align: left;">Which claims are non-negotiable?</td>
+<td style="text-align: left;"><code>dbgstat</code>, <code>hwmodel</code>, <code>image_digest</code>, <code>nvidia_gpu.cc_mode</code></td>
+<td style="text-align: left;">Omitting <code>dbgstat</code> alone voids the guarantee</td>
+</tr>
+<tr>
+<td style="text-align: left;">Where should the weight KEK live?</td>
+<td style="text-align: left;">Cloud EKM, verified by the provider's own verifier</td>
+<td style="text-align: left;">Cloud KMS reduces the guarantee to an IAM policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is gVisor an alternative to a TEE?</td>
+<td style="text-align: left;"><strong>No</strong> — opposite direction, both may be useful</td>
+<td style="text-align: left;">Protects the host from the workload, not the reverse</td>
+</tr>
+<tr>
+<td style="text-align: left;">Confidential Space or Confidential GKE?</td>
+<td style="text-align: left;">Confidential Space for the data plane; regular GKE around it</td>
+<td style="text-align: left;">You give up HPA, rolling updates, and sidecars for the confidential part</td>
+</tr>
+</tbody>
+</table>
+<p>You now have every component: hardware TEEs, attestation, confidential GPUs, and the platform primitives that expose them. What remains is the design itself — how the weights get in, where TLS terminates, what the KV cache does to your threat model, and what an insider with host root can still do to the finished system. That is <strong>Module 6: Designing Confidential LLM Serving on GKE (<code>06_designing_confidential_llm_serving_on_gke.md</code>)</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

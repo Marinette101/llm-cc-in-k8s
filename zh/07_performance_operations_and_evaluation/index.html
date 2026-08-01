@@ -1,0 +1,2094 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../06_designing_confidential_llm_serving_on_gke/">
+      
+      
+        <link rel="next" href="../appendix_glossary_and_terminology/">
+      
+      
+        
+          <link rel="alternate" href="../../07_performance_operations_and_evaluation/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>模块 7 - 性能、运维与评估 - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#7" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              模块 7 - 性能、运维与评估
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../07_performance_operations_and_evaluation/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 1 - 机密计算基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 3 - 远程证明与密钥释放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 4 - 机密 GPU 与加速器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 6 - 在 GKE 上设计机密 LLM 服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: 基准测试方法学
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: 基准测试方法学">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 四配置矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 一份站得住脚的基准要控制什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 服务场景真正要紧的指标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 对已公开数字的诚实框定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: 开销与成本预算
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: 开销与成本预算">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 代价究竟来自哪
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 成本模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 这在商业上意味着什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 可调试性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 3 部分: 可调试性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 你失去了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 如何在这个约束下工作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 没有证据的事件响应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 证明约束下的机群生命周期
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 证明约束下的机群生命周期">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 证明给每项操作加了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-tcb-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 TCB 推进 Runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 重新审视自动扩缩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 合规与定位
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 合规与定位">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 机密计算真正支撑得住什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 营销跑到机制前面的地方
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 部分: 对比架构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 6 部分: 对比架构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 版图
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 各家做对了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 值得知道的一项进展
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 一份 GKE 设计该瞄准什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 搭出基准框架并演练一次轮转
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 搭出基准框架并演练一次轮转">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 部分 —— 四配置矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B 部分 —— 拆解冷启动
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C 部分 —— 密钥轮转演练
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-tcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D 部分 —— TCB 推进模拟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: 运营一个机密推理机群
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        接下来去哪
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B - 一手资料阅读清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: 基准测试方法学
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: 基准测试方法学">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 四配置矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 一份站得住脚的基准要控制什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 服务场景真正要紧的指标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 对已公开数字的诚实框定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: 开销与成本预算
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: 开销与成本预算">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 代价究竟来自哪
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 成本模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 这在商业上意味着什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 可调试性
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 3 部分: 可调试性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 你失去了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 如何在这个约束下工作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 没有证据的事件响应
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 证明约束下的机群生命周期
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 证明约束下的机群生命周期">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 证明给每项操作加了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-tcb-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 TCB 推进 Runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 重新审视自动扩缩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 合规与定位
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 合规与定位">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 机密计算真正支撑得住什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 营销跑到机制前面的地方
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 部分: 对比架构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 6 部分: 对比架构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 版图
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 各家做对了什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 值得知道的一项进展
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 一份 GKE 设计该瞄准什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 搭出基准框架并演练一次轮转
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 搭出基准框架并演练一次轮转">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A 部分 —— 四配置矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B 部分 —— 拆解冷启动
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C 部分 —— 密钥轮转演练
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-tcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D 部分 —— TCB 推进模拟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: 运营一个机密推理机群
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        接下来去哪
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="7">模块 7: 性能、运维与评估<a class="headerlink" href="#7" title="Permanent link">&para;</a></h1>
+<p>一个正确但无法运维的设计不是设计。本模块讲的是决定模块 6 架构能否在生产中存活的三件事：你能否诚实地测量它的代价、你能否在没有惯用工具的情况下运营它，以及你能否在一个读过同样文献的对手方面前为它的论断辩护。</p>
+<p>本模块涵盖 <strong>基准测试方法学</strong>、<strong>开销与成本预算</strong>、<strong>没有 SSH 与 core dump 时如何调试</strong>、<strong>证明约束下的机群生命周期</strong>、<strong>哪些合规论断真正成立</strong>，以及<strong>AWS、Azure、Apple 已公开的方案如何对比</strong>。</p>
+<hr />
+<h2 id="1">第 1 部分: 基准测试方法学<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="11">1.1 四配置矩阵<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<p>本领域最常见的基准测试错误，是为"机密计算开销"报一个数字。至少存在<strong>两个独立</strong>的代价来源，而且它们的行为<strong>完全不同</strong>。把它们分开不是学究气——这决定了哪一项优化值得做。</p>
+<pre class="mermaid"><code>flowchart TD
+    A["配置 1：基线&lt;br&gt;普通 VM，普通 GPU"] --&gt; D["Δ(2−1) = CPU TEE 代价&lt;br&gt;内存加密、页接受、&lt;br&gt;宿主侧 bounce buffer"]
+    B["配置 2：仅 CPU TEE&lt;br&gt;机密 VM，GPU cc_mode=OFF"] --&gt; D
+    B --&gt; E["Δ(3−2) = GPU CC 代价&lt;br&gt;加密的 PCIe 传输"]
+    C["配置 3：完整生产态&lt;br&gt;机密 VM + GPU cc_mode=ON"] --&gt; E
+    C --&gt; F["配置 4：冷启动&lt;br&gt;在**每个**里程碑处**单独**测量"]</code></pre>
+<p>配置 4 不是第四个环境——它是一条坚持：<strong>冷启动必须与稳态分开报告</strong>。把两者混在一起产出的数字哪个都不描述，而且它掩盖了"一个组件几乎免费、另一个很贵"这个事实。</p>
+<h3 id="12">1.2 一份站得住脚的基准要控制什么<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变量</th>
+<th style="text-align: left;">为什么要紧</th>
+<th style="text-align: left;">怎么控制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">模型规模</td>
+<td style="text-align: left;">开销随模型增大而下降（模块 4 §5.2）</td>
+<td style="text-align: left;">逐模型报告；绝不跨规模外推</td>
+</tr>
+<tr>
+<td style="text-align: left;">批大小</td>
+<td style="text-align: left;">开销随批处理增大而下降</td>
+<td style="text-align: left;">做扫描；报曲线，不报单点</td>
+</tr>
+<tr>
+<td style="text-align: left;">序列长度</td>
+<td style="text-align: left;">更长的 prompt 把传输摊到更多算力上</td>
+<td style="text-align: left;">输入与输出长度分别扫描</td>
+</tr>
+<tr>
+<td style="text-align: left;">量化</td>
+<td style="text-align: left;">改变传输字节数与常驻字节数</td>
+<td style="text-align: left;">写明；fp8 与 bf16 是不同的实验</td>
+</tr>
+<tr>
+<td style="text-align: left;">冷 vs 热</td>
+<td style="text-align: left;">差一个数量级</td>
+<td style="text-align: left;">永远分开</td>
+</tr>
+<tr>
+<td style="text-align: left;">证明缓存</td>
+<td style="text-align: left;">冷取厂商 collateral 会多出数秒</td>
+<td style="text-align: left;">写明缓存是热的还是冷的</td>
+</tr>
+<tr>
+<td style="text-align: left;">实例差异</td>
+<td style="text-align: left;">机密容量受限，你可能拿到不同宿主</td>
+<td style="text-align: left;">跨多实例重复，报分布</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13">1.3 服务场景真正要紧的指标<a class="headerlink" href="#13" title="Permanent link">&para;</a></h3>
+<p>四个都报；任何单独一个都会误导：</p>
+<div class="arithmatex">\[
+\text{TTFT} = t_{\text{first token}} - t_{\text{request}} \qquad
+\text{TPOT} = \frac{t_{\text{last}} - t_{\text{first}}}{N_{\text{output}} - 1}
+\]</div>
+<ul>
+<li><strong>TTFT</strong> —— 由 prefill 主导。受 CC 影响适中。</li>
+<li><strong>TPOT</strong> —— 由 decode 主导。受 CC 影响最小。</li>
+<li><strong>吞吐</strong>（在固定延迟 SLO 下的 requests/s 与 tokens/s）—— 决定每 token 成本的那个数字。</li>
+<li><strong>冷启动</strong>，按模块 6 §4.1 的里程碑拆解。</li>
+</ul>
+<p><strong>在延迟 SLO 下</strong>报吞吐，而不是孤立地报。在无界排队下测出的吞吐，是一个关于你的队列的数字，不是关于你的系统的数字。</p>
+<h3 id="14">1.4 对已公开数字的诚实框定<a class="headerlink" href="#14" title="Permanent link">&para;</a></h3>
+<p>针对 H100 机密计算的已公开基准工作，曾报告 LLM 推理吞吐惩罚处于<strong>个位数百分比中段</strong>，并随模型规模、批大小与序列长度增大而趋于可忽略，且代价几乎完全归因于跨 PCIe 的 CPU–GPU 传输，而非设备内计算。</p>
+<p>把这些数字带进自己的规划时，有两点要当心：</p>
+<ol>
+<li><strong>它们是稳态数字。</strong> 它们对冷启动只字未提，而冷启动正是这套架构真正吃痛的地方。</li>
+<li><strong>它们是单卡数字。</strong> Hopper 的单卡约束（模块 4 §4.1）意味着这个对比往往<strong>不是</strong>"同一个负载开关 CC"，而是"一个你不得不重构以塞进 80 GB 的负载 vs 一个不必重构的负载"。<strong>那份重构成本是真实的，而且不会体现在任何 CC 开销百分比里。</strong></li>
+</ol>
+<p>在拿到自己的测量数据之前，预留大约 <strong>15–25% 的额外吞吐容量</strong>是一个合理的起步启发式——一旦有了针对自身负载的测量，就该立刻用它替换掉这个数字。</p>
+<hr />
+<h2 id="2">第 2 部分: 开销与成本预算<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h3 id="21">2.1 代价究竟来自哪<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">来源</th>
+<th style="text-align: left;">量级</th>
+<th style="text-align: left;">落在哪</th>
+<th style="text-align: left;">可缓解？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">加密的 PCIe 传输</td>
+<td style="text-align: left;">稳态最大项</td>
+<td style="text-align: left;">每一个 host↔device 字节</td>
+<td style="text-align: left;">部分——多批处理、少传输；最终靠 TDISP</td>
+</tr>
+<tr>
+<td style="text-align: left;">冷启动时的权重加载</td>
+<td style="text-align: left;">总体最大项</td>
+<td style="text-align: left;">仅启动</td>
+<td style="text-align: left;">预热池、量化、封存缓存</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest 私有内存接受</td>
+<td style="text-align: left;">数秒，随 VM 内存缩放</td>
+<td style="text-align: left;">仅启动</td>
+<td style="text-align: left;">把 VM 规格定准</td>
+</tr>
+<tr>
+<td style="text-align: left;">证明往返</td>
+<td style="text-align: left;">数百毫秒到数秒</td>
+<td style="text-align: left;">启动，以及重新证明</td>
+<td style="text-align: left;">缓存 collateral；与权重取回重叠</td>
+</tr>
+<tr>
+<td style="text-align: left;">密钥释放往返</td>
+<td style="text-align: left;">到外部 KMS 的网络 RTT</td>
+<td style="text-align: left;">启动</td>
+<td style="text-align: left;">就近部署；但不以牺牲独立性为代价</td>
+</tr>
+<tr>
+<td style="text-align: left;">内存加密</td>
+<td style="text-align: left;">小，多被内存层级掩盖</td>
+<td style="text-align: left;">所有内存访问</td>
+<td style="text-align: left;">基本不可</td>
+</tr>
+<tr>
+<td style="text-align: left;">失去 GPU 共享（无 MIG、无 time-slicing）</td>
+<td style="text-align: left;"><strong>可能压过其他一切</strong></td>
+<td style="text-align: left;">利用率</td>
+<td style="text-align: left;">不可——这是硬约束</td>
+</tr>
+</tbody>
+</table>
+<p>最后一行是预算最常漏掉的。5% 的吞吐惩罚很容易吸收。而<strong>失去把多个小模型打包到一块 GPU 上的能力，可能把你的有效利用率砍半</strong>，这在每 token 成本上的体现远大于任何加密开销。</p>
+<h3 id="22">2.2 成本模型<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[
+C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{premium}})}{\text{Throughput}_{\text{tokens/hour}} \times U_{\text{effective}}}
+\]</div>
+<p>三个乘数同时与你为敌，而其中只有一个是大家常说的那个开销：</p>
+<ol>
+<li><strong><span class="arithmatex">\(\alpha_{\text{premium}}\)</span></strong> —— 机密机型带价格溢价，且机密 SKU 是一个更窄、更难拿折扣的选择集。</li>
+<li><strong>吞吐</strong> —— 被 §1.4 的 CC 开销降低。这是<strong>小</strong>的那一项。</li>
+<li><strong><span class="arithmatex">\(U_{\text{effective}}\)</span></strong> —— 被失去的 GPU 共享、预热池的闲置容量，以及分钟级冷启动所迫使的超配同时降低。<strong>这通常是最大的一项。</strong></li>
+</ol>
+<p>带进定价讨论的诚实总结是：<strong>机密计算的算力开销不大；运维开销才大。</strong> 预热池与丢掉的打包密度，比加密贵得多。</p>
+<h3 id="23">2.3 这在商业上意味着什么<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
+<p>机密推理档位是一个<strong>溢价产品</strong>，就该按溢价产品来定价和定位。试图把它与标准推理平价供应，意味着要在某个看不见的地方吸收预热池与利用率成本，而那最终会变成一个<strong>容量问题</strong>，而不是一个毛利问题。</p>
+<hr />
+<h2 id="3">第 3 部分: 可调试性<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1 你失去了什么<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph GONE ["❌ 按设计消失"]
+        A["SSH 进实例"]
+        B["kubectl exec 进工作负载"]
+        C["转储到任何 host 可见位置的 core dump"]
+        D["宿主侧 profiling —— 从外面跑 perf、nsys"]
+        E["内存自省与在线内核调试"]
+        F["cc_mode=ON 下的 GPU profiling"]
+        G["记录请求或响应内容"]
+    end
+
+    subgraph LEFT ["✅ 你还剩什么"]
+        H["带白名单 schema 的结构化日志"]
+        I["指标：计数、延迟、错误类别"]
+        J["用合成数据的 DEBUG 镜像环境"]
+        K["TEE 内 profiling，只输出聚合值"]
+        L["形状与生产一致的预发环境"]
+        M["从合成输入的确定性重放"]
+    end</code></pre>
+<p>实践中最痛的两条：</p>
+<ul>
+<li><strong>没有 core dump。</strong> 崩溃最多给你一个堆栈跟踪，而那个堆栈跟踪<strong>不能</strong>包含内容。一次 CUDA kernel 里的段错误留给你的线索非常少。</li>
+<li><strong>没有生产 profiling。</strong> <code>cc_mode=ON</code> 会禁用 profiling 工具。<strong>你无法 profile 你真正在跑的那个配置</strong>；你只能 profile <code>DEVTOOLS</code> 模式，然后指望差异不重要。</li>
+</ul>
+<h3 id="32">3.2 如何在这个约束下工作<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>把 DEBUG 路径做成一等公民。</strong> 一个用合成数据、除此之外每一处都与生产一致的 Confidential Space DEBUG 镜像，才是调试真正发生的地方。<strong>在"让它真正一致"上投入</strong>——一个与生产有偏差的调试环境，正是那些你复现不了的 bug 藏身之处。</li>
+<li><strong>用白名单记日志，绝不用黑名单。</strong> 显式定义可输出字段。任何能插值任意数据的日志调用，都是一次等着合适异常出现的泄露。<strong>这是一条 lint 规则，不是一条代码评审约定。</strong></li>
+<li><strong>在边界处净化异常。</strong> 把请求处理器包起来，让任何异常消息都传不到 logger。记录一个错误<strong>类别</strong>和一个关联 ID；消息丢弃。</li>
+<li><strong>到处用关联 ID。</strong> 日志里没有内容时，一个贯穿所有组件的请求 ID 是重建请求路径的<strong>唯一</strong>办法。</li>
+<li><strong>确定性合成复现。</strong> 建立"只重放请求<strong>形状</strong>"的能力——token 数、批次组成、采样参数——而不含其内容。多数性能 bug 和不少正确性 bug 仅凭形状就能复现。</li>
+<li><strong>只输出聚合值的 TEE 内 profiling。</strong> 直方图和分位数可以离开边界。单个请求的 trace 不行。</li>
+</ol>
+<h3 id="33">3.3 没有证据的事件响应<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<p>生产出问题时，你手上会有：指标、错误类别、证明状态，以及<strong>没有内容</strong>。在事件发生<strong>之前</strong>就为它做好准备：</p>
+<ul>
+<li><strong>事先定好升级路径。</strong> 如果诊断确实需要内容，唯一正当的途径是<strong>客户同意的、有时限的、被证明的</strong>遥测（模块 6 §8.2）——而不是某位 SRE 在压力下决定打开一个 debug 开关。</li>
+<li><strong>在心平气和时写好 runbook。</strong> "我们看不了数据"在凌晨三点是个很不受欢迎的发现。</li>
+<li><strong>接受有些事件无法解决。</strong> 有些问题会在没有根因的情况下关闭。<strong>那是这套架构刻意付出的代价</strong>，应当在 SLA 对话中被承认，而不是被当作一次运维失败。</li>
+</ul>
+<hr />
+<h2 id="4">第 4 部分: 证明约束下的机群生命周期<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 证明给每项操作加了什么<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">操作</th>
+<th style="text-align: left;">普通机群</th>
+<th style="text-align: left;">机密机群</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">节点加入</td>
+<td style="text-align: left;">向控制面注册</td>
+<td style="text-align: left;">证明、取密钥、到达 GPU ready 状态</td>
+</tr>
+<tr>
+<td style="text-align: left;">镜像发布</td>
+<td style="text-align: left;">推送、滚动、结束</td>
+<td style="text-align: left;">推送、<strong>更新释放策略里的参考值</strong>、然后滚动</td>
+</tr>
+<tr>
+<td style="text-align: left;">固件更新</td>
+<td style="text-align: left;">透明</td>
+<td style="text-align: left;">推进 TCB → 缓存 collateral 失效 → 全机群重新证明</td>
+</tr>
+<tr>
+<td style="text-align: left;">密钥轮转</td>
+<td style="text-align: left;">更新一个 secret</td>
+<td style="text-align: left;">重新封装 DEK，向每个在跑实例重新释放</td>
+</tr>
+<tr>
+<td style="text-align: left;">扩容</td>
+<td style="text-align: left;">数秒</td>
+<td style="text-align: left;">数分钟（模块 6 §4）</td>
+</tr>
+<tr>
+<td style="text-align: left;">主机维护</td>
+<td style="text-align: left;">热迁移</td>
+<td style="text-align: left;"><strong>终止</strong>——SEV-SNP 与 TDX 下没有热迁移</td>
+</tr>
+</tbody>
+</table>
+<p>镜像发布那一行是运维陷阱。<strong>新镜像有新摘要，而摘要在释放策略里。</strong> 先部署镜像、后更新策略，每一个新实例都拿不到权重密钥——一次自作自受的故障，看起来像密钥管理失败，实际上是<strong>部署顺序 bug</strong>。</p>
+<p>正确的顺序，它该待在部署流水线里而不是某个人的记忆里：</p>
+<ol>
+<li>构建并签名镜像；记下摘要。</li>
+<li>把新摘要<strong>加入</strong>释放策略，<strong>保留</strong>旧的。</li>
+<li>滚动机群。</li>
+<li>确认没有实例还在用旧摘要。</li>
+<li><strong>移除</strong>旧摘要。</li>
+</ol>
+<p>第 2 步与第 5 步让策略在滚动期间同时容忍两个版本。跳过第 5 步，白名单里就会堆积起没人说得清来历的摘要，而那本身就是一个安全问题。</p>
+<h3 id="42-tcb-runbook">4.2 TCB 推进 Runbook<a class="headerlink" href="#42-tcb-runbook" title="Permanent link">&para;</a></h3>
+<p>当 AMD 或 Intel 发布固件更新时（模块 3 §4.2）：</p>
+<ol>
+<li>缓存的背书 collateral 变陈旧；验证开始失败。</li>
+<li>旧 TCB 层级被标记为过期；你的策略必须决定是否接受它。</li>
+<li>立即拒绝它，意味着每一台未更新的节点失去密钥访问。</li>
+<li>接受它，意味着在一批有已公开漏洞的硬件上继续服务。</li>
+</ol>
+<p>可行的答案，它必须在<strong>第一份公告之前</strong>就以书面策略的形式存在：</p>
+<ul>
+<li>一个接受上一个 TCB 层级的<strong>宽限窗口</strong>。</li>
+<li>对任何仍处于旧层级的节点<strong>大声告警</strong>。</li>
+<li>一个到期即无条件抬高门槛的<strong>事先承诺日期</strong>。</li>
+<li>一张全机群 <strong>TCB 版本分布看板</strong>——公告落地那天你会需要它，而在压力下临时建它不是个好时机。</li>
+</ul>
+<h3 id="43">4.3 重新审视自动扩缩容<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
+<p>模块 6 §4.3 已确立：在分钟级冷启动下，被动式自动扩缩容不管用。可行的运维形态是：</p>
+<ul>
+<li><strong>预测式扩缩容</strong>，基于预测而非瞬时队列深度。</li>
+<li><strong>按到达过程 p99 定容的预热池</strong>，而不是按均值。</li>
+<li><strong>显式背压</strong> —— 排队并以明确错误拒绝，而不是超时。</li>
+<li><strong>把证明健康度当成一等信号。</strong> 一个通过了证明并释放了密钥的实例才是 "ready"；一个只是启动完成的不是。<strong>你的 readiness probe 必须检查 GPU CC 模式与证明状态</strong>，而不只是 HTTP 端口通不通（模块 4 实验第 2 步）。</li>
+</ul>
+<hr />
+<h2 id="5">第 5 部分: 合规与定位<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="51">5.1 机密计算真正支撑得住什么<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">论断</th>
+<th style="text-align: left;">成立？</th>
+<th style="text-align: left;">限定条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">"云运营商读不到使用中的数据"</td>
+<td style="text-align: left;">✅ 是</td>
+<td style="text-align: left;">需同时具备 SEV-SNP/TDX <strong>且</strong> GPU CC 模式 <strong>且</strong> TEE 内 TLS 终结</td>
+</tr>
+<tr>
+<td style="text-align: left;">"数据受保护，免于被攻陷的 hypervisor"</td>
+<td style="text-align: left;">✅ 是</td>
+<td style="text-align: left;">这是核心的、证据充分的性质</td>
+</tr>
+<tr>
+<td style="text-align: left;">"只有被批准的代码能解密数据"</td>
+<td style="text-align: left;">✅ 是</td>
+<td style="text-align: left;">前提是释放策略完整且验证方独立</td>
+</tr>
+<tr>
+<td style="text-align: left;">"客户可以独立验证这一点"</td>
+<td style="text-align: left;">✅ 是</td>
+<td style="text-align: left;">仅当验证方独立；若云运营商就是验证方则 ❌</td>
+</tr>
+<tr>
+<td style="text-align: left;">"数据永不离开该司法辖区"</td>
+<td style="text-align: left;">⚠️ 部分</td>
+<td style="text-align: left;">CC 不控制部署位置；那是另一个地域级控制</td>
+</tr>
+<tr>
+<td style="text-align: left;">"这满足 [某法规]"</td>
+<td style="text-align: left;">⚠️ 视情况</td>
+<td style="text-align: left;">CC 是支撑某个控制目标的<strong>证据</strong>，不是一张认证</td>
+</tr>
+<tr>
+<td style="text-align: left;">"工作负载无法外泄数据"</td>
+<td style="text-align: left;">❌ <strong>否</strong></td>
+<td style="text-align: left;">TEE 保护工作负载免受平台侵害，<strong>从不</strong>反过来</td>
+</tr>
+<tr>
+<td style="text-align: left;">"数据免于一切攻击"</td>
+<td style="text-align: left;">❌ <strong>否</strong></td>
+<td style="text-align: left;">侧信道、流量分析与可用性依然在（模块 2 §5.4）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52">5.2 营销跑到机制前面的地方<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<p>四条值得你在客户会议上礼貌地纠正的说法：</p>
+<ol>
+<li><strong>"机密计算意味着我们看不到你的数据。"</strong> 只有在 GPU 已被证明、TLS 在 TEE 内终结、且没有任何遥测携带内容时才成立。这三条<strong>每一条都是一个设计决策</strong>，而且经常被做成了另一种。</li>
+<li><strong>"证明证明了代码可信。"</strong> 证明证明的是<strong>哪份</strong>代码在跑。那份代码是否可信，是另一个由源码可得性、可复现构建或审计来回答的问题（模块 3 §7）。</li>
+<li><strong>"你的数据与其他租户隔离。"</strong> 在批处理部署中，租户间的隔离由推理服务的<strong>正确性</strong>保证，而非由硬件保证（模块 6 §7.2）。</li>
+<li><strong>"这让我们合规了。"</strong> 机密计算是一项支撑合规论证的技术控制。它不是认证，而且没有哪个监管机构有一个"机密计算"的勾选框。</li>
+</ol>
+<p><strong>做那个在房间里把这些说准确的人，比做那个宣称更多的人更有价值。</strong> 成熟的对手方——而模型提供方的安全团队就是成熟的对手方——是根据<strong>你主动说出哪些限定条件</strong>来给你的可信度打分的。</p>
+<hr />
+<h2 id="6">第 6 部分: 对比架构<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<h3 id="61">6.1 版图<a class="headerlink" href="#61" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>AWS Nitro Enclaves</strong></th>
+<th style="text-align: left;"><strong>Azure Confidential Containers</strong></th>
+<th style="text-align: left;"><strong>Apple Private Cloud Compute</strong></th>
+<th style="text-align: left;"><strong>本设计（GKE）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">隔离单位</td>
+<td style="text-align: left;">从父 EC2 实例中切出的 enclave</td>
+<td style="text-align: left;">Pod 沙箱（Kata + SEV-SNP）</td>
+<td style="text-align: left;">整台专用节点</td>
+<td style="text-align: left;">一个 Confidential Space 实例</td>
+</tr>
+<tr>
+<td style="text-align: left;">硬件基础</td>
+<td style="text-align: left;">Nitro hypervisor 与 Nitro 卡</td>
+<td style="text-align: left;">AMD SEV-SNP</td>
+<td style="text-align: left;">Apple 芯片，扩展部署中还有 Intel TDX 与 NVIDIA CC</td>
+<td style="text-align: left;">Intel TDX + NVIDIA H100 CC</td>
+</tr>
+<tr>
+<td style="text-align: left;">证明模型</td>
+<td style="text-align: left;">background-check——enclave 把文档交给 KMS</td>
+<td style="text-align: left;">来自 Microsoft Azure Attestation 的 JWT</td>
+<td style="text-align: left;">客户端强制，对照透明日志</td>
+<td style="text-align: left;">经 Google Cloud Attestation 的 passport，或提供方自验原始证据</td>
+</tr>
+<tr>
+<td style="text-align: left;">密钥释放</td>
+<td style="text-align: left;">针对证明的 KMS 条件键</td>
+<td style="text-align: left;">Managed HSM 安全密钥释放</td>
+<td style="text-align: left;">Apple 控制，客户端验证</td>
+<td style="text-align: left;">提供方运营的外部 KMS</td>
+</tr>
+<tr>
+<td style="text-align: left;">无交互式访问</td>
+<td style="text-align: left;">enclave 无持久存储、无网络、无 shell</td>
+<td style="text-align: left;">沙箱边界</td>
+<td style="text-align: left;"><strong>在设计上被剔除</strong>——无远程 shell、无交互式调试</td>
+<td style="text-align: left;">Confidential Space 生产镜像</td>
+</tr>
+<tr>
+<td style="text-align: left;">参考值</td>
+<td style="text-align: left;">客户自管的 PCR</td>
+<td style="text-align: left;">针对容器镜像的策略</td>
+<td style="text-align: left;"><strong>可复现构建 + 公开二进制 + 只可追加日志</strong></td>
+<td style="text-align: left;">签名的黄金值；摘要白名单</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU 支持</td>
+<td style="text-align: left;">有限</td>
+<td style="text-align: left;">正在形成</td>
+<td style="text-align: left;">有，NVIDIA CC</td>
+<td style="text-align: left;">有，每实例一块 H100</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 各家做对了什么<a class="headerlink" href="#62" title="Permanent link">&para;</a></h3>
+<p><strong>AWS Nitro Enclaves</strong> 的密钥释放故事最干净：KMS 策略被表达成针对证明度量值的条件键，并由 KMS 自己执行。这个机制简单到可以用一张图向客户讲清楚，而那是一项<strong>真实的工程美德</strong>。它的局限在于作用域——enclave 没有持久存储、没有直接网络，这对密钥操作很优雅，对挂 GPU 的推理则很别扭。</p>
+<p><strong>Azure Confidential Containers</strong> 把<strong>机密性单位</strong>选对了。让每个 Pod 跑在自己的 VM TEE 里（Kata 加 SEV-SNP），意味着 kubelet 与节点代理留在信任边界之外——<strong>恰恰是 Confidential GKE Nodes 所缺的那个性质</strong>（模块 5 §2.3）。如果 GKE 提供一个 Pod 沙箱式的机密运行时，模块 6 的架构会简单得多，因为你可以既保留 Kubernetes、又把控制面排除在外。</p>
+<p><strong>Apple Private Cloud Compute</strong> 是对参考值问题最完整的公开处理，也是最值得下功夫研究的那个设计。它陈述的五条要求——无状态计算、可强制执行的保证、无特权运行时访问、不可定向、可验证透明性——读起来就是对本书所罗列的那些缺口的直接回答。其中两条正是 GKE 设计最常达不到的：</p>
+<ul>
+<li><strong>无特权运行时访问，是"设计上剔除"而非"配置上关闭"。</strong> Apple 声明它<strong>刻意</strong>没有在 PCC 节点上包含远程 shell 与交互式调试机制，因为这种开放式访问会提供一个宽阔的攻击面。请与模块 5 §2.3 那次 <code>kubectl exec</code> 演示对照。</li>
+<li><strong>可验证透明性，由客户端强制。</strong> 镜像以可复现方式构建，二进制公开供检视，度量值进入一个可密码学验证的只可追加账本，而且——<strong>承重的那部分</strong>——客户端设备<strong>拒绝</strong>向镜像不在该日志中的节点发送数据。<strong>如果客户端不据此强制，发布度量值什么也换不来。</strong></li>
+</ul>
+<h3 id="63">6.3 值得知道的一项进展<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<p>Apple 已把 Private Cloud Compute 扩展到自有数据中心之外，与 Google 和 NVIDIA 合作，在 Google Cloud 上运行 Apple Intelligence 负载。已公开的技术栈是 <strong>NVIDIA GPU 上的 NVIDIA Confidential Computing、带 TDX 的 Intel CPU，以及 Google 的 Titan 芯片</strong>——这在组件层面上，<strong>就是模块 6 所描述的那套架构</strong>。</p>
+<p>Apple 的表述中有两个细节值得内化，因为它们恰恰是本书一直在主张的立场：</p>
+<ol>
+<li><strong>Apple 保有对软件的完全控制。</strong> Apple 设备只信任经 Apple 密码学批准的 PCC 软件，并且所有二进制都公开供检视。<strong>Google 提供基础设施；Google 没有成为验证方。</strong> 这就是模块 3 §1.3 的规则——<strong>验证方与密钥持有方应当是资产处于风险中的那一方</strong>——由一个有足够筹码去坚持它的一方，在规模上实现了出来。</li>
+<li><strong>Apple 明确表示不单靠机密计算。</strong> 他们公开的立场是：不单独依赖机密计算来缓解那些利用机密 VM <strong>之外</strong>特权访问的攻击，<strong>包括侧信道攻击</strong>。这就是模块 2 §5.4 那份诚实总结被采纳为一种工程姿态：<strong>在"TEE 的保证是有边界的"这一假设下做分层防御。</strong></li>
+</ol>
+<p>对一份 Vertex 3P MaaS 设计而言，其现实意义很直接：<strong>一个成熟的模型提供方，在 Google Cloud 基础设施上运行、自带独立验证方、自己控制软件——这不是假设。</strong> 它是一个已公开、已上线的安排，并且它设定了一个可比产品将被拿来衡量的预期。</p>
+<h3 id="64-gke">6.4 一份 GKE 设计该瞄准什么<a class="headerlink" href="#64-gke" title="Permanent link">&para;</a></h3>
+<p>按"价值/投入"比排序：</p>
+<ol>
+<li><strong>独立验证。</strong> 模型提供方自己验证原始硬件证据。价值最高；今天完全做得到。</li>
+<li><strong>外部密钥管理。</strong> 权重 KEK 放在 Google 之外。用 Cloud EKM 可达。</li>
+<li><strong>生产环境无交互式访问。</strong> Confidential Space 生产镜像，以及一条永不接受 <code>dbgstat == enabled</code> 的策略。<strong>免费</strong>——它就是一行策略。</li>
+<li><strong>客户端强制证明。</strong> 客户端在发送前验证。需要一个 SDK；<strong>这是大多数设计跳过的那一步，也正是那个让保证归客户所有而不是归运营商所有的一步。</strong></li>
+<li><strong>发布参考值。</strong> 一份签名的、带版本的可接受度量值清单。投入中等，可信度高。</li>
+<li><strong>可复现构建。</strong> 投入最高，强度最高。朝它去；如果必须先发，就先发，<strong>并且说明这一点</strong>。</li>
+</ol>
+<p>一份站得住脚的设计与 Apple 的标尺之间的差距，就是第 4、5、6 项——<strong>而它们没有一项是硬件限制。</strong> 它们全都是产品与工程的投入决策。</p>
+<hr />
+<h2 id="lab">Lab: 搭出基准框架并演练一次轮转<a class="headerlink" href="#lab" title="Permanent link">&para;</a></h2>
+<p><strong>目标</strong>：产出你的组织将来真正会引用的那张开销表，并演练那个最可能引发故障的操作。</p>
+<p><strong>成本</strong>：⚠️ 若要做真正的 A/B，需要两台 A3 实例。据此做预算，或者接受通过开关 GPU CC 模式做的同机对比。<strong>状态</strong>：这是一次方法学练习；具体命令取决于你的服务栈。</p>
+<h3 id="a">A 部分 —— 四配置矩阵<a class="headerlink" href="#a" title="Permanent link">&para;</a></h3>
+<p>在 §1.1 的各配置上跑同一个负载，把这张表填满。<strong>这张产物就是交付物。</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: left;">TTFT p50</th>
+<th style="text-align: left;">TTFT p99</th>
+<th style="text-align: left;">TPOT p50</th>
+<th style="text-align: left;">Tokens/s</th>
+<th style="text-align: left;">冷启动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1. 基线（普通 VM + GPU）</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">2. 仅 CPU TEE（<code>cc_mode=OFF</code>）</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">3. 完整 CC（<code>cc_mode=ON</code>）</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>然后对配置 1 与 3 扫描批大小 <span class="arithmatex">\(\in \{1, 4, 16, 64\}\)</span> 与输入长度 <span class="arithmatex">\(\in \{128, 1024, 8192\}\)</span>，把开销百分比对二者作图。<strong>你要找的是模块 4 §5.2 预测的那条下降斜率。</strong> 如果你没看到它，说明你的基准以模型未预测的方式受限于传输，而<strong>弄清楚为什么，比那些数字本身更有价值</strong>。</p>
+<h3 id="b">B 部分 —— 拆解冷启动<a class="headerlink" href="#b" title="Permanent link">&para;</a></h3>
+<p>给模块 6 §4.1 的每个里程碑加埋点，产出：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">阶段</th>
+<th style="text-align: left;">时长</th>
+<th style="text-align: left;">占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">实例预置</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">TEE 启动 + 内存接受</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">证明（collateral 缓存为热）</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">证明（collateral 缓存为冷）</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">密钥释放</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">权重取回</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">解密 + 加载到受保护 HBM</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">预热至首 token</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>跑两遍——一遍 collateral 缓存为热、一遍为冷——并记下差值。<strong>那个差值就是你在关键路径上对 AMD KDS 或 Intel PCS 故障的暴露程度。</strong></p>
+<h3 id="c">C 部分 —— 密钥轮转演练<a class="headerlink" href="#c" title="Permanent link">&para;</a></h3>
+<p>这演练的是最可能造成自作自受故障的那项操作。</p>
+<ol>
+<li>在有流量的情况下，轮转 KEK 并重新封装 DEK。</li>
+<li>强制启动一个新实例并让它取得新密钥。</li>
+<li>确认旧实例上在飞的请求不受影响。</li>
+<li>排空旧实例。</li>
+<li><strong>给全过程计时</strong>，并记录是否有请求失败。</li>
+</ol>
+<p>现在在非生产环境里<strong>刻意</strong>做破坏性版本：<strong>部署一个新镜像摘要，但不先把它加进释放策略。</strong> 看着每个新实例都拿不到密钥。给"你从可用信号中诊断出原因"计时——<strong>而那正是你将来某一天要在压力下、没有 shell 访问权的情况下做的那次诊断。</strong></p>
+<h3 id="d-tcb">D 部分 —— TCB 推进模拟<a class="headerlink" href="#d-tcb" title="Permanent link">&para;</a></h3>
+<p>把释放策略里的最低 TCB 版本抬到高于你机群当前上报的值。观察所有实例都拿不到密钥。然后问：</p>
+<ol>
+<li>你的监控多快检测到了？</li>
+<li>告警说的是"TCB 低于策略下限"，还是"密钥释放失败"？<strong>只有前者可行动。</strong></li>
+<li>你本来会怎么回滚？</li>
+</ol>
+<p>从你学到的东西写出 runbook。<strong>在一个平常的周二刻意做这件事，远比在固件公告落地那天才发现它便宜。</strong></p>
+<hr />
+<h2 id="_1">总结: 运营一个机密推理机群<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">问题</th>
+<th style="text-align: left;">答案</th>
+<th style="text-align: left;">为什么要紧</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">怎么诚实地做基准？</td>
+<td style="text-align: left;">四配置；把 CPU TEE、GPU CC、冷启动分开</td>
+<td style="text-align: left;">一个混合数字什么都不描述</td>
+</tr>
+<tr>
+<td style="text-align: left;">算力开销在哪？</td>
+<td style="text-align: left;">PCIe 传输；个位数百分比中段，随规模缩小</td>
+<td style="text-align: left;">不大，而且不是主要成本</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>真正</strong>的成本在哪？</td>
+<td style="text-align: left;">预热池、失去的 GPU 共享、为冷启动做的超配</td>
+<td style="text-align: left;">利用率压过加密开销</td>
+</tr>
+<tr>
+<td style="text-align: left;">调试上失去什么？</td>
+<td style="text-align: left;">SSH、exec、core dump、宿主与 GPU profiling、内容日志</td>
+<td style="text-align: left;">投入到 DEBUG 一致性与基于形状的重放</td>
+</tr>
+<tr>
+<td style="text-align: left;">怎么安全地记日志？</td>
+<td style="text-align: left;">白名单字段、净化异常、关联 ID</td>
+<td style="text-align: left;">黑名单会从一条异常消息里漏出去</td>
+</tr>
+<tr>
+<td style="text-align: left;">镜像发布时什么会坏？</td>
+<td style="text-align: left;">摘要变了，而释放策略没变</td>
+<td style="text-align: left;">滚动前先加新摘要，滚完再删旧的</td>
+</tr>
+<tr>
+<td style="text-align: left;">固件更新时会发生什么？</td>
+<td style="text-align: left;">TCB 推进、collateral 陈旧、全机群重新证明</td>
+<td style="text-align: left;">需要宽限窗口与事先承诺的截止日</td>
+</tr>
+<tr>
+<td style="text-align: left;">自动扩缩容管用吗？</td>
+<td style="text-align: left;">被动式不管用</td>
+<td style="text-align: left;">预测式扩缩容 + 按 p99 定容的预热池</td>
+</tr>
+<tr>
+<td style="text-align: left;">哪些合规论断成立？</td>
+<td style="text-align: left;">"运营商读不到使用中的数据"成立；"工作负载无法外泄"<strong>不成立</strong></td>
+<td style="text-align: left;">主动说出限定条件换来可信度</td>
+</tr>
+<tr>
+<td style="text-align: left;">该瞄准什么标尺？</td>
+<td style="text-align: left;">Apple PCC：设计上无特权访问、可复现构建、客户端强制透明性</td>
+<td style="text-align: left;">§6.4 的第 4–6 项是产品决策，不是硬件限制</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_2">接下来去哪<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>你现在拥有了完整的栈：原语、硬件、证明系统、加速器、平台、一个设计，以及评估它的手段。接下来有两件事值得做。</p>
+<p><strong>把能端到端跑通的最小的东西建出来。</strong> 一台机密实例、一个带加密权重文件的玩具模型、一条复合释放策略，以及一个在证明失败时<strong>拒绝发送 prompt</strong> 的客户端。<strong>最后那个行为——一个会说"不"的客户端——才是把这一切从理论变成你信得过的系统的那一步。</strong></p>
+<p><strong>把一手资料放在手边。</strong> 这个领域变化得足够快，本书里任何一条具体论断都有保质期。架构不会变太多；可用性矩阵、GPU 世代和攻击文献会变。附录 B 存在的意义正在于此。</p>
+<p>两份附录是 <a href="../appendix_glossary_and_terminology/">附录 A: 术语总表</a> 与 <a href="../appendix_reading_list/">附录 B: 一手资料阅读清单</a>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

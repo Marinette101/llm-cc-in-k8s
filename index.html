@@ -1,0 +1,1258 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+      
+        <link rel="next" href="01_confidential_computing_foundations/">
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="stylesheets/custom.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#confidential-computing-for-llm-serving-threat-model-and-comprehensive-curriculum" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Threat Model & Curriculum
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/zh/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-leading-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Leading Principles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Leading Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#principle-1-encryption-at-rest-and-in-transit-leaves-the-in-use-gap-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 1: Encryption at Rest and in Transit Leaves the In-Use Gap Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-2-trust-must-be-measured-not-asserted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 2: Trust Must Be Measured, Not Asserted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-3-the-accelerator-is-inside-the-trust-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 3: The Accelerator Is Inside the Trust Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-4-a-guarantee-is-only-as-honest-as-its-stated-threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 4: A Guarantee Is Only as Honest as Its Stated Threat Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-three-party-trust-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Three-Party Trust Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-curriculum-structure-and-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Curriculum Structure and Roadmap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-deep-dive-module-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Deep-Dive Module Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Deep-Dive Module Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module-1-confidential-computing-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 1: Confidential Computing Foundations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-2-hardware-tee-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 2: Hardware TEE Architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-3-remote-attestation-and-attested-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 3: Remote Attestation and Attested Key Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-4-confidential-gpus-and-accelerators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 4: Confidential GPUs and Accelerators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-5-the-google-cloud-confidential-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 5: The Google Cloud Confidential Surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-6-designing-confidential-llm-serving-on-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 6: Designing Confidential LLM Serving on GKE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-7-performance-operations-and-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 7: Performance, Operations, and Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-how-each-module-is-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: How Each Module Is Built
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-leading-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Leading Principles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Leading Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#principle-1-encryption-at-rest-and-in-transit-leaves-the-in-use-gap-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 1: Encryption at Rest and in Transit Leaves the In-Use Gap Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-2-trust-must-be-measured-not-asserted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 2: Trust Must Be Measured, Not Asserted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-3-the-accelerator-is-inside-the-trust-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 3: The Accelerator Is Inside the Trust Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principle-4-a-guarantee-is-only-as-honest-as-its-stated-threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Principle 4: A Guarantee Is Only as Honest as Its Stated Threat Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-three-party-trust-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Three-Party Trust Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-curriculum-structure-and-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Curriculum Structure and Roadmap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-deep-dive-module-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Deep-Dive Module Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Deep-Dive Module Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module-1-confidential-computing-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 1: Confidential Computing Foundations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-2-hardware-tee-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 2: Hardware TEE Architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-3-remote-attestation-and-attested-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 3: Remote Attestation and Attested Key Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-4-confidential-gpus-and-accelerators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 4: Confidential GPUs and Accelerators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-5-the-google-cloud-confidential-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 5: The Google Cloud Confidential Surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-6-designing-confidential-llm-serving-on-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 6: Designing Confidential LLM Serving on GKE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-7-performance-operations-and-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module 7: Performance, Operations, and Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-how-each-module-is-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: How Each Module Is Built
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="confidential-computing-for-llm-serving-threat-model-and-comprehensive-curriculum">Confidential Computing for LLM Serving: Threat Model and Comprehensive Curriculum<a class="headerlink" href="#confidential-computing-for-llm-serving-threat-model-and-comprehensive-curriculum" title="Permanent link">&para;</a></h1>
+<p>Serving a third-party foundation model on someone else's cloud is a problem of <em>conflicting distrust</em>. The model provider does not want the cloud operator — or the end customer — to read the weights they spent nine figures training. The end customer does not want the cloud operator — or the model provider — to read their prompts. The cloud operator wants to be able to say, credibly and to a regulator, that it is <em>technically incapable</em> of reading either. No amount of policy, contract, or IAM configuration resolves this, because every one of those controls is enforced by the party being distrusted.</p>
+<p>Confidential computing is the set of hardware mechanisms that convert those promises into checkable claims. This textbook builds the subject from memory-encryption primitives up to a complete, adversarially-reviewed reference architecture for confidential LLM inference on GKE, covering <strong>the three states of data and the in-use gap</strong>, <strong>AMD SEV-SNP and Intel TDX internals</strong>, <strong>remote attestation and attested key release</strong>, <strong>confidential GPUs</strong>, <strong>the Google Cloud product surface</strong>, <strong>the applied serving design</strong>, and <strong>performance, operations, and honest evaluation</strong>.</p>
+<hr />
+<h2 id="part-1-leading-principles">Part 1: Leading Principles<a class="headerlink" href="#part-1-leading-principles" title="Permanent link">&para;</a></h2>
+<p>Four principles organize everything that follows. Every module is, in some sense, an elaboration of one of them.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["🔐 Confidential LLM Serving"] --&gt; B["Principle 1&lt;br&gt;Encryption at Rest and in Transit&lt;br&gt;Leaves the In-Use Gap Open"]
+    A --&gt; C["Principle 2&lt;br&gt;Trust Must Be Measured,&lt;br&gt;Not Asserted"]
+    A --&gt; D["Principle 3&lt;br&gt;The Accelerator Is Inside&lt;br&gt;the Trust Boundary"]
+    A --&gt; E["Principle 4&lt;br&gt;A Guarantee Is Only as Honest&lt;br&gt;as Its Stated Threat Model"]
+
+    B --&gt; B1["Memory Encryption + Integrity&lt;br&gt;SEV-SNP / TDX"]
+    C --&gt; C1["Remote Attestation&lt;br&gt;+ Policy-Gated Key Release"]
+    D --&gt; D1["GPU TEE, Encrypted PCIe,&lt;br&gt;Protected NVLink"]
+    E --&gt; E1["Explicit Out-of-Scope List:&lt;br&gt;Availability, Side Channels,&lt;br&gt;Traffic Analysis"]</code></pre>
+<h3 id="principle-1-encryption-at-rest-and-in-transit-leaves-the-in-use-gap-open">Principle 1: Encryption at Rest and in Transit Leaves the In-Use Gap Open<a class="headerlink" href="#principle-1-encryption-at-rest-and-in-transit-leaves-the-in-use-gap-open" title="Permanent link">&para;</a></h3>
+<p>The industry solved data at rest (disk encryption, CMEK) and data in transit (TLS everywhere) two decades ago. Both solutions share a structural assumption: at some point the data is decrypted into RAM, and RAM is trusted. That assumption was defensible when the machine belonged to you. It is not defensible when the machine belongs to a cloud provider whose hypervisor, host kernel, firmware, and operations staff all sit between the DIMM and your process.</p>
+<p><strong>The problem this creates for inference</strong>: an LLM serving process is <em>nothing but</em> data in use. The weights are in RAM and HBM. The prompt is in RAM the instant TLS terminates. The KV cache — a lossy but very real encoding of the entire conversation — sits in GPU memory for the duration of the request. There is no moment in the request lifecycle where the interesting data is at rest.</p>
+<p><strong>The solution</strong>: hardware memory encryption with integrity protection, so that the ciphertext visible to the hypervisor and to a physical attacker is not decryptable by them, and cannot be replayed or remapped without detection.</p>
+<h3 id="principle-2-trust-must-be-measured-not-asserted">Principle 2: Trust Must Be Measured, Not Asserted<a class="headerlink" href="#principle-2-trust-must-be-measured-not-asserted" title="Permanent link">&para;</a></h3>
+<p>A TEE with no remote attestation is a machine that claims to be secure. A TEE <em>with</em> remote attestation is a machine that produces a hardware-signed statement of exactly what code it is running, which a remote party can verify against a reference value it chose in advance, before releasing anything sensitive to it.</p>
+<p>The second is worth something. The first is worth nothing, because a malicious operator can simply run a normal VM and tell you it is a confidential one.</p>
+<p><strong>The consequence for how you spend your time</strong>: engineers new to this field spend it on the TEE and treat attestation as plumbing. This is backwards. The TEE is bought from AMD or Intel and works or does not. Attestation is where all the design decisions, all the operational pain, and all the actual security properties live — which is why Module 3 is the longest chapter in this book.</p>
+<h3 id="principle-3-the-accelerator-is-inside-the-trust-boundary">Principle 3: The Accelerator Is Inside the Trust Boundary<a class="headerlink" href="#principle-3-the-accelerator-is-inside-the-trust-boundary" title="Permanent link">&para;</a></h3>
+<p>A confidential VM protects CPU memory. An LLM does not live in CPU memory. If the weights are copied over a plaintext PCIe bus into unprotected HBM, the confidential VM has protected the least interesting copy of the data and a host-side attacker reads the rest.</p>
+<p><strong>The consequence</strong>: LLM confidential computing is not "confidential computing, applied to LLMs." It is a strictly harder problem that requires the GPU to have its own root of trust, its own attestation, its own protected memory, and an encrypted, integrity-protected channel to the CPU TEE — and it requires the verifier to check <em>both</em> pieces of evidence and bind them together. This is the single most common design error in the field.</p>
+<h3 id="principle-4-a-guarantee-is-only-as-honest-as-its-stated-threat-model">Principle 4: A Guarantee Is Only as Honest as Its Stated Threat Model<a class="headerlink" href="#principle-4-a-guarantee-is-only-as-honest-as-its-stated-threat-model" title="Permanent link">&para;</a></h3>
+<p>Confidential computing does not make a workload "secure." It moves specific, enumerable adversaries out of the trust boundary, and leaves others inside it. A design document that says "data is protected in use" without saying <em>from whom</em> and <em>against what</em> is marketing.</p>
+<p><strong>The discipline this book enforces</strong>: every architecture in these notes is followed by an explicit list of what remains exposed — availability, request timing and volume, ciphertext side channels, the fact that the customer's own client can log the plaintext, and the supply chain that produced the measured image. The last chapter of Module 6 exists solely to walk the finished reference architecture back through the adversary list and say plainly what an insider with host root can still do.</p>
+<hr />
+<h2 id="part-2-the-three-party-trust-problem">Part 2: The Three-Party Trust Problem<a class="headerlink" href="#part-2-the-three-party-trust-problem" title="Permanent link">&para;</a></h2>
+<p>Every design decision in this book traces back to this diagram. It is worth internalizing before Module 1.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph MP ["🏭 Model Provider (e.g. a frontier lab)"]
+        MP1["Owns: model weights&lt;br&gt;Fears: weight exfiltration by&lt;br&gt;cloud operator or customer"]
+    end
+
+    subgraph CO ["☁️ Cloud Operator (Google)"]
+        CO1["Owns: hypervisor, host kernel,&lt;br&gt;firmware, physical datacenter, SREs&lt;br&gt;Wants: provable incapability&lt;br&gt;of reading either party's data"]
+    end
+
+    subgraph CU ["👤 End Customer (enterprise tenant)"]
+        CU1["Owns: prompts, documents, completions&lt;br&gt;Fears: prompt disclosure to&lt;br&gt;cloud operator or model provider"]
+    end
+
+    MP --&gt;|"encrypted weights +&lt;br&gt;key released only on attestation"| TEE
+    CU --&gt;|"prompt over channel terminated&lt;br&gt;inside the TEE"| TEE
+    CO --&gt;|"operates the hardware but&lt;br&gt;holds no decryption key"| TEE
+
+    TEE["🔒 Attested TEE&lt;br&gt;CPU TEE + GPU TEE&lt;br&gt;Runs a measured, signed image&lt;br&gt;Verifiable independently by&lt;br&gt;ALL THREE parties"]</code></pre>
+<p>The load-bearing word is <strong>independently</strong>. The architecture is only interesting if the model provider can verify the weight-decryption key was released to an environment it approved of, <em>without trusting Google's word for it</em>, and the customer can verify the prompt-handling endpoint is that same approved environment, <em>without trusting either Google or the model provider</em>. Anything less collapses back into ordinary cloud tenancy with extra steps.</p>
+<hr />
+<h2 id="part-3-curriculum-structure-and-roadmap">Part 3: Curriculum Structure and Roadmap<a class="headerlink" href="#part-3-curriculum-structure-and-roadmap" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Module</th>
+<th style="text-align: left;">Filename</th>
+<th style="text-align: left;">Key Topics Covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><a href="01_confidential_computing_foundations/">Module 1: Foundations</a></strong></td>
+<td style="text-align: left;"><a href="01_confidential_computing_foundations/"><code>01_confidential_computing_foundations.md</code></a></td>
+<td style="text-align: left;">Three states of data; adversary taxonomy; TCB minimization; root of trust, measurement, sealing; memory encryption and integrity; process TEEs vs VM TEEs; the 3P MaaS problem statement</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="02_hardware_tee_architectures/">Module 2: Hardware TEEs</a></strong></td>
+<td style="text-align: left;"><a href="02_hardware_tee_architectures/"><code>02_hardware_tee_architectures.md</code></a></td>
+<td style="text-align: left;">AMD SEV → SEV-ES → SEV-SNP (RMP, VMPL, PSP); Intel TDX (SEAM, TDX Module, secure EPT, MRTD/RTMR); ARM CCA and RISC-V CoVE; what breaks operationally; ciphertext side channels and single-stepping attacks</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="03_remote_attestation_and_key_release/">Module 3: Attestation</a></strong></td>
+<td style="text-align: left;"><a href="03_remote_attestation_and_key_release/"><code>03_remote_attestation_and_key_release.md</code></a></td>
+<td style="text-align: left;">RATS architecture (RFC 9334); the measurement chain from RoT to container digest; evidence formats and certificate chains; freshness, revocation, TCB versioning; attested key release; RA-TLS; reproducible reference values</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="04_confidential_gpus_and_accelerators/">Module 4: Confidential GPUs</a></strong></td>
+<td style="text-align: left;"><a href="04_confidential_gpus_and_accelerators/"><code>04_confidential_gpus_and_accelerators.md</code></a></td>
+<td style="text-align: left;">Why CPU-only TEEs fail for inference; NVIDIA Hopper/Blackwell CC mode; bounce buffers, SPDM, PCIe IDE; GPU attestation, RIMs, NRAS, composite attestation; single-GPU Hopper vs multi-GPU Blackwell NVLink encryption; the overhead model</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="05_google_cloud_confidential_surface/">Module 5: The GCP Surface</a></strong></td>
+<td style="text-align: left;"><a href="05_google_cloud_confidential_surface/"><code>05_google_cloud_confidential_surface.md</code></a></td>
+<td style="text-align: left;">Confidential VM families; Confidential GKE Nodes and their GPU constraints; Confidential Space and its three-role separation; GCP attestation tokens and Workload Identity Federation; Cloud KMS/EKM key hierarchies; Confidential Space vs Confidential GKE for inference</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="06_designing_confidential_llm_serving_on_gke/">Module 6: Applied Design</a></strong></td>
+<td style="text-align: left;"><a href="06_designing_confidential_llm_serving_on_gke/"><code>06_designing_confidential_llm_serving_on_gke.md</code></a></td>
+<td style="text-align: left;">Requirements decomposition; the reference architecture; encrypted weight delivery; the cold-start budget; where TLS terminates; KV cache and prefix-cache leakage; multi-tenancy; the observability/safety tension; adversarial review</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="07_performance_operations_and_evaluation/">Module 7: Performance &amp; Ops</a></strong></td>
+<td style="text-align: left;"><a href="07_performance_operations_and_evaluation/"><code>07_performance_operations_and_evaluation.md</code></a></td>
+<td style="text-align: left;">Benchmarking methodology; the overhead budget and cost model; debugging without SSH, core dumps, or host profilers; fleet lifecycle under attestation; compliance claims that hold and claims that don't; AWS Nitro, Azure CACI, and Apple PCC compared</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="appendix_glossary_and_terminology/">Appendix A: Glossary</a></strong></td>
+<td style="text-align: left;"><a href="appendix_glossary_and_terminology/"><code>appendix_glossary_and_terminology.md</code></a></td>
+<td style="text-align: left;">Every acronym in the book, grouped by domain, with expansions and one-line definitions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="appendix_reading_list/">Appendix B: Reading List</a></strong></td>
+<td style="text-align: left;"><a href="appendix_reading_list/"><code>appendix_reading_list.md</code></a></td>
+<td style="text-align: left;">Annotated primary sources — vendor specs, RFCs, and the attack papers — so any claim here can be re-verified at the source</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-4-deep-dive-module-breakdown">Part 4: Deep-Dive Module Breakdown<a class="headerlink" href="#part-4-deep-dive-module-breakdown" title="Permanent link">&para;</a></h2>
+<h3 id="module-1-confidential-computing-foundations"><a href="01_confidential_computing_foundations/">Module 1: Confidential Computing Foundations</a><a class="headerlink" href="#module-1-confidential-computing-foundations" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>The Three States of Data</strong> — why "in use" was left unsolved, and why inference is the workload that makes it unavoidable.</li>
+<li><strong>Threat Models and the Adversary Taxonomy</strong> — malicious co-tenant, compromised hypervisor, cloud insider with host root, physical/DMA attacker, malicious guest. What each is capable of and which mechanism addresses it.</li>
+<li><strong>TEE Building Blocks</strong> — hardware root of trust, measured boot, sealing, attestation reports, ephemeral memory encryption keys, AES-XTS vs AES-GCM, and why confidentiality without integrity is defeated by replay and remap.</li>
+<li><strong>Process TEEs vs VM TEEs</strong> — the SGX enclave model and its porting cost, the VM-TEE lift-and-shift model and its TCB cost, and why VM TEEs won for AI. Confidential containers as the Kubernetes-shaped middle ground.</li>
+<li><strong>The Third-Party MaaS Problem, Formalized</strong> — the four security properties, the parties each is held against, and the evaluation checklist reused in Module 6.</li>
+</ol>
+<h3 id="module-2-hardware-tee-architectures"><a href="02_hardware_tee_architectures/">Module 2: Hardware TEE Architectures</a><a class="headerlink" href="#module-2-hardware-tee-architectures" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>AMD SEV Lineage</strong> — the C-bit and the memory encryption engine; SEV-ES and VMSA register protection; SEV-SNP's Reverse Map Table, <code>PVALIDATE</code>, VMPLs, guest policy, and the PSP as root of trust.</li>
+<li><strong>Intel TDX</strong> — SEAM mode and the TDX Module as an added TCB layer; shared vs private GPA and secure EPT; <code>TDCALL</code>/<code>SEAMCALL</code>; <code>MRTD</code> vs the runtime-extendable <code>RTMR0-3</code>; the TDREPORT → Quoting Enclave → DCAP quote path.</li>
+<li><strong>The Rest of the Landscape</strong> — SGX's retreat from this workload, ARM CCA Realms, RISC-V CoVE.</li>
+<li><strong>Comparison and Operational Consequences</strong> — TCB size, integrity model, I/O model, attestation format, GCP availability; then what stops working: live migration, ballooning, nested virtualization, huge pages, host-side profiling, kdump.</li>
+<li><strong>Known Attacks and Residual Risk</strong> — the ciphertext side channel family, single-stepping, TDX errata and patch cadence — framed as: <em>what does this do to the claim you are about to make to a model provider?</em></li>
+</ol>
+<h3 id="module-3-remote-attestation-and-attested-key-release"><a href="03_remote_attestation_and_key_release/">Module 3: Remote Attestation and Attested Key Release</a><a class="headerlink" href="#module-3-remote-attestation-and-attested-key-release" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>The RATS Architecture</strong> — Attester, Verifier, Relying Party, Endorser, Reference Value Provider; passport vs background-check models; why "who is the verifier" is a commercial question wearing a technical costume.</li>
+<li><strong>The Measurement Chain</strong> — hardware RoT → firmware → measurement registers → kernel/initrd/<code>dm-verity</code> → container image digest, and the three places it usually breaks.</li>
+<li><strong>Evidence Formats and Certificate Chains</strong> — SEV-SNP report layout, TDX quote layout, TPM quote and event log; VCEK/VLEK and the AMD KDS; Intel PCS and DCAP collateral; EAT/CoRIM normalization.</li>
+<li><strong>Freshness, Revocation, and TCB Versioning</strong> — nonces, replay, token lifetime, and the fleet-wide re-attestation churn that firmware updates cause.</li>
+<li><strong>Attested Key Release</strong> — envelope encryption of weights; policy over attestation claims; KMS-side vs verifier-side enforcement; GCP, AWS, and Azure patterns compared.</li>
+<li><strong>RA-TLS</strong> — binding the TLS public key into the attestation report, and why this is the only clean end-to-end guarantee for a client.</li>
+<li><strong>Reference Values and Reproducible Builds</strong> — the genuinely unsolved part: knowing which measurement to expect.</li>
+</ol>
+<h3 id="module-4-confidential-gpus-and-accelerators"><a href="04_confidential_gpus_and_accelerators/">Module 4: Confidential GPUs and Accelerators</a><a class="headerlink" href="#module-4-confidential-gpus-and-accelerators" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Why the GPU Must Join the TCB</strong> — an exact accounting of what leaks when the CPU is confidential and the GPU is not.</li>
+<li><strong>NVIDIA CC Mode Internals</strong> — CC-Off/CC-On/CC-DevTools; the on-die root of trust and GSP firmware; protected memory regions; AES-GCM encrypted bounce buffers; SPDM sessions and PCIe IDE.</li>
+<li><strong>GPU Attestation</strong> — device evidence, VBIOS/driver measurements, Reference Integrity Manifests, NRAS vs local verification, <code>nvtrust</code>, and composite CPU+GPU+image policy.</li>
+<li><strong>Multi-GPU and Tensor Parallelism</strong> — the Hopper single-GPU constraint and what it costs a large model; Blackwell's hardware-encrypted NVLink and 1/2/4/8-GPU confidential assignment.</li>
+<li><strong>The Overhead Model</strong> — why the cost lands on host↔device transfer rather than compute, why it shrinks as model and batch size grow, and what to actually measure.</li>
+<li><strong>The Adjacent Ecosystem</strong> — AMD SEV-TIO, PCIe TDISP as the standardization endpoint, and where confidential accelerators are heading.</li>
+</ol>
+<h3 id="module-5-the-google-cloud-confidential-surface"><a href="05_google_cloud_confidential_surface/">Module 5: The Google Cloud Confidential Surface</a><a class="headerlink" href="#module-5-the-google-cloud-confidential-surface" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Confidential VM</strong> — SEV, SEV-SNP, and TDX by machine family; feature gaps; regional and capacity reality; Confidential Hyperdisk and CMEK.</li>
+<li><strong>Confidential GKE Nodes</strong> — enabling it, the node-pool constraints, and the critical point that the control plane sits <em>outside</em> your TEE.</li>
+<li><strong>Confidential Space</strong> — the hardened image and launcher; the workload-author / operator / data-collaborator separation; DEBUG vs PROD images; the logging escape hatches and exactly how much they cost you.</li>
+<li><strong>Attestation on GCP</strong> — the attestation token and its claims; the vTPM path; Workload Identity Federation attribute conditions as policy language; Cloud KMS, Cloud HSM, and EKM key hierarchies.</li>
+<li><strong>The Supporting Cast</strong> — Binary Authorization and Sigstore signing; Workload Identity vs Secret Manager; gVisor as an <em>orthogonal</em> threat model, not a weaker TEE.</li>
+<li><strong>Confidential Space vs Confidential GKE for Inference</strong> — a head-to-head decision table, and why the right answer is not the obvious one.</li>
+</ol>
+<h3 id="module-6-designing-confidential-llm-serving-on-gke"><a href="06_designing_confidential_llm_serving_on_gke/">Module 6: Designing Confidential LLM Serving on GKE</a><a class="headerlink" href="#module-6-designing-confidential-llm-serving-on-gke" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Requirements Decomposition</strong> — the four properties, stated formally, each against a named adversary.</li>
+<li><strong>The Reference Architecture</strong> — Confidential GKE node + confidential GPU + vLLM + attestation agent + attested key release + in-TEE TLS termination, component by component.</li>
+<li><strong>The Encrypted Weight Pipeline</strong> — provider-side encryption through attested decryption into protected GPU memory; key rotation and revocation.</li>
+<li><strong>The Cold-Start Problem</strong> — a latency budget for TEE boot + attestation + multi-gigabyte decrypt + GPU load, and the mitigations that don't break attestation.</li>
+<li><strong>Where TLS Terminates</strong> — the attested-ingress problem, and why a managed L7 load balancer silently voids the guarantee.</li>
+<li><strong>KV Cache, Prefix Caching, and Disaggregation</strong> — why cross-tenant prefix cache reuse is a plaintext-equivalent leak, and what disaggregated serving does to your trust boundary.</li>
+<li><strong>Multi-Tenancy</strong> — per-tenant TEE vs shared TEE with cross-tenant continuous batching.</li>
+<li><strong>Observability and the Safety Blind Spot</strong> — the real conflict between confidentiality and abuse monitoring, and the three architectural responses to it.</li>
+<li><strong>Adversarial Review</strong> — the finished design, walked back through the Module 1 adversary list.</li>
+</ol>
+<h3 id="module-7-performance-operations-and-evaluation"><a href="07_performance_operations_and_evaluation/">Module 7: Performance, Operations, and Evaluation</a><a class="headerlink" href="#module-7-performance-operations-and-evaluation" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Benchmarking Methodology</strong> — isolating CPU-TEE cost from GPU-CC cost from attestation cost; what a fair A/B requires.</li>
+<li><strong>The Overhead and Cost Budget</strong> — attributable overhead by source, plus the machine-type premium and the selection constraints.</li>
+<li><strong>Debuggability</strong> — operating without SSH, core dumps, host profilers, or <code>kubectl exec</code>; incident response without evidence.</li>
+<li><strong>Fleet Lifecycle</strong> — node upgrades, TCB rollouts forcing re-attestation, key rotation under load, autoscaling with attestation on the critical path.</li>
+<li><strong>Compliance and Positioning</strong> — what confidential computing genuinely supports, and where the marketing outruns the mechanism.</li>
+<li><strong>Comparative Architectures</strong> — AWS Nitro Enclaves, Azure Confidential Containers, and Apple Private Cloud Compute as published design references.</li>
+</ol>
+<hr />
+<h2 id="part-5-how-each-module-is-built">Part 5: How Each Module Is Built<a class="headerlink" href="#part-5-how-each-module-is-built" title="Permanent link">&para;</a></h2>
+<p>Every module follows the same four-beat structure, and closes with a hands-on lab.</p>
+<ol>
+<li><strong>Conceptual foundation</strong> — the mechanism explained from first principles, with the problem it exists to solve stated before the solution.</li>
+<li><strong>Architecture and data flow</strong> — Mermaid diagrams for every major mechanism, plus comparison tables wherever two designs compete.</li>
+<li><strong>Configuration and API anatomy</strong> — the actual flags, claim names, report fields, and <code>gcloud</code> surfaces, not paraphrases of them.</li>
+<li><strong>Production pitfalls</strong> — what breaks, what the vendor documentation understates, and what the residual risk is.</li>
+<li><strong><code>## Lab:</code></strong> — a runnable exercise. Confidential computing does not become intuitive by reading field tables; it becomes intuitive the first time you pull a real attestation report, decode it, flip one byte of the image, and watch key release fail.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">On labs and cost</p>
+<p>The labs provision real Confidential VM, Confidential GKE, and A3 GPU resources, which are billable and in several cases capacity-constrained by region. Each lab states its rough cost and whether its commands have been executed against a live project or are transcribed from vendor documentation and marked unverified.</p>
+</div>
+<p>Start with <a href="01_confidential_computing_foundations/">Module 1: Confidential Computing Foundations</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

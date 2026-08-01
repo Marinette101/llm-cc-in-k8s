@@ -1,0 +1,1990 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../03_remote_attestation_and_key_release/">
+      
+      
+        <link rel="next" href="../05_google_cloud_confidential_surface/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/04_confidential_gpus_and_accelerators/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 4 - Confidential GPUs and Accelerators - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-4-confidential-gpus-and-accelerators" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 4 - Confidential GPUs and Accelerators
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/04_confidential_gpus_and_accelerators/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-the-gpu-must-join-the-tcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Why the GPU Must Join the TCB
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Why the GPU Must Join the TCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-accounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Accounting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-the-gpu-tee-has-to-provide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What the GPU TEE Has to Provide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-nvidia-confidential-computing-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: NVIDIA Confidential Computing Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: NVIDIA Confidential Computing Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-three-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Three States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-protected-memory-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Protected Memory Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-session-establishment-spdm-and-pcie-ide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Session Establishment: SPDM and PCIe IDE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-operational-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Operational Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-gpu-attestation-and-composite-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: GPU Attestation and Composite Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: GPU Attestation and Composite Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-composite-attestation-is-the-whole-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Composite Attestation Is the Whole Point
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-multi-gpu-and-tensor-parallelism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Multi-GPU and Tensor Parallelism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Multi-GPU and Tensor Parallelism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-hopper-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Hopper Constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-blackwell-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The Blackwell Change
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-attestation-consequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Attestation Consequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-performance-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Performance Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Performance Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-where-the-overhead-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Where the Overhead Actually Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-why-this-is-good-news-for-llm-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Why This Is Good News for LLM Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-cold-start-is-the-real-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Cold Start Is the Real Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-what-to-measure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 What to Measure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-the-adjacent-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: The Adjacent Ecosystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: The Adjacent Ecosystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-amd-and-the-rest-of-the-accelerator-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 AMD and the Rest of the Accelerator Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-tdisp-where-this-is-all-going" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 TDISP: Where This Is All Going
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-tpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 TPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-verify-a-confidential-gpu-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Verify a Confidential GPU End to End
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Verify a Confidential GPU End to End">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-a-confidential-gpu-node-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Create a confidential GPU node pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-confirm-cc-mode-from-inside-the-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Confirm CC mode from inside the guest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-observe-the-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Observe the enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-pull-and-verify-a-gpu-attestation-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Pull and verify a GPU attestation report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-measure-the-transfer-penalty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Measure the transfer penalty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-connect-it-to-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Connect it to serving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-delete-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Delete it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-confidential-gpu-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Confidential GPU Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-the-gpu-must-join-the-tcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Why the GPU Must Join the TCB
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Why the GPU Must Join the TCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-accounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Accounting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-the-gpu-tee-has-to-provide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What the GPU TEE Has to Provide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-nvidia-confidential-computing-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: NVIDIA Confidential Computing Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: NVIDIA Confidential Computing Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-three-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Three States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-protected-memory-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Protected Memory Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-session-establishment-spdm-and-pcie-ide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Session Establishment: SPDM and PCIe IDE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-operational-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Operational Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-gpu-attestation-and-composite-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: GPU Attestation and Composite Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: GPU Attestation and Composite Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-composite-attestation-is-the-whole-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Composite Attestation Is the Whole Point
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-multi-gpu-and-tensor-parallelism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Multi-GPU and Tensor Parallelism
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Multi-GPU and Tensor Parallelism">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-hopper-constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Hopper Constraint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-blackwell-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The Blackwell Change
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-attestation-consequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Attestation Consequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-performance-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Performance Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Performance Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-where-the-overhead-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Where the Overhead Actually Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-why-this-is-good-news-for-llm-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Why This Is Good News for LLM Inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-cold-start-is-the-real-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Cold Start Is the Real Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-what-to-measure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 What to Measure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-the-adjacent-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: The Adjacent Ecosystem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: The Adjacent Ecosystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-amd-and-the-rest-of-the-accelerator-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 AMD and the Rest of the Accelerator Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-tdisp-where-this-is-all-going" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 TDISP: Where This Is All Going
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-tpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 TPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-verify-a-confidential-gpu-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Verify a Confidential GPU End to End
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Verify a Confidential GPU End to End">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-a-confidential-gpu-node-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Create a confidential GPU node pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-confirm-cc-mode-from-inside-the-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Confirm CC mode from inside the guest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-observe-the-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Observe the enforcement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-pull-and-verify-a-gpu-attestation-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Pull and verify a GPU attestation report
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-measure-the-transfer-penalty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Measure the transfer penalty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-connect-it-to-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Connect it to serving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-delete-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Delete it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-confidential-gpu-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Confidential GPU Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-4-confidential-gpus-and-accelerators">Module 4: Confidential GPUs and Accelerators<a class="headerlink" href="#module-4-confidential-gpus-and-accelerators" title="Permanent link">&para;</a></h1>
+<p>Every release policy in Module 3 contained a line about <code>cc_mode</code> that was never explained. This module explains it, and in doing so closes the gap that separates "confidential computing" from "confidential <em>LLM</em> computing." A confidential VM protects host DRAM. An LLM does not live in host DRAM. Until the accelerator is inside the trust boundary, a perfectly attested confidential VM is protecting the least valuable copy of your data while the interesting copy sits in plaintext HBM on a device the hypervisor can address.</p>
+<p>This module covers <strong>why the GPU must join the TCB</strong>, <strong>the internals of NVIDIA confidential computing mode</strong>, <strong>GPU attestation and composite policy</strong>, <strong>the multi-GPU story and what it means for tensor parallelism</strong>, <strong>the performance model</strong>, and <strong>the adjacent ecosystem</strong>.</p>
+<hr />
+<h2 id="part-1-why-the-gpu-must-join-the-tcb">Part 1: Why the GPU Must Join the TCB<a class="headerlink" href="#part-1-why-the-gpu-must-join-the-tcb" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-accounting">1.1 The Accounting<a class="headerlink" href="#11-the-accounting" title="Permanent link">&para;</a></h3>
+<p>Take the Module 6 reference architecture in its half-finished state: a Confidential GKE node running SEV-SNP or TDX, with an ordinary GPU attached by PCIe passthrough. Exactly what is protected?</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph CVM ["🔒 Confidential VM — CPU TEE protects this"]
+        A["Tokenizer, scheduler,&lt;br&gt;request queue"]
+        B["Encrypted weights on disk"]
+        C["Decrypted weights,&lt;br&gt;transiently in host RAM"]
+    end
+
+    subgraph BUS ["⚠️ PCIe — plaintext in a non-CC design"]
+        D["Weights streamed to device&lt;br&gt;via shared bounce buffers"]
+        E["Every prompt's token IDs"]
+        F["Every generated logit"]
+    end
+
+    subgraph GPU ["❌ GPU HBM — NOT protected without CC mode"]
+        G["🔴 The complete model weights,&lt;br&gt;resident for the process lifetime"]
+        H["🔴 KV cache for every in-flight request"]
+        I["🔴 Activations for every forward pass"]
+    end
+
+    C --&gt; D --&gt; G
+    A --&gt; E --&gt; H
+    G --&gt; I --&gt; F</code></pre>
+<p>The three red rows are the entire asset. A host-side attacker who can read GPU memory — through the driver interface, through a DMA path, through the device's own debug facilities — gets:</p>
+<ul>
+<li><strong>The weights</strong>, in full, at rest, for hours. This is P1 from Module 1, defeated completely.</li>
+<li><strong>The KV cache</strong>, which is a per-request, high-fidelity encoding of everything the model has been told, including the system prompt and the full conversation. This is P2, defeated completely.</li>
+<li><strong>The activations</strong>, which are recoverable enough to matter.</li>
+</ul>
+<p>There is a further point that is easy to miss: in a CPU-only confidential design, the <em>hypervisor still programs the IOMMU and owns the PCIe topology</em>. The confidential VM's own DMA buffers must be shared (unencrypted) pages, by construction — that is how DMA works under SEV-SNP and TDX (Module 2, §4.2.4). So the weights do not merely end up unprotected on the GPU; they cross the bus in the clear, through memory the hypervisor can read, on every load.</p>
+<p><strong>Conclusion, stated as strongly as it deserves</strong>: a confidential LLM serving design that does not attest the GPU provides no meaningful confidentiality for the model or the prompts. It is not a partial guarantee. It is the appearance of one.</p>
+<h3 id="12-what-the-gpu-tee-has-to-provide">1.2 What the GPU TEE Has to Provide<a class="headerlink" href="#12-what-the-gpu-tee-has-to-provide" title="Permanent link">&para;</a></h3>
+<p>The same five primitives as Module 1, §3, restated for a device that is not a CPU:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Primitive</th>
+<th style="text-align: left;">What it means on a GPU</th>
+<th style="text-align: left;">Consequence if missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Root of trust</td>
+<td style="text-align: left;">A per-device key fused at manufacture, never exposed to software</td>
+<td style="text-align: left;">Device identity is forgeable</td>
+</tr>
+<tr>
+<td style="text-align: left;">Measurement</td>
+<td style="text-align: left;">Measurements of VBIOS, GSP firmware, and driver state</td>
+<td style="text-align: left;">You attest "a GPU," not "a trustworthy GPU"</td>
+</tr>
+<tr>
+<td style="text-align: left;">Memory protection</td>
+<td style="text-align: left;">HBM regions the host cannot read</td>
+<td style="text-align: left;">The weights are readable</td>
+</tr>
+<tr>
+<td style="text-align: left;">Secure channel</td>
+<td style="text-align: left;">Encrypted, integrity-protected PCIe transfers</td>
+<td style="text-align: left;">Weights and prompts leak in transit on every load and every request</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation</td>
+<td style="text-align: left;">A signed device report, verifiable against a vendor chain</td>
+<td style="text-align: left;">No basis for including the device in the trust boundary</td>
+</tr>
+</tbody>
+</table>
+<p>And one that has no CPU analogue, because a CPU is not a peripheral:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Primitive</th>
+<th style="text-align: left;">What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Binding to the CPU TEE</strong></td>
+<td style="text-align: left;">Evidence that <em>this</em> GPU is exclusively assigned to <em>this</em> confidential VM. Without it, an attacker attests a genuine CC-mode GPU somewhere else in the fleet and uses a non-protected one for the actual work — the relay attack of Module 3, §6.1, applied to a device.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-2-nvidia-confidential-computing-mode">Part 2: NVIDIA Confidential Computing Mode<a class="headerlink" href="#part-2-nvidia-confidential-computing-mode" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-three-states">2.1 The Three States<a class="headerlink" href="#21-the-three-states" title="Permanent link">&para;</a></h3>
+<p>NVIDIA Hopper (H100/H200) and Blackwell parts expose a device-level mode with three settings, and the distinction between the middle two is a frequent source of production incidents:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Protection</th>
+<th style="text-align: left;">Profiling / debug tools</th>
+<th style="text-align: left;">Intended use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>OFF</code></td>
+<td style="text-align: left;">None</td>
+<td style="text-align: left;">Full</td>
+<td style="text-align: left;">Normal, non-confidential workloads</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ON</code></td>
+<td style="text-align: left;">Full — protected memory, encrypted transfers, attestation required</td>
+<td style="text-align: left;"><strong>Disabled</strong></td>
+<td style="text-align: left;">Production confidential workloads</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DEVTOOLS</code></td>
+<td style="text-align: left;">Partial — the mechanisms run, but the protections are relaxed</td>
+<td style="text-align: left;">Enabled</td>
+<td style="text-align: left;">Development and performance work only</td>
+</tr>
+</tbody>
+</table>
+<p><code>DEVTOOLS</code> exists because you cannot profile a workload whose memory is unreadable, and someone has to tune the kernels. It is not a security mode. <strong>A release policy that accepts <code>cc_mode ∈ {ON, DEVTOOLS}</code> accepts an environment where the operator can profile your inference and read device memory</strong> — which is exactly the <code>dbgstat</code> trap from Module 3, §5.2, wearing a GPU costume. Assert <code>cc_mode == ON</code> and nothing else.</p>
+<h3 id="22-the-protected-memory-model">2.2 The Protected Memory Model<a class="headerlink" href="#22-the-protected-memory-model" title="Permanent link">&para;</a></h3>
+<p>In CC mode the GPU partitions its HBM:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph HBM ["GPU HBM"]
+        P["🔒 Protected Region&lt;br&gt;weights, KV cache, activations&lt;br&gt;host CANNOT read&lt;br&gt;on-die access control + encryption"]
+        U["📭 Unprotected Region&lt;br&gt;the bounce landing zone&lt;br&gt;host-visible, ciphertext only"]
+    end
+
+    subgraph HOST ["🔒 Confidential VM (CPU TEE)"]
+        HP["Private guest memory&lt;br&gt;SEV-SNP / TDX encrypted"]
+        HS["Shared bounce buffer&lt;br&gt;hypervisor-visible"]
+    end
+
+    HP --&gt;|"1 CPU TEE encrypts&lt;br&gt;with the session key"| HS
+    HS --&gt;|"2 DMA over PCIe&lt;br&gt;ciphertext in flight"| U
+    U --&gt;|"3 GPU decrypts on-die,&lt;br&gt;copies into protected memory"| P
+    P --&gt;|"results take the reverse path,&lt;br&gt;encrypted before leaving"| U</code></pre>
+<p>The essential insight is that <strong>the plaintext never exists outside a trust boundary at any point on the path.</strong> It is plaintext in confidential-VM private memory, ciphertext from the moment it enters the shared bounce buffer, ciphertext across the bus, ciphertext in the unprotected landing region, and plaintext again only inside the GPU's protected region. The hypervisor can read the shared buffer and the unprotected region and learns nothing but ciphertext and sizes.</p>
+<p>Note the asymmetry with CPU memory encryption from Module 2: <strong>here the mode is AES-GCM, not AES-XTS</strong>. Over a bus you can afford the nonce and authentication tag that GCM adds, and you get authentication and non-determinism for free — which is why the ciphertext side channel of Module 2, §5.1 does not have a direct analogue on this path. You cannot afford that expansion in DRAM, which is why CPU memory encryption is stuck with a deterministic mode. This is the clearest illustration in the book of why the two halves of the system have different cryptographic properties.</p>
+<h3 id="23-session-establishment-spdm-and-pcie-ide">2.3 Session Establishment: SPDM and PCIe IDE<a class="headerlink" href="#23-session-establishment-spdm-and-pcie-ide" title="Permanent link">&para;</a></h3>
+<p>The encryption key on that path has to come from somewhere, and it cannot come from the hypervisor. The mechanism is <strong>SPDM</strong> (Security Protocol and Data Model, a DMTF standard): the confidential VM and the GPU perform a mutually authenticated key exchange, with the GPU authenticating using its fused device key and its certificate chain. The result is a session key held by the guest and the device, and by nobody in between.</p>
+<p><strong>PCIe IDE</strong> (Integrity and Data Encryption) is the link-layer standard for encrypting and integrity-protecting PCIe traffic. Hopper's implementation encrypts data in software-managed bounce buffers; the direction of travel across the industry is toward hardware link encryption plus <strong>TDISP</strong> for device assignment (§6.2).</p>
+<p>The point worth carrying forward: the secure channel is established <em>between the confidential VM and the device</em>, using keys derived from the device's root of trust, with the hypervisor excluded. This is the same shape as everything else in this book — the guest, not the platform, decides what crosses the boundary.</p>
+<h3 id="24-operational-requirements">2.4 Operational Requirements<a class="headerlink" href="#24-operational-requirements" title="Permanent link">&para;</a></h3>
+<p>Two things that are not obvious from the architecture and that will cost you an afternoon each:</p>
+<ol>
+<li><strong><code>nvidia-persistenced</code> is required.</strong> In CC mode, tearing down and reloading the driver means renegotiating the secure session and re-attesting. The persistence daemon keeps the driver loaded so this does not happen on every process exit. Without it you will see intermittent, confusing attestation failures.</li>
+<li><strong>The GPU has a "ready state" that gates compute.</strong> After attestation succeeds, something must tell the GPU that it may accept work: <code>nvidia-smi conf-compute -srs 1</code>. Until then, the GPU is in CC mode but not ready, and CUDA operations fail. This is deliberate — it is the hardware's enforcement point for "no compute before successful attestation," and it means <strong>attestation is on your cold-start critical path by design</strong> (Module 6, §4).</li>
+</ol>
+<hr />
+<h2 id="part-3-gpu-attestation-and-composite-policy">Part 3: GPU Attestation and Composite Policy<a class="headerlink" href="#part-3-gpu-attestation-and-composite-policy" title="Permanent link">&para;</a></h2>
+<h3 id="31-the-evidence">3.1 The Evidence<a class="headerlink" href="#31-the-evidence" title="Permanent link">&para;</a></h3>
+<p>The GPU produces its own attestation report, structurally parallel to the SEV-SNP report of Module 2:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Device identity</td>
+<td style="text-align: left;">A unique device identifier, signed with the fused per-device key</td>
+</tr>
+<tr>
+<td style="text-align: left;">Measurements</td>
+<td style="text-align: left;">VBIOS version, GSP firmware measurements, driver version, CC mode state</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nonce</td>
+<td style="text-align: left;">Caller-supplied, for freshness</td>
+</tr>
+<tr>
+<td style="text-align: left;">Certificate chain</td>
+<td style="text-align: left;">Device certificate chaining to an NVIDIA root</td>
+</tr>
+</tbody>
+</table>
+<p>Verification compares those measurements against a <strong>RIM</strong> (Reference Integrity Manifest) — NVIDIA's signed publication of expected measurements for a given firmware and driver version. This is the reference-value problem of Module 3, §7 solved the "vendor-published" way: you trust NVIDIA's signed manifest rather than deriving the expected values yourself. It is the same strength rating as the second row of that table — moderate, and it moves the trust rather than removing it.</p>
+<p>Two verification topologies, matching Module 3, §1.2 exactly:</p>
+<ul>
+<li><strong>NRAS</strong> (NVIDIA Remote Attestation Service) — send evidence to NVIDIA, get back a verdict. Simple; adds a network dependency and tells NVIDIA about your fleet.</li>
+<li><strong>Local verifier</strong> — run the verification yourself against cached RIMs and NVIDIA's root certificates. More work; no runtime dependency on NVIDIA; and, for a model provider that wants to be its own verifier (Module 3, §1.3), the only acceptable option.</li>
+</ul>
+<h3 id="32-composite-attestation-is-the-whole-point">3.2 Composite Attestation Is the Whole Point<a class="headerlink" href="#32-composite-attestation-is-the-whole-point" title="Permanent link">&para;</a></h3>
+<p>A CPU attestation and a GPU attestation, each valid, verified separately, prove very little together. What you need is a single policy decision over <em>bound</em> evidence:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph EV ["Evidence to be appraised TOGETHER"]
+        C["CPU TEE evidence&lt;br&gt;TDX quote / SNP report&lt;br&gt;MRTD, RTMRs, TCB version, dbgstat"]
+        G["GPU evidence&lt;br&gt;device cert, VBIOS, GSP firmware,&lt;br&gt;cc_mode, driver version"]
+        I["Workload identity&lt;br&gt;container image digest&lt;br&gt;+ image signatures"]
+        B["🔗 Binding&lt;br&gt;proof this GPU is assigned to&lt;br&gt;THIS confidential VM"]
+    end
+
+    C --&gt; P["🔍 Single Composite Policy"]
+    G --&gt; P
+    I --&gt; P
+    B --&gt; P
+
+    P --&gt;|"ALL must pass"| R["🔑 Release the weight-decryption key"]
+    P --&gt;|"ANY fails"| D["🚫 Deny — and the GPU never&lt;br&gt;reaches ready state"]</code></pre>
+<p>On Google Cloud this composition is done for you and surfaced in the Confidential Space attestation token, which carries a <code>submods.nvidia_gpu</code> section alongside the CPU claims — including <code>cc_mode</code>, <code>cc_feature</code>, and per-GPU entries with <code>hwmodel</code> (e.g. <code>GCP_NVIDIA_H100</code>), <code>driver_version</code>, <code>vbios_version</code>, and a device unique identifier. That is what makes a single-token policy possible: one JWT, verified once, asserting facts about the CPU TEE, the GPU, and the container image simultaneously.</p>
+<p><strong>The policy lines you must not omit</strong>, restating Module 3, §5.2 with the reasoning now visible:</p>
+<div class="highlight"><pre><span></span><code>submods.nvidia_gpu.cc_mode == &quot;ON&quot;           # not DEVTOOLS
+submods.nvidia_gpu.gpus[*].hwmodel == expected model
+submods.nvidia_gpu.gpus[*].driver_version &gt;= floor
+submods.nvidia_gpu.gpus[*].vbios_version  in approved set
+</code></pre></div>
+<p>A policy that verifies the CPU TEE perfectly and omits these four lines produces an environment that is attested, confidential, and loading your weights into plaintext HBM.</p>
+<hr />
+<h2 id="part-4-multi-gpu-and-tensor-parallelism">Part 4: Multi-GPU and Tensor Parallelism<a class="headerlink" href="#part-4-multi-gpu-and-tensor-parallelism" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-hopper-constraint">4.1 The Hopper Constraint<a class="headerlink" href="#41-the-hopper-constraint" title="Permanent link">&para;</a></h3>
+<p>This is the single most consequential practical fact in this module, and it shapes the entire Module 6 architecture.</p>
+<p>The first-generation Hopper confidential computing implementation supports <strong>single-GPU passthrough</strong>. One H100 is assigned to one confidential VM. There is no protected interconnect between two confidential GPUs, so a tensor-parallel group spanning two GPUs would have to move activations between them over a path that is not inside either TEE.</p>
+<p>Google Cloud's Confidential GKE Nodes with GPU reflect this directly: the documented configuration is the <code>a3-highgpu-1g</code> machine type with exactly <strong>one</strong> NVIDIA H100 80 GB GPU per node, using Intel TDX — and GPU sharing features (time-sharing, MIG) are not available.</p>
+<p>The consequences for model serving are severe and should be stated plainly:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Constraint</th>
+<th style="text-align: left;">Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">One 80 GB GPU per confidential node</td>
+<td style="text-align: left;">Your model plus KV cache must fit in 80 GB, minus runtime overhead</td>
+</tr>
+<tr>
+<td style="text-align: left;">No tensor parallelism across GPUs</td>
+<td style="text-align: left;">A 70B model in bf16 (~140 GB of weights) <strong>does not fit</strong>, full stop</td>
+</tr>
+<tr>
+<td style="text-align: left;">No MIG, no time-sharing</td>
+<td style="text-align: left;">No packing several small models onto one device; utilization suffers</td>
+</tr>
+<tr>
+<td style="text-align: left;">No NVLink between confidential GPUs</td>
+<td style="text-align: left;">Pipeline parallelism across nodes crosses the network, not just a bus</td>
+</tr>
+</tbody>
+</table>
+<p>The practical serving envelope on a single 80 GB confidential H100 is therefore: models up to roughly 30–40B parameters at bf16, or larger models quantized to 8-bit or 4-bit. A frontier-scale model in full precision is not servable in this configuration. <strong>If your Vertex 3P MaaS workload is a large model, the Hopper generation forces either quantization, pipeline parallelism across nodes with encrypted inter-node transport, or waiting for Blackwell.</strong></p>
+<h3 id="42-the-blackwell-change">4.2 The Blackwell Change<a class="headerlink" href="#42-the-blackwell-change" title="Permanent link">&para;</a></h3>
+<p>Blackwell-generation HGX platforms (B200 and successors) remove this constraint. Multi-GPU confidential computing is supported with <strong>hardware-encrypted NVLink</strong> between GPUs inside the same confidential VM, with 1, 2, 4, or 8 GPUs assignable to a single CVM. CPU↔GPU traffic still goes through encrypted bounce buffers; GPU↔GPU traffic within the confidential group travels over encrypted NVLink.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph HOP ["Hopper generation — single-GPU passthrough"]
+        H1["🔒 Confidential VM"] --&gt;|"encrypted bounce buffers"| H2["🔒 One H100&lt;br&gt;protected HBM"]
+        H3["❌ No protected path to a second GPU&lt;br&gt;→ no tensor parallelism&lt;br&gt;→ model must fit in 80 GB"]
+    end
+
+    subgraph BLA ["Blackwell generation — multi-GPU TEE"]
+        B1["🔒 Confidential VM"] --&gt;|"encrypted bounce buffers"| B2["🔒 GPU 0"]
+        B2 &lt;--&gt;|"🔒 hardware-encrypted NVLink"| B3["🔒 GPU 1"]
+        B3 &lt;--&gt;|"🔒 hardware-encrypted NVLink"| B4["🔒 GPU … up to 8"]
+        B5["✅ Tensor parallelism inside the TEE&lt;br&gt;→ frontier-scale models servable"]
+    end</code></pre>
+<p>This is the change that moves confidential LLM serving from "a demo for small models" to "a deployment option for the models people actually pay for." When planning a 3P MaaS confidential offering, the accelerator generation is not an optimization detail — <strong>it determines which models are servable at all</strong>, and it belongs near the top of the design document, not in an appendix.</p>
+<h3 id="43-the-attestation-consequence">4.3 The Attestation Consequence<a class="headerlink" href="#43-the-attestation-consequence" title="Permanent link">&para;</a></h3>
+<p>Multi-GPU confidential computing multiplies the evidence. Each GPU produces its own report, and the policy must verify:</p>
+<ol>
+<li>Every GPU in the group individually — model, firmware, CC mode.</li>
+<li>That all of them are bound to the same confidential VM.</li>
+<li>That the NVLink interconnect between them is in its protected mode.</li>
+</ol>
+<p>A policy that checks GPU 0 and assumes GPUs 1–7 match is a policy with a seven-eighths hole in it. Verify each device.</p>
+<hr />
+<h2 id="part-5-the-performance-model">Part 5: The Performance Model<a class="headerlink" href="#part-5-the-performance-model" title="Permanent link">&para;</a></h2>
+<h3 id="51-where-the-overhead-actually-is">5.1 Where the Overhead Actually Is<a class="headerlink" href="#51-where-the-overhead-actually-is" title="Permanent link">&para;</a></h3>
+<p>The single most useful thing to know about confidential GPU performance is <em>where the cost is not</em>:</p>
+<div class="arithmatex">\[
+T_{\text{total}} = \underbrace{T_{\text{transfer}}}_{\text{heavily affected}} + \underbrace{T_{\text{compute}}}_{\text{nearly unaffected}} + \underbrace{T_{\text{attest}}}_{\text{one-time, but large}}
+\]</div>
+<p><strong>Compute inside the GPU is essentially unaffected.</strong> The SMs operate on plaintext in protected HBM; there is no per-instruction cryptography. A matrix multiply in CC mode runs at the same rate as one outside it.</p>
+<p><strong>Transfer across PCIe is heavily affected.</strong> Every host↔device byte is encrypted, copied into a bounce buffer, DMA'd, and decrypted. This is a per-byte cost on a path that was already the slowest link in the system.</p>
+<p>Published benchmark work on H100 CC mode is consistent on the shape of this: the GPU-internal computational overhead is minimal, and the overall penalty is dominated by CPU–GPU data transfer over PCIe.</p>
+<h3 id="52-why-this-is-good-news-for-llm-inference">5.2 Why This Is Good News for LLM Inference<a class="headerlink" href="#52-why-this-is-good-news-for-llm-inference" title="Permanent link">&para;</a></h3>
+<p>The arithmetic intensity of LLM inference works in your favor. Define, for a given phase:</p>
+<div class="arithmatex">\[
+I = \frac{\text{FLOPs performed on the device}}{\text{bytes moved across PCIe}}
+\]</div>
+<p>CC mode taxes the denominator and leaves the numerator alone. So the relative overhead scales as <span class="arithmatex">\(1/I\)</span>, and the phases of inference sort neatly:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Phase</th>
+<th style="text-align: left;">PCIe traffic</th>
+<th style="text-align: left;">Device compute</th>
+<th style="text-align: left;">CC overhead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Weight loading (cold start)</strong></td>
+<td style="text-align: left;">Enormous — tens to hundreds of GB, once</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: left;"><strong>Severe</strong> — this is where the cost lands</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Prefill</strong></td>
+<td style="text-align: left;">Small — token IDs in</td>
+<td style="text-align: left;">Large — full forward pass over the prompt</td>
+<td style="text-align: left;">Low</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Decode</strong></td>
+<td style="text-align: left;">Tiny — one token in, logits out</td>
+<td style="text-align: left;">Moderate per step, repeated</td>
+<td style="text-align: left;">Low, and falls further with batching</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Small-batch, short-prompt requests</strong></td>
+<td style="text-align: left;">Small but not negligible relative to compute</td>
+<td style="text-align: left;">Small</td>
+<td style="text-align: left;">Highest of the serving phases</td>
+</tr>
+</tbody>
+</table>
+<p>This is why published measurements report that overhead <strong>shrinks as model size, batch size, and sequence length grow</strong>: all three increase compute per byte transferred. Benchmark work on H100 CC mode has reported throughput penalties in the mid-single-digit percentage range for LLM inference, falling toward negligible for the largest models and longest sequences, with the smallest models and shortest sequences carrying the highest relative cost.</p>
+<p><strong>The design implication is direct</strong>: confidential mode is cheapest exactly where LLM serving is most valuable — large models, batched traffic, long contexts. It is most expensive on cold starts and on small, latency-sensitive requests. Optimize accordingly: fewer, longer-lived, well-batched replicas rather than many small ones.</p>
+<h3 id="53-cold-start-is-the-real-cost">5.3 Cold Start Is the Real Cost<a class="headerlink" href="#53-cold-start-is-the-real-cost" title="Permanent link">&para;</a></h3>
+<p>Loading a 40 GB model into protected HBM means encrypting, bouncing, DMA-ing, and decrypting 40 GB. At an effective post-CC bandwidth of <span class="arithmatex">\(B\)</span> GB/s:</p>
+<div class="arithmatex">\[
+T_{\text{load}} = \frac{S_{\text{model}}}{B_{\text{effective}}} \quad\text{where}\quad B_{\text{effective}} &lt; B_{\text{raw PCIe}}
+\]</div>
+<p>Add the confidential VM's own memory acceptance loop (Module 2, §4.2.3), TEE boot, attestation round trips, and the KMS key release, and cold start for a confidential inference pod is materially worse than for a normal one. This is the dominant term in the Module 6, §4 latency budget, and it is why autoscaling a confidential inference fleet is a different problem from autoscaling a normal one.</p>
+<h3 id="54-what-to-measure">5.4 What to Measure<a class="headerlink" href="#54-what-to-measure" title="Permanent link">&para;</a></h3>
+<p>Do not accept published numbers, including the ones above, as applying to your workload. The variables that matter — model size, batch size, sequence length, quantization, PCIe generation, CPU TEE type — vary enough that the honest answer is always "measure it." A defensible benchmark isolates four things:</p>
+<ol>
+<li><strong>Baseline</strong>: normal VM, normal GPU.</li>
+<li><strong>CPU TEE only</strong>: confidential VM, GPU with CC off. Isolates the CPU-side cost.</li>
+<li><strong>CPU TEE + GPU CC</strong>: the production configuration.</li>
+<li><strong>Cold start, separately from steady state.</strong> Reporting a single blended number hides the fact that one component is nearly free and the other is expensive.</li>
+</ol>
+<p>For capacity planning before you have measurements, a reasonable starting heuristic drawn from published single-H100 work is to reserve on the order of <strong>15–25% additional throughput capacity</strong>, then replace that with workload-specific measurements as soon as you have them. Module 7, §1 develops the methodology.</p>
+<hr />
+<h2 id="part-6-the-adjacent-ecosystem">Part 6: The Adjacent Ecosystem<a class="headerlink" href="#part-6-the-adjacent-ecosystem" title="Permanent link">&para;</a></h2>
+<h3 id="61-amd-and-the-rest-of-the-accelerator-field">6.1 AMD and the Rest of the Accelerator Field<a class="headerlink" href="#61-amd-and-the-rest-of-the-accelerator-field" title="Permanent link">&para;</a></h3>
+<p>AMD's Instinct line pairs with SEV-SNP through <strong>SEV-TIO</strong> (Trusted I/O), AMD's implementation of trusted device assignment. The architectural shape is the same as NVIDIA's — device root of trust, attestation, encrypted DMA — with the difference that AMD can integrate the CPU and device trust models more tightly, since it owns both ends.</p>
+<p>For a Google Cloud design this is mostly informational today, but it matters for a second reason: <strong>it demonstrates that the mechanism is not NVIDIA-specific</strong>, which means designing your attestation policy against an abstract "accelerator evidence" shape rather than against NVIDIA's specific report format is the portable choice.</p>
+<h3 id="62-tdisp-where-this-is-all-going">6.2 TDISP: Where This Is All Going<a class="headerlink" href="#62-tdisp-where-this-is-all-going" title="Permanent link">&para;</a></h3>
+<p>The current generation of confidential GPU support is, architecturally, a workaround. Bounce buffers exist because the device cannot be securely assigned to the confidential VM in a way the platform understands; software encrypts data before DMA because the link itself is not trusted.</p>
+<p><strong>TDISP</strong> (TEE Device Interface Security Protocol), a PCIe specification, is the standardized fix. It defines how a device interface is assigned to a TEE, how it is authenticated (via SPDM), how the link is protected (via IDE), and how the device transitions through a defined security state machine. When TDISP is broadly implemented, the bounce buffer disappears: a device function is assigned directly into the confidential VM's private memory, with hardware link encryption.</p>
+<p>The consequences to anticipate:</p>
+<ul>
+<li>Most of the transfer overhead in §5.1 goes away.</li>
+<li>Attestation becomes more standardized and less vendor-specific.</li>
+<li>The trust boundary becomes cleaner to describe — a genuinely useful outcome when explaining the design to a counterparty's security team.</li>
+</ul>
+<p>This is a two-to-three-year horizon, not a thing to build on today, but it is the reason not to over-invest in bounce-buffer-specific optimizations.</p>
+<h3 id="63-tpus">6.3 TPUs<a class="headerlink" href="#63-tpus" title="Permanent link">&para;</a></h3>
+<p>Google's TPUs are the obvious question for a Vertex-hosted workload, and the honest answer is that the confidential computing story for TPUs is substantially less mature and less publicly documented than the NVIDIA GPU path. Any 3P MaaS confidential design should be verified against current Google Cloud documentation before assuming TPU support, and should treat the GPU path as the one with a documented, verifiable attestation chain today.</p>
+<hr />
+<h2 id="lab-verify-a-confidential-gpu-end-to-end">Lab: Verify a Confidential GPU End to End<a class="headerlink" href="#lab-verify-a-confidential-gpu-end-to-end" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> bring up a confidential VM with an H100 in CC mode, confirm the mode from inside the guest, obtain and verify a GPU attestation report, and measure the transfer overhead that §5.1 predicts.</p>
+<p><strong>Cost:</strong> ⚠️ <strong>This is the expensive lab.</strong> An A3 instance with an H100 costs several dollars per hour and is capacity-constrained by zone. Budget an hour and delete the instance immediately afterward. <strong>Status:</strong> <code>nvidia-smi</code> and <code>nvtrust</code> invocations follow NVIDIA's documented interfaces; the <code>gcloud</code> node-pool flags follow Google Cloud documentation. Verify against current documentation before running — confidential GPU support changes faster than any other area in this book.</p>
+<h3 id="step-1-create-a-confidential-gpu-node-pool">Step 1 — Create a confidential GPU node pool<a class="headerlink" href="#step-1-create-a-confidential-gpu-node-pool" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-gpu-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>us-central1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>TDX<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>a3-highgpu-1g<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--accelerator<span class="o">=</span><span class="nv">type</span><span class="o">=</span>nvidia-h100-80gb,count<span class="o">=</span><span class="m">1</span>,gpu-driver-version<span class="o">=</span>latest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--num-nodes<span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+<p>Note the constraints encoded in that command: TDX, <code>a3-highgpu-1g</code>, and <code>count=1</code>. Try <code>count=2</code> and observe the rejection — that is §4.1 enforced by the API rather than described in prose.</p>
+<h3 id="step-2-confirm-cc-mode-from-inside-the-guest">Step 2 — Confirm CC mode from inside the guest<a class="headerlink" href="#step-2-confirm-cc-mode-from-inside-the-guest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Is the GPU in confidential computing mode?</span>
+nvidia-smi<span class="w"> </span>conf-compute<span class="w"> </span>-f
+
+<span class="c1"># What is the GPU&#39;s ready state? Compute is gated on this.</span>
+nvidia-smi<span class="w"> </span>conf-compute<span class="w"> </span>-grs
+
+<span class="c1"># Confirm the driver is pinned — required in CC mode</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>nvidia-persistenced
+</code></pre></div>
+<p>Expect <code>CC status: ON</code>. If it reports <code>OFF</code>, everything downstream in this lab is measuring a non-confidential GPU, and — more importantly — a production deployment in this state would be silently unprotected. <strong>This check belongs in your readiness probe</strong>, not just in a lab.</p>
+<h3 id="step-3-observe-the-enforcement">Step 3 — Observe the enforcement<a class="headerlink" href="#step-3-observe-the-enforcement" title="Permanent link">&para;</a></h3>
+<p>Before the ready state is set, try to run any CUDA workload:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import torch; print(torch.zeros(1).cuda())&quot;</span>
+</code></pre></div>
+<p>It should fail. Now set the ready state and retry:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>nvidia-smi<span class="w"> </span>conf-compute<span class="w"> </span>-srs<span class="w"> </span><span class="m">1</span>
+python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import torch; print(torch.zeros(1).cuda())&quot;</span>
+</code></pre></div>
+<p>This is the most instructive moment in the lab: <strong>the hardware refuses to compute until something asserts that attestation succeeded.</strong> Attestation is not advisory, and it is not off the critical path.</p>
+<h3 id="step-4-pull-and-verify-a-gpu-attestation-report">Step 4 — Pull and verify a GPU attestation report<a class="headerlink" href="#step-4-pull-and-verify-a-gpu-attestation-report" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NVIDIA/nvtrust.git
+<span class="nb">cd</span><span class="w"> </span>nvtrust/guest_tools/attestation_sdk
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="c1"># Verify locally against cached RIMs and NVIDIA roots, or remotely via NRAS —</span>
+<span class="c1"># consult the tool&#39;s current documentation for the invocation.</span>
+python3<span class="w"> </span>-m<span class="w"> </span>verifier.cc_admin
+</code></pre></div>
+<p>Inspect the output for the VBIOS version, driver version, and the individual measurement comparisons against the RIM. When a measurement mismatches, the tool names the index — which is the GPU equivalent of the reference-value problem from Module 3, §7, and a good moment to ask where that RIM came from and who signed it.</p>
+<h3 id="step-5-measure-the-transfer-penalty">Step 5 — Measure the transfer penalty<a class="headerlink" href="#step-5-measure-the-transfer-penalty" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># CUDA sample bandwidth test, if available</span>
+/usr/local/cuda/extras/demo_suite/bandwidthTest<span class="w"> </span>--memory<span class="o">=</span>pinned<span class="w"> </span>--mode<span class="o">=</span>range<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--start<span class="o">=</span><span class="m">1048576</span><span class="w"> </span>--end<span class="o">=</span><span class="m">1073741824</span><span class="w"> </span>--increment<span class="o">=</span><span class="m">104857600</span>
+</code></pre></div>
+<p>Or a minimal PyTorch equivalent timing <code>.cuda()</code> and <code>.cpu()</code> on a large tensor. Record host-to-device and device-to-host bandwidth.</p>
+<p>If you can obtain a non-CC A3 instance for comparison, run the identical test there. The predicted result from §5.1 is a substantial drop in PCIe bandwidth and essentially unchanged on-device compute throughput. <strong>Verify the second half too</strong> — run a large matmul benchmark on both and confirm the FLOPs are comparable. Demonstrating that compute is <em>not</em> affected is what makes the model in §5.2 credible.</p>
+<h3 id="step-6-connect-it-to-serving">Step 6 — Connect it to serving<a class="headerlink" href="#step-6-connect-it-to-serving" title="Permanent link">&para;</a></h3>
+<p>Load a model that fits in 80 GB and time the two phases separately:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Time weight loading (the expensive phase) distinctly from serving</span>
+<span class="nb">time</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from vllm import LLM</span>
+<span class="s2">llm = LLM(model=&#39;YOUR_MODEL&#39;, gpu_memory_utilization=0.9)</span>
+<span class="s2">print(&#39;loaded&#39;)</span>
+<span class="s2">&quot;</span>
+</code></pre></div>
+<p>Then run a short generation benchmark. You should see the pattern §5.2 predicts: loading is disproportionately slow, steady-state generation is close to baseline. That single observation is the empirical basis for the entire cold-start discussion in Module 6.</p>
+<h3 id="step-7-delete-it">Step 7 — Delete it<a class="headerlink" href="#step-7-delete-it" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>delete<span class="w"> </span>cc-gpu-pool<span class="w"> </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span>--location<span class="o">=</span>us-central1<span class="w"> </span>--quiet
+</code></pre></div>
+<p>Confirm the deletion. A forgotten A3 node is an expensive lesson.</p>
+<hr />
+<h2 id="summary-confidential-gpu-checklist">Summary: Confidential GPU Checklist<a class="headerlink" href="#summary-confidential-gpu-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Answer</th>
+<th style="text-align: left;">Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Does a CPU-only confidential VM protect an LLM?</td>
+<td style="text-align: left;"><strong>No</strong> — weights, KV cache, and activations are all in GPU HBM</td>
+<td style="text-align: left;">This is the defining error in the field</td>
+</tr>
+<tr>
+<td style="text-align: left;">What does CC mode encrypt?</td>
+<td style="text-align: left;">Host↔device transfers with AES-GCM; HBM is access-controlled into a protected region</td>
+<td style="text-align: left;">Non-deterministic mode, unlike CPU memory encryption</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is <code>DEVTOOLS</code> a security mode?</td>
+<td style="text-align: left;"><strong>No</strong> — profiling is enabled and protections are relaxed</td>
+<td style="text-align: left;">Assert <code>cc_mode == ON</code> exactly</td>
+</tr>
+<tr>
+<td style="text-align: left;">How is the session key established?</td>
+<td style="text-align: left;">SPDM mutual authentication between the CVM and the device</td>
+<td style="text-align: left;">The hypervisor is excluded by construction</td>
+</tr>
+<tr>
+<td style="text-align: left;">How is the GPU attested?</td>
+<td style="text-align: left;">Signed device report, measurements compared against NVIDIA RIMs</td>
+<td style="text-align: left;">Local verifier if you need to be your own verifier</td>
+</tr>
+<tr>
+<td style="text-align: left;">Must CPU and GPU evidence be bound?</td>
+<td style="text-align: left;"><strong>Yes</strong> — otherwise a genuine CC GPU elsewhere can be relayed</td>
+<td style="text-align: left;">Composite policy over a single token</td>
+</tr>
+<tr>
+<td style="text-align: left;">How many GPUs per confidential VM on Hopper?</td>
+<td style="text-align: left;"><strong>One</strong> — <code>a3-highgpu-1g</code>, no MIG, no time-sharing</td>
+<td style="text-align: left;">Caps servable model size at what fits in 80 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Does Blackwell fix this?</td>
+<td style="text-align: left;">Yes — encrypted NVLink, 1/2/4/8 GPUs per CVM</td>
+<td style="text-align: left;">Determines whether frontier-scale models are servable at all</td>
+</tr>
+<tr>
+<td style="text-align: left;">Where does the overhead land?</td>
+<td style="text-align: left;">Host↔device transfer; on-device compute is nearly unaffected</td>
+<td style="text-align: left;">Overhead shrinks with model size, batch size, and sequence length</td>
+</tr>
+<tr>
+<td style="text-align: left;">What is the expensive operation?</td>
+<td style="text-align: left;">Cold start — loading tens of GB into protected HBM</td>
+<td style="text-align: left;">The dominant term in the Module 6 latency budget</td>
+</tr>
+</tbody>
+</table>
+<p>You now have the two hardware halves: a confidential CPU with verified measurements, and a confidential accelerator bound to it. What remains is the platform — which machine types, which GKE settings, which attestation service, and which of Google's two quite different confidential products you should actually build on. That is <strong>Module 5: The Google Cloud Confidential Surface (<code>05_google_cloud_confidential_surface.md</code>)</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

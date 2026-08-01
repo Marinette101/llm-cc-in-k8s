@@ -1,0 +1,2512 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../05_google_cloud_confidential_surface/">
+      
+      
+        <link rel="next" href="../07_performance_operations_and_evaluation/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/06_designing_confidential_llm_serving_on_gke/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 6 - Designing Confidential LLM Serving on GKE - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-6-designing-confidential-llm-serving-on-gke" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 6 - Designing Confidential LLM Serving on GKE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/06_designing_confidential_llm_serving_on_gke/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-requirements-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Requirements Decomposition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Requirements Decomposition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-four-properties-made-precise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Four Properties, Made Precise
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-cannot-be-achieved-stated-up-front" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What Cannot Be Achieved, Stated Up Front
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-reference-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Reference Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Reference Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-component-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Component Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-the-encrypted-weight-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: The Encrypted Weight Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: The Encrypted Weight Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-design-decisions-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Design Decisions That Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-the-cold-start-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: The Cold-Start Problem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: The Cold-Start Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-mitigations-with-their-security-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Mitigations, With Their Security Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-consequence-for-autoscaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Consequence for Autoscaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-where-tls-terminates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Where TLS Terminates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Where TLS Terminates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-problem-that-voids-everything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Problem That Voids Everything Else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-kv-cache-prefix-caching-and-disaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: KV Cache, Prefix Caching, and Disaggregation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: KV Cache, Prefix Caching, and Disaggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-kv-cache-is-prompt-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The KV Cache Is Prompt Content
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-prefix-caching-a-plaintext-equivalent-leak-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Prefix Caching: A Plaintext-Equivalent Leak Channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-disaggregated-prefill-and-decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Disaggregated Prefill and Decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-multi-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7: Multi-Tenancy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7: Multi-Tenancy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-spectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The Spectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-the-caveat-that-must-be-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 The Caveat That Must Be Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-observable-cross-tenant-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Observable Cross-Tenant Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-observability-and-the-safety-blind-spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8: Observability and the Safety Blind Spot
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8: Observability and the Safety Blind Spot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-what-you-can-emit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 What You Can Emit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-the-safety-tension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 The Safety Tension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-9-adversarial-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9: Adversarial Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9: Adversarial Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-the-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 The Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-what-an-insider-with-host-root-can-still-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 What an Insider With Host Root Can Still Do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-the-six-claim-checklist-answered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 The Six-Claim Checklist, Answered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-end-to-end-confidential-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: End-to-End Confidential Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: End-to-End Confidential Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-encrypt-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Encrypt a model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-build-the-inference-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Build the inference image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-write-the-composite-release-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Write the composite release policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-deploy-and-time-each-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Deploy and time each phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-verify-from-the-client-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Verify from the client side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-demonstrate-the-prefix-cache-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Demonstrate the prefix-cache oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-design-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The Design Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-requirements-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Requirements Decomposition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Requirements Decomposition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-four-properties-made-precise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Four Properties, Made Precise
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-cannot-be-achieved-stated-up-front" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What Cannot Be Achieved, Stated Up Front
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-reference-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Reference Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Reference Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-component-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Component Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-the-encrypted-weight-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: The Encrypted Weight Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: The Encrypted Weight Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-design-decisions-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Design Decisions That Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-the-cold-start-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: The Cold-Start Problem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: The Cold-Start Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-mitigations-with-their-security-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Mitigations, With Their Security Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-consequence-for-autoscaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The Consequence for Autoscaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-where-tls-terminates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Where TLS Terminates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Where TLS Terminates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-problem-that-voids-everything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Problem That Voids Everything Else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-kv-cache-prefix-caching-and-disaggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: KV Cache, Prefix Caching, and Disaggregation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: KV Cache, Prefix Caching, and Disaggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-kv-cache-is-prompt-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The KV Cache Is Prompt Content
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-prefix-caching-a-plaintext-equivalent-leak-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Prefix Caching: A Plaintext-Equivalent Leak Channel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-disaggregated-prefill-and-decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Disaggregated Prefill and Decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-multi-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7: Multi-Tenancy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7: Multi-Tenancy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-spectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The Spectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-the-caveat-that-must-be-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 The Caveat That Must Be Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-observable-cross-tenant-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Observable Cross-Tenant Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-observability-and-the-safety-blind-spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8: Observability and the Safety Blind Spot
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8: Observability and the Safety Blind Spot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-what-you-can-emit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 What You Can Emit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-the-safety-tension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 The Safety Tension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-9-adversarial-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9: Adversarial Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9: Adversarial Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-the-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 The Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-what-an-insider-with-host-root-can-still-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 What an Insider With Host Root Can Still Do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-the-six-claim-checklist-answered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 The Six-Claim Checklist, Answered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-end-to-end-confidential-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: End-to-End Confidential Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: End-to-End Confidential Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-encrypt-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Encrypt a model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-build-the-inference-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Build the inference image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-write-the-composite-release-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Write the composite release policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-deploy-and-time-each-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Deploy and time each phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-verify-from-the-client-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Verify from the client side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-demonstrate-the-prefix-cache-oracle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Demonstrate the prefix-cache oracle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-design-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The Design Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-6-designing-confidential-llm-serving-on-gke">Module 6: Designing Confidential LLM Serving on GKE<a class="headerlink" href="#module-6-designing-confidential-llm-serving-on-gke" title="Permanent link">&para;</a></h1>
+<p>Everything before this module exists to make this module readable. The mechanisms are established: memory encryption with integrity, a measurement chain that reaches the container digest, attested key release, a GPU inside the trust boundary, and the platform primitives that expose them. This module assembles them into a design, and then — the part that distinguishes an engineering document from a marketing one — walks the finished design back through the adversary list and states plainly what still leaks.</p>
+<p>This module covers <strong>requirements decomposition</strong>, <strong>the reference architecture</strong>, <strong>the encrypted weight pipeline</strong>, <strong>the cold-start budget</strong>, <strong>where TLS terminates</strong>, <strong>KV cache and prefix-cache leakage</strong>, <strong>multi-tenancy</strong>, <strong>the observability and safety tension</strong>, and <strong>an adversarial review of the result</strong>.</p>
+<hr />
+<h2 id="part-1-requirements-decomposition">Part 1: Requirements Decomposition<a class="headerlink" href="#part-1-requirements-decomposition" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-four-properties-made-precise">1.1 The Four Properties, Made Precise<a class="headerlink" href="#11-the-four-properties-made-precise" title="Permanent link">&para;</a></h3>
+<p>Module 1, §5.1 stated P1–P4 informally. Here they are as testable assertions, each naming the adversary it is held against.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">Held against</th>
+<th style="text-align: left;">Test: how would you know it failed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>P1</strong></td>
+<td style="text-align: left;">Model weights exist in plaintext only inside a TEE whose measurement the model provider approved in advance</td>
+<td style="text-align: left;">Cloud operator (A2, A3, A4); end customer</td>
+<td style="text-align: left;">Can any party obtain a plaintext weight file without producing evidence that satisfies the provider's policy?</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>P2a</strong></td>
+<td style="text-align: left;">Prompts and completions exist in plaintext only inside such a TEE</td>
+<td style="text-align: left;">Cloud operator (A2, A3, A4)</td>
+<td style="text-align: left;">Is there any point on the request path where a Google-operated component holds plaintext?</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>P2b</strong></td>
+<td style="text-align: left;">Prompts are not disclosed to the model provider beyond what inference requires</td>
+<td style="text-align: left;">Model provider (B2)</td>
+<td style="text-align: left;">Can the workload egress, persist, or log content? Who verified that it does not?</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>P3</strong></td>
+<td style="text-align: left;">Each party can verify P1, P2a, and P2b from evidence rooted in silicon vendor certificates, without relying on assertions by another party</td>
+<td style="text-align: left;">All parties</td>
+<td style="text-align: left;">Does verification require trusting a statement made by the party being distrusted?</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>P4</strong></td>
+<td style="text-align: left;">P1–P3 hold at competitive TTFT and throughput, with a workable cold start, on obtainable hardware</td>
+<td style="text-align: left;">Reality</td>
+<td style="text-align: left;">Is the confidential path more than ~25% worse, or is cold start unbounded?</td>
+</tr>
+</tbody>
+</table>
+<p>Splitting P2 into P2a and P2b is the most useful thing in this table. They are different problems with different solutions: P2a is solved by hardware, and P2b is not solvable by hardware at all. Designs routinely solve P2a, claim P2, and ship.</p>
+<h3 id="12-what-cannot-be-achieved-stated-up-front">1.2 What Cannot Be Achieved, Stated Up Front<a class="headerlink" href="#12-what-cannot-be-achieved-stated-up-front" title="Permanent link">&para;</a></h3>
+<p>Before designing, fix the boundaries. The following are out of scope permanently, and a design that implies otherwise is dishonest:</p>
+<ul>
+<li><strong>Availability against the operator.</strong> Google can stop the workload. Always.</li>
+<li><strong>Traffic analysis.</strong> Request counts, arrival times, payload sizes, inter-token timing, and session duration are visible to the platform. For an LLM this is more informative than it sounds: output length is directly observable from streaming behavior.</li>
+<li><strong>The customer's own endpoint.</strong> If the customer's application logs prompts, nothing here helps.</li>
+<li><strong>Perfect P2b.</strong> As Module 1, §5.3 established, attestation reduces "trust the provider's intentions" to "trust the provider's published image." It cannot reduce it to nothing. Closing the remainder requires transparency mechanisms outside the hardware.</li>
+</ul>
+<hr />
+<h2 id="part-2-the-reference-architecture">Part 2: The Reference Architecture<a class="headerlink" href="#part-2-the-reference-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-design">2.1 The Design<a class="headerlink" href="#21-the-design" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph CLIENT ["👤 Customer"]
+        C1["Client SDK&lt;br&gt;verifies attestation BEFORE sending&lt;br&gt;encrypts payload to the attested key"]
+    end
+
+    subgraph NORMAL ["☁️ Regular GKE — never sees plaintext"]
+        LB["L4 passthrough load balancer&lt;br&gt;⚠️ NOT L7 — see Part 5"]
+        RT["Router / dispatcher&lt;br&gt;routes ciphertext by model + tenant"]
+        CTL["Fleet controller&lt;br&gt;scaling, health, rollout"]
+        OBS["Metrics and content-free logs"]
+    end
+
+    subgraph CONF ["🔒 Confidential data plane — the ONLY place plaintext exists"]
+        ATT["Attestation agent&lt;br&gt;composite CPU + GPU evidence&lt;br&gt;binds the TLS key into REPORT_DATA"]
+        TLS["TLS / payload decryption&lt;br&gt;terminated INSIDE the TEE"]
+        INF["vLLM inference server&lt;br&gt;weights in protected HBM&lt;br&gt;KV cache in protected HBM"]
+    end
+
+    subgraph PROVIDER ["🏭 Model provider domain — outside Google"]
+        VER["Provider-operated verifier&lt;br&gt;appraises raw hardware evidence&lt;br&gt;against AMD/Intel/NVIDIA roots"]
+        EKM["Provider-operated key manager&lt;br&gt;holds the weight KEK"]
+    end
+
+    subgraph STORE ["📦 Untrusted object storage"]
+        W["weights.enc + wrapped DEK"]
+    end
+
+    C1 --&gt;|"1 challenge + nonce"| ATT
+    ATT --&gt;|"2 evidence"| VER
+    VER --&gt;|"3 verdict"| C1
+    C1 --&gt;|"4 encrypted request"| LB --&gt; RT --&gt;|"ciphertext"| TLS
+    ATT --&gt;|"5 evidence + nonce"| EKM
+    EKM --&gt;|"6 unwrapped DEK"| INF
+    W --&gt;|"7 encrypted weights"| INF
+    TLS --&gt; INF
+    INF --&gt;|"encrypted response"| RT
+    INF --&gt;|"counts and latencies only"| OBS
+    CTL --&gt;|"lifecycle only, no data access"| CONF</code></pre>
+<h3 id="22-component-walkthrough">2.2 Component Walkthrough<a class="headerlink" href="#22-component-walkthrough" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Choice</th>
+<th style="text-align: left;">Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Confidential runtime</td>
+<td style="text-align: left;">Confidential Space instances, orchestrated by a controller in regular GKE</td>
+<td style="text-align: left;">Module 5, §6.2 — Confidential GKE Nodes leave the Google-operated control plane able to inject code into the trust boundary</td>
+</tr>
+<tr>
+<td style="text-align: left;">CPU TEE</td>
+<td style="text-align: left;">Intel TDX</td>
+<td style="text-align: left;">Module 2, §4.1 — native <code>RTMR</code> runtime measurement; and it is the confidential-GPU path</td>
+</tr>
+<tr>
+<td style="text-align: left;">Accelerator</td>
+<td style="text-align: left;">H100 in CC mode, <code>cc_mode == ON</code>, one per instance</td>
+<td style="text-align: left;">Module 4, §2.1 and §4.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">Verifier</td>
+<td style="text-align: left;"><strong>Provider-operated</strong>, appraising raw evidence</td>
+<td style="text-align: left;">Module 3, §1.3 — a Google-operated verifier makes P3 a promise by Google</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key manager</td>
+<td style="text-align: left;"><strong>Provider-operated external KMS</strong></td>
+<td style="text-align: left;">Module 5, §4.3 — Cloud KMS reduces the guarantee to an IAM policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ingress</td>
+<td style="text-align: left;">L4 passthrough, or client-side payload encryption</td>
+<td style="text-align: left;">Part 5 — an L7 LB terminates TLS outside the TEE and voids P2a</td>
+</tr>
+<tr>
+<td style="text-align: left;">Control plane</td>
+<td style="text-align: left;">Regular GKE, explicitly outside the trust boundary</td>
+<td style="text-align: left;">It may orchestrate; it must never see plaintext</td>
+</tr>
+<tr>
+<td style="text-align: left;">Observability</td>
+<td style="text-align: left;">Counts, latencies, and error classes only</td>
+<td style="text-align: left;">Part 8</td>
+</tr>
+</tbody>
+</table>
+<p>The rule that makes the split-plane design coherent, worth stating as an invariant:</p>
+<blockquote>
+<p><strong>The orchestration plane may start, stop, scale, and route to the confidential plane. It may never possess a key that decrypts anything, nor observe any request or response content.</strong></p>
+</blockquote>
+<p>Any proposed feature that violates this — a debugging endpoint, a content-aware router, a caching layer in front of the model — is a change to the security architecture and must be reviewed as one.</p>
+<hr />
+<h2 id="part-3-the-encrypted-weight-pipeline">Part 3: The Encrypted Weight Pipeline<a class="headerlink" href="#part-3-the-encrypted-weight-pipeline" title="Permanent link">&para;</a></h2>
+<h3 id="31-the-flow">3.1 The Flow<a class="headerlink" href="#31-the-flow" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph PROV ["🏭 Provider, on their own infrastructure"]
+        A["Plaintext weights"] --&gt;|"1 encrypt with a random DEK"| B["weights.enc"]
+        C["DEK"] --&gt;|"2 wrap under the KEK"| D["wrapped DEK"]
+        E["🔑 KEK&lt;br&gt;never leaves the provider's key manager"]
+    end
+
+    B --&gt;|"3 upload — no secret required"| F["📦 GCS bucket&lt;br&gt;Google can read this and learn nothing"]
+    D --&gt; F
+
+    subgraph TEE ["🔒 Attested inference instance"]
+        G["Fetch weights.enc&lt;br&gt;bulk transfer, no auth secrets"]
+        H["Produce composite evidence&lt;br&gt;CPU TEE + GPU + image digest + nonce"]
+        I["Receive unwrapped DEK"]
+        J["Decrypt into TEE memory,&lt;br&gt;stream into protected HBM"]
+    end
+
+    F --&gt; G
+    H --&gt;|"4 evidence"| E
+    E --&gt;|"5 policy check passes → unwrap"| I
+    I --&gt; J</code></pre>
+<h3 id="32-design-decisions-that-matter">3.2 Design Decisions That Matter<a class="headerlink" href="#32-design-decisions-that-matter" title="Permanent link">&para;</a></h3>
+<p><strong>Never write plaintext weights to disk.</strong> Decrypt into memory and stream into GPU memory. A plaintext weight file on a persistent disk is readable by the platform regardless of how it got there. If memory pressure forces staging, stage into <code>tmpfs</code> inside the TEE, never onto a persistent volume.</p>
+<p><strong>Key granularity.</strong> Three reasonable schemes, with real tradeoffs:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scheme</th>
+<th style="text-align: left;">Blast radius of a leaked DEK</th>
+<th style="text-align: left;">Operational cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">One DEK per model version</td>
+<td style="text-align: left;">That model version, everywhere</td>
+<td style="text-align: left;">Lowest</td>
+</tr>
+<tr>
+<td style="text-align: left;">One DEK per model version per deployment region</td>
+<td style="text-align: left;">One region</td>
+<td style="text-align: left;">Moderate</td>
+</tr>
+<tr>
+<td style="text-align: left;">One DEK per instance, derived at release time</td>
+<td style="text-align: left;">One instance</td>
+<td style="text-align: left;">Highest; complicates caching</td>
+</tr>
+</tbody>
+</table>
+<p>Per-model-version is the usual starting point. Per-region is worth it when regulatory boundaries matter.</p>
+<p><strong>Rotation.</strong> Rotating the KEK means rewrapping the DEK — cheap, and it does not touch the encrypted weights. Rotating the DEK means re-encrypting the model — expensive. Design so that the routine operation is KEK rotation.</p>
+<p><strong>Revocation.</strong> Removing an image digest from the release policy stops <em>new</em> instances from obtaining the key. It does not stop instances already running with the key in memory. If revocation must be immediate, you need short-lived key leases and periodic re-attestation, with the workload terminating when a lease cannot be renewed. Decide which you need; the difference is a design change, not a config change.</p>
+<hr />
+<h2 id="part-4-the-cold-start-problem">Part 4: The Cold-Start Problem<a class="headerlink" href="#part-4-the-cold-start-problem" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-budget">4.1 The Budget<a class="headerlink" href="#41-the-budget" title="Permanent link">&para;</a></h3>
+<p>This is the dominant practical cost of the whole design, and it needs to be a budget, not a hope.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Phase</th>
+<th style="text-align: left;">What happens</th>
+<th style="text-align: left;">Confidential-specific cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Instance provisioning</td>
+<td style="text-align: left;">Allocate an A3 confidential instance</td>
+<td style="text-align: left;">Constrained capacity; may queue</td>
+</tr>
+<tr>
+<td style="text-align: left;">TEE boot</td>
+<td style="text-align: left;">Firmware, guest kernel, <strong>private memory acceptance</strong></td>
+<td style="text-align: left;">Acceptance is proportional to VM memory (Module 2, §4.2.3)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation</td>
+<td style="text-align: left;">Compose CPU + GPU evidence, round trip to the verifier</td>
+<td style="text-align: left;">Network round trips; vendor collateral fetch if cache is cold</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU ready state</td>
+<td style="text-align: left;"><code>conf-compute -srs 1</code> after successful attestation</td>
+<td style="text-align: left;">Hardware refuses compute before this (Module 4, §2.4)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key release</td>
+<td style="text-align: left;">Round trip to the provider's external key manager</td>
+<td style="text-align: left;">Cross-organization network dependency</td>
+</tr>
+<tr>
+<td style="text-align: left;">Weight fetch</td>
+<td style="text-align: left;">Pull tens of GB from object storage</td>
+<td style="text-align: left;">Same as non-confidential</td>
+</tr>
+<tr>
+<td style="text-align: left;">Decrypt + load</td>
+<td style="text-align: left;">Decrypt in TEE memory, stream into protected HBM</td>
+<td style="text-align: left;"><strong>The big one</strong> — every byte encrypted, bounced, DMA'd, decrypted (Module 4, §5.3)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Warm-up</td>
+<td style="text-align: left;">CUDA graph capture, first-token latency stabilization</td>
+<td style="text-align: left;">Same as non-confidential</td>
+</tr>
+</tbody>
+</table>
+<p>Two structural properties make this worse than a normal cold start: the sequence is largely <strong>serial</strong> (you cannot fetch the key before attesting, or load weights before the GPU is ready), and it has <strong>external dependencies</strong> on a verifier and a key manager that a normal deployment does not have.</p>
+<div class="arithmatex">\[
+T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T_{\text{key}} + \frac{S_{\text{model}}}{B_{\text{fetch}}} + \frac{S_{\text{model}}}{B_{\text{cc-effective}}} + T_{\text{warm}}
+\]</div>
+<p><strong>Measure each term separately.</strong> A single blended number tells you nothing about which one to attack.</p>
+<h3 id="42-mitigations-with-their-security-cost">4.2 Mitigations, With Their Security Cost<a class="headerlink" href="#42-mitigations-with-their-security-cost" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mitigation</th>
+<th style="text-align: left;">How it helps</th>
+<th style="text-align: left;">Security cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Warm pools</strong></td>
+<td style="text-align: left;">Pre-attested, pre-loaded instances absorb demand spikes</td>
+<td style="text-align: left;"><strong>None.</strong> Just money. This is the primary answer.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Overlap fetch and attest</strong></td>
+<td style="text-align: left;">Pull encrypted weights while attestation is in flight; they need no secret</td>
+<td style="text-align: left;"><strong>None.</strong> Free win, and frequently missed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sealed local cache</strong></td>
+<td style="text-align: left;">Cache decrypted weights on local SSD under a sealing key (Module 1, §3.5)</td>
+<td style="text-align: left;">Moderate — expands the attack surface to a persistent medium; ties the cache to a measurement, so an image update invalidates it</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Aggressive collateral caching</strong></td>
+<td style="text-align: left;">Avoid a cold fetch from AMD KDS or Intel PCS on the critical path</td>
+<td style="text-align: left;">None, if staleness is handled (Module 3, §4.2)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Quantization</strong></td>
+<td style="text-align: left;">Fewer bytes to decrypt and transfer; also relieves the Hopper 80 GB ceiling</td>
+<td style="text-align: left;">None to confidentiality; a quality decision</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>VM snapshot / restore</strong></td>
+<td style="text-align: left;">Would skip boot and load entirely</td>
+<td style="text-align: left;">❌ <strong>Fundamentally hostile to attestation.</strong> A snapshot restores memory state without re-executing the measured boot path; the launch measurement no longer reflects how this memory came to exist. Do not do this without a scheme specifically designed for it.</td>
+</tr>
+</tbody>
+</table>
+<p>The snapshot row deserves emphasis because it is the most tempting optimization and the one that quietly destroys the guarantee. If someone proposes it, the question to ask is: <em>what does the launch measurement mean for a VM whose memory was restored rather than built?</em></p>
+<h3 id="43-the-consequence-for-autoscaling">4.3 The Consequence for Autoscaling<a class="headerlink" href="#43-the-consequence-for-autoscaling" title="Permanent link">&para;</a></h3>
+<p>With cold start measured in minutes rather than seconds, reactive autoscaling does not work — by the time a new instance is serving, the traffic spike is over. The workable patterns:</p>
+<ol>
+<li><strong>Predictive scaling</strong> on traffic forecasts rather than instantaneous queue depth.</li>
+<li><strong>Generous warm pools</strong>, sized by the p99 of the arrival process rather than the mean.</li>
+<li><strong>Queue and degrade</strong>, admitting that some requests wait, with explicit backpressure rather than timeouts.</li>
+<li><strong>Over-provision and accept the cost.</strong> Often the honest answer for a premium confidential tier, and it should be priced in rather than engineered around.</li>
+</ol>
+<hr />
+<h2 id="part-5-where-tls-terminates">Part 5: Where TLS Terminates<a class="headerlink" href="#part-5-where-tls-terminates" title="Permanent link">&para;</a></h2>
+<h3 id="51-the-problem-that-voids-everything-else">5.1 The Problem That Voids Everything Else<a class="headerlink" href="#51-the-problem-that-voids-everything-else" title="Permanent link">&para;</a></h3>
+<p>This is the most common silent failure in confidential inference design, and it is worth being blunt about.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph BAD ["❌ The default configuration — P2a is already lost"]
+        A1["Customer"] --&gt;|"TLS"| B1["Managed L7 Load Balancer&lt;br&gt;🔴 terminates TLS&lt;br&gt;🔴 Google holds the private key&lt;br&gt;🔴 PLAINTEXT PROMPT IN MEMORY"]
+        B1 --&gt;|"re-encrypted"| C1["🔒 Confidential inference&lt;br&gt;perfectly protected, and pointless"]
+    end
+
+    subgraph GOOD ["✅ Terminated inside the TEE"]
+        A2["Customer"] --&gt;|"TLS, end to end"| B2["L4 passthrough LB&lt;br&gt;forwards packets;&lt;br&gt;no key, no plaintext"]
+        B2 --&gt; C2["🔒 Confidential inference&lt;br&gt;RA-TLS terminated INSIDE&lt;br&gt;key bound into the attestation report"]
+    end</code></pre>
+<p>The failure is not subtle in its consequences and is extremely easy to miss in review, because the confidential portion of the architecture is genuinely correct. The prompt is plaintext in a Google-operated load balancer before it ever reaches the TEE. <strong>P2a fails at the first hop</strong>, and every diagram downstream of that point is describing protection that no longer matters.</p>
+<h3 id="52-the-options">5.2 The Options<a class="headerlink" href="#52-the-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">How it works</th>
+<th style="text-align: left;">P2a holds?</th>
+<th style="text-align: left;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>A. Managed L7 LB</strong></td>
+<td style="text-align: left;">Google terminates TLS, re-encrypts to backend</td>
+<td style="text-align: left;">❌ <strong>No</strong></td>
+<td style="text-align: left;">Zero effort; zero guarantee</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>B. L4 passthrough + RA-TLS in the TEE</strong></td>
+<td style="text-align: left;">LB forwards packets; the TEE holds the only private key, bound into its attestation report (Module 3, §6)</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">Lose L7 routing, WAF, HTTP-aware rate limiting; client needs custom verification</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C. Client-side payload encryption</strong></td>
+<td style="text-align: left;">Client encrypts the prompt to a public key released only to an attested TEE (HPKE); transport TLS may terminate anywhere</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">Application-layer protocol; client SDK required; streaming responses need per-chunk encryption</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>D. B + C together</strong></td>
+<td style="text-align: left;">Belt and braces</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">Highest complexity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-the-recommendation">5.3 The Recommendation<a class="headerlink" href="#53-the-recommendation" title="Permanent link">&para;</a></h3>
+<p><strong>Option C, with Option B where the client can support it.</strong></p>
+<p>The reasoning is that Option C degrades gracefully. Payload encryption is independent of transport, so the design survives a load balancer misconfiguration, a service-mesh change, or an SRE adding an L7 hop for a good operational reason. Option B alone is correct but fragile: it depends on a network topology invariant that an unrelated team can break without realizing what they have broken.</p>
+<p>Option C's cost is real: every client must use an SDK that fetches the attested public key, verifies the attestation, encrypts the payload, and decrypts streamed chunks. For a first-party or enterprise integration this is acceptable. For a public, curl-compatible API it is a genuine adoption barrier — which is why confidential inference offerings tend to be enterprise-tier products rather than default endpoints.</p>
+<p><strong>Whichever you choose, write down the invariant and add a test for it.</strong> "No Google-operated component ever holds a key that decrypts request content" is a property you can assert in a design review and, with some effort, verify continuously.</p>
+<hr />
+<h2 id="part-6-kv-cache-prefix-caching-and-disaggregation">Part 6: KV Cache, Prefix Caching, and Disaggregation<a class="headerlink" href="#part-6-kv-cache-prefix-caching-and-disaggregation" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-kv-cache-is-prompt-content">6.1 The KV Cache Is Prompt Content<a class="headerlink" href="#61-the-kv-cache-is-prompt-content" title="Permanent link">&para;</a></h3>
+<p>The KV cache is a per-request tensor encoding of everything the model has attended to: the system prompt, the retrieved documents, the user's message, the conversation history. Treat it with exactly the sensitivity of the prompt itself, because that is what it is.</p>
+<p>Inside a confidential GPU it lives in protected HBM and is fine. The danger is every mechanism that moves it, shares it, or persists it.</p>
+<h3 id="62-prefix-caching-a-plaintext-equivalent-leak-channel">6.2 Prefix Caching: A Plaintext-Equivalent Leak Channel<a class="headerlink" href="#62-prefix-caching-a-plaintext-equivalent-leak-channel" title="Permanent link">&para;</a></h3>
+<p>Prefix caching reuses the computed KV blocks for a shared prompt prefix across requests. It is one of the highest-value optimizations in modern serving. It is also, across tenants, an information leak — and worse, an <em>actively probeable</em> one.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Tenant A sends:&lt;br&gt;'CONFIDENTIAL_PROJECT_NAME: quarterly figures…'"] --&gt; B["KV blocks computed&lt;br&gt;and cached, keyed by&lt;br&gt;a hash of the prefix"]
+    C["Attacker (Tenant B) sends:&lt;br&gt;'CONFIDENTIAL_PROJECT_NAME: …'"] --&gt; D{"Cache hit?"}
+    B --&gt; D
+    D --&gt;|"HIT → measurably faster TTFT"| E["🔴 Attacker learns Tenant A&lt;br&gt;submitted this exact prefix"]
+    D --&gt;|"MISS → normal TTFT"| F["Attacker learns it did not"]</code></pre>
+<p>This is a timing oracle over the content of other tenants' prompts. An attacker with API access can binary-search a secret by observing TTFT. Memory encryption does not help at all — the leak is through <em>latency</em>, not memory access, and latency is visible to anyone who can send a request.</p>
+<p><strong>The rules:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Configuration</th>
+<th style="text-align: left;">Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Prefix cache shared across tenants</td>
+<td style="text-align: left;">❌ <strong>Never.</strong> This is a cross-tenant content oracle.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Prefix cache scoped per tenant</td>
+<td style="text-align: left;">✅ Acceptable — the oracle only reveals the tenant's own prompts to themselves</td>
+</tr>
+<tr>
+<td style="text-align: left;">Prefix cache for a provider-supplied system prompt, shared</td>
+<td style="text-align: left;">⚠️ Acceptable only if that prefix is not secret; be certain it contains no tenant data</td>
+</tr>
+<tr>
+<td style="text-align: left;">KV cache offloaded to CPU RAM</td>
+<td style="text-align: left;">✅ Fine inside the confidential VM; ❌ never to host-shared memory</td>
+</tr>
+<tr>
+<td style="text-align: left;">KV cache persisted to disk</td>
+<td style="text-align: left;">❌ Not without encryption under an attestation-gated key</td>
+</tr>
+</tbody>
+</table>
+<p>The general principle, which applies well beyond prefix caching: <strong>any cache keyed on content, shared across trust boundaries, is an oracle for that content.</strong> Apply it to tokenizer caches, semantic caches, embedding caches, and speculative-decoding draft caches too.</p>
+<h3 id="63-disaggregated-prefill-and-decode">6.3 Disaggregated Prefill and Decode<a class="headerlink" href="#63-disaggregated-prefill-and-decode" title="Permanent link">&para;</a></h3>
+<p>Disaggregated serving runs prefill and decode on separate machines and ships the KV cache between them. This is a substantial throughput win and it drives a truck through the trust boundary if done naively.</p>
+<p>The KV cache — prompt content — crosses the network between two nodes. In a confidential design that transfer must be:</p>
+<ol>
+<li><strong>Encrypted in transit</strong>, under a key established between the two TEEs.</li>
+<li><strong>Mutually attested</strong> — the prefill node must verify the decode node is an approved, attested TEE before sending, and vice versa. Otherwise an attacker stands up a fake decode node and receives plaintext KV blocks.</li>
+<li><strong>Not staged in plaintext</strong> in any intermediate buffer, transfer service, or RDMA staging area.</li>
+</ol>
+<p>This amounts to RA-TLS (Module 3, §6) between inference nodes, on the hot path, for large tensors. It is achievable, but the performance benefit of disaggregation has to be weighed against the added latency and the significant added complexity. <strong>For a first confidential deployment, do not disaggregate.</strong> Get the single-node path correct, measure it, and revisit.</p>
+<hr />
+<h2 id="part-7-multi-tenancy">Part 7: Multi-Tenancy<a class="headerlink" href="#part-7-multi-tenancy" title="Permanent link">&para;</a></h2>
+<h3 id="71-the-spectrum">7.1 The Spectrum<a class="headerlink" href="#71-the-spectrum" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">Isolation</th>
+<th style="text-align: left;">Efficiency</th>
+<th style="text-align: left;">When it is right</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Instance per tenant</strong></td>
+<td style="text-align: left;">Strongest — a TEE boundary between tenants</td>
+<td style="text-align: left;">Poor: a GPU per tenant, cold start per tenant</td>
+<td style="text-align: left;">High-value tenants; regulatory separation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Instance per model, tenants batched together</strong></td>
+<td style="text-align: left;">Hardware isolation from the platform; <strong>software isolation between tenants</strong></td>
+<td style="text-align: left;">Good — the standard serving model</td>
+<td style="text-align: left;">Most cases, if you accept the caveat below</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Multiple models per instance</strong></td>
+<td style="text-align: left;">Weakest</td>
+<td style="text-align: left;">Best</td>
+<td style="text-align: left;">Not with confidential single-GPU constraints anyway</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-the-caveat-that-must-be-stated">7.2 The Caveat That Must Be Stated<a class="headerlink" href="#72-the-caveat-that-must-be-stated" title="Permanent link">&para;</a></h3>
+<p>In the middle row — the normal one — continuous batching puts multiple tenants' tokens in the same forward pass, the same GPU memory, and the same process. The TEE boundary is around the <em>whole instance</em>, not around each tenant.</p>
+<p><strong>Consequence</strong>: the isolation between tenant A and tenant B is enforced by the correctness of the inference server's request handling, not by hardware. A bug in vLLM's block manager that leaks KV blocks between sequences is a cross-tenant data leak, and confidential computing does nothing about it — the leak happens entirely inside the trust boundary.</p>
+<p>This is worth saying explicitly to customers, because the natural reading of "confidential computing" is "hardware-isolated from other tenants," and that is not what a batched deployment provides. What it provides is hardware isolation from <em>the platform</em>, which is a different and also valuable property. Conflating them is the kind of imprecision that becomes a problem during a security review.</p>
+<p>If a tenant requires hardware isolation from other tenants, they need a dedicated instance, and that should be a priced tier rather than an argument.</p>
+<h3 id="73-observable-cross-tenant-signals">7.3 Observable Cross-Tenant Signals<a class="headerlink" href="#73-observable-cross-tenant-signals" title="Permanent link">&para;</a></h3>
+<p>Even with correct isolation, tenants sharing an instance can observe each other indirectly:</p>
+<ul>
+<li><strong>Queue delay</strong> reveals other tenants' load.</li>
+<li><strong>Batch composition effects</strong> on inter-token latency reveal concurrent activity.</li>
+<li><strong>Prefix cache hits</strong> reveal content, if shared (§6.2).</li>
+<li><strong>Preemption and eviction</strong> under memory pressure reveal other tenants' sequence lengths.</li>
+</ul>
+<p>None of these are catastrophic in most threat models, but they should be enumerated in the design document rather than discovered by a customer's red team.</p>
+<hr />
+<h2 id="part-8-observability-and-the-safety-blind-spot">Part 8: Observability and the Safety Blind Spot<a class="headerlink" href="#part-8-observability-and-the-safety-blind-spot" title="Permanent link">&para;</a></h2>
+<h3 id="81-what-you-can-emit">8.1 What You Can Emit<a class="headerlink" href="#81-what-you-can-emit" title="Permanent link">&para;</a></h3>
+<p>The invariant from §2.2 constrains telemetry hard. A workable classification:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Signal</th>
+<th style="text-align: left;">Emit?</th>
+<th style="text-align: left;">Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Request count, latency, TTFT, TPOT</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">Content-free</td>
+</tr>
+<tr>
+<td style="text-align: left;">Token counts (input and output)</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">Needed for billing; note it <em>is</em> a small leak — length is observable anyway</td>
+</tr>
+<tr>
+<td style="text-align: left;">Error classes and codes</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">Not error <em>messages</em>, which often embed content</td>
+</tr>
+<tr>
+<td style="text-align: left;">Model, version, instance, attestation status</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">Essential for operations</td>
+</tr>
+<tr>
+<td style="text-align: left;">Queue depth, batch size, cache hit rate</td>
+<td style="text-align: left;">⚠️</td>
+<td style="text-align: left;">Aggregate only; per-tenant cache hit rates leak (§6.2)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Prompt or completion text</td>
+<td style="text-align: left;">❌</td>
+<td style="text-align: left;">Voids P2a</td>
+</tr>
+<tr>
+<td style="text-align: left;">Stack traces, core dumps</td>
+<td style="text-align: left;">❌</td>
+<td style="text-align: left;">Routinely contain content</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sampled requests for quality evaluation</td>
+<td style="text-align: left;">❌</td>
+<td style="text-align: left;">Even 0.1% sampling is a plaintext egress channel</td>
+</tr>
+</tbody>
+</table>
+<p>The stack trace row is the one that bites in production. An unhandled exception whose message includes part of the prompt, logged to Cloud Logging, is a plaintext leak through an ordinary code path that no one reviewed as a security boundary. <strong>Structured logging with an explicit allowlist of fields is not optional here</strong> — a denylist will fail.</p>
+<h3 id="82-the-safety-tension">8.2 The Safety Tension<a class="headerlink" href="#82-the-safety-tension" title="Permanent link">&para;</a></h3>
+<p>This is the genuinely hard, unresolved problem, and it deserves to be named rather than engineered around silently.</p>
+<p>Responsible model serving involves abuse monitoring, safety classification, and incident investigation. All of them require reading user content. Confidential computing forbids reading user content outside the TEE. These requirements are in direct conflict.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Requirement: confidentiality&lt;br&gt;no one outside the TEE&lt;br&gt;reads user content"] --&gt; C{"⚔️ Direct conflict"}
+    B["Requirement: safety&lt;br&gt;detect abuse, enforce policy,&lt;br&gt;investigate incidents"] --&gt; C
+
+    C --&gt; D["Option 1: In-TEE classifiers&lt;br&gt;run safety models inside the boundary;&lt;br&gt;emit only verdicts, never content"]
+    C --&gt; E["Option 2: Provider-side enforcement&lt;br&gt;the model refuses in-context;&lt;br&gt;no external monitoring at all"]
+    C --&gt; F["Option 3: Consented telemetry&lt;br&gt;per-tenant opt-in to content review,&lt;br&gt;attested and auditable"]
+    C --&gt; G["Option 4: Aggregate signals only&lt;br&gt;refusal rates, anomaly scores;&lt;br&gt;no content ever leaves"]</code></pre>
+<p>None of these is complete:</p>
+<ul>
+<li><strong>In-TEE classifiers</strong> work for automated policy enforcement and are the strongest option, but they cannot support human review of a specific incident, they add latency, and they enlarge the measured image.</li>
+<li><strong>Provider-side enforcement</strong> relies entirely on model behavior, with no defense in depth.</li>
+<li><strong>Consented telemetry</strong> is honest and workable for enterprise customers, and it should be <em>attested</em> — the tenant's consent state should be part of what the policy enforces, not a flag the operator sets.</li>
+<li><strong>Aggregate signals</strong> tell you something is wrong without telling you what.</li>
+</ul>
+<p><strong>The design position to take</strong>: pick a combination, write it down in the customer-facing documentation, and be explicit that the confidential tier has <em>weaker abuse monitoring</em> than the standard tier. That is a real tradeoff a customer is entitled to know about, and pretending otherwise is how a security architecture becomes a liability.</p>
+<hr />
+<h2 id="part-9-adversarial-review">Part 9: Adversarial Review<a class="headerlink" href="#part-9-adversarial-review" title="Permanent link">&para;</a></h2>
+<p>Now the discipline from Module 1, §2.1. Take the finished design and walk the adversary list.</p>
+<h3 id="91-the-review">9.1 The Review<a class="headerlink" href="#91-the-review" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Adversary</th>
+<th style="text-align: left;">Capability against this design</th>
+<th style="text-align: left;">Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>A1 — Malicious co-tenant</strong></td>
+<td style="text-align: left;">Cannot read another confidential instance's memory</td>
+<td style="text-align: left;">✅ Addressed</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>A2 — Compromised hypervisor</strong></td>
+<td style="text-align: left;">Sees ciphertext in DRAM and on the PCIe path; integrity-protected</td>
+<td style="text-align: left;">✅ Addressed</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>A3 — Cloud insider with host root</strong></td>
+<td style="text-align: left;">Can stop the workload, observe traffic patterns, and attempt ciphertext side channels. Cannot read weights or prompts. Cannot change the release policy — it lives in the provider's key manager</td>
+<td style="text-align: left;">✅ Addressed for confidentiality</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>A4 — Physical attacker</strong></td>
+<td style="text-align: left;">DRAM and bus contents are ciphertext with integrity</td>
+<td style="text-align: left;">✅ Addressed</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>B1 — Compromised workload image</strong></td>
+<td style="text-align: left;">Full access to everything inside the boundary</td>
+<td style="text-align: left;">⚠️ <strong>Mitigated only by supply chain</strong>: minimal image, signing, reproducible builds, attested digest allowlist</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>B2 — Malicious model provider</strong></td>
+<td style="text-align: left;">Wrote the code holding the plaintext prompt</td>
+<td style="text-align: left;">⚠️ <strong>Partially addressed</strong>: no egress, no persistence, attested digest, VPC-SC. Residual trust in the image's behavior remains — this is P2b, unsolved by hardware</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>B3 — TEE vendor</strong></td>
+<td style="text-align: left;">AMD, Intel, NVIDIA firmware is trusted by construction</td>
+<td style="text-align: left;">⚠️ Irreducible; name it in the design document</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C1 — Availability</strong></td>
+<td style="text-align: left;">Google can terminate the workload at will</td>
+<td style="text-align: left;">❌ Out of scope, permanently</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C2 — Traffic analysis</strong></td>
+<td style="text-align: left;">Request counts, sizes, timing, and streaming behavior are all visible</td>
+<td style="text-align: left;">❌ Out of scope; disclose it</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3 — Side channels</strong></td>
+<td style="text-align: left;">Ciphertext side channel against keys in guest memory; single-stepping</td>
+<td style="text-align: left;">⚠️ Real; keep firmware current, minimize long-lived keys in guest DRAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C4 — Customer's own endpoint</strong></td>
+<td style="text-align: left;">Customer may log their own plaintext</td>
+<td style="text-align: left;">❌ Out of scope</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-what-an-insider-with-host-root-can-still-do">9.2 What an Insider With Host Root Can Still Do<a class="headerlink" href="#92-what-an-insider-with-host-root-can-still-do" title="Permanent link">&para;</a></h3>
+<p>Stated plainly, because a model provider's security team will ask exactly this:</p>
+<ol>
+<li><strong>Stop you.</strong> Terminate the instance, deny capacity, revoke the project.</li>
+<li><strong>Observe metadata.</strong> How many requests, how large, how often, how long the responses stream — from which output length is directly inferable.</li>
+<li><strong>Attempt side channels.</strong> Ciphertext side channel against cryptographic keys in guest memory (Module 2, §5.1); single-stepping to amplify other channels. Not trivial, not theoretical.</li>
+<li><strong>Attack the supply chain.</strong> If they can influence what image gets built or which digest lands in the allowlist, they win — which is why the allowlist must live in the provider's key manager, not in a Google Cloud IAM policy.</li>
+<li><strong>Escalate through a firmware vulnerability.</strong> Which is why the TCB floor and the update posture from Module 3, §4.2 are security controls, not hygiene.</li>
+</ol>
+<p>What they <strong>cannot</strong> do: read the weights, read the prompts, read the completions, or read the KV cache.</p>
+<h3 id="93-the-six-claim-checklist-answered">9.3 The Six-Claim Checklist, Answered<a class="headerlink" href="#93-the-six-claim-checklist-answered" title="Permanent link">&para;</a></h3>
+<p>Module 1, §5.2 decomposed "Google cannot see the weights" into six checkable claims. The finished design:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Claim</th>
+<th style="text-align: left;">Status in this design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Weights encrypted at rest with a key Google does not hold</td>
+<td style="text-align: left;">✅ Provider-operated external key manager (§2.2, §3.1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Weights decrypted only inside a TEE</td>
+<td style="text-align: left;">✅ Attested key release (§3.1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">The TEE runs exactly the approved image</td>
+<td style="text-align: left;">✅ Confidential Space image digest in the token; ⚠️ subject to §7.4 of Module 3 — reference values</td>
+</tr>
+<tr>
+<td style="text-align: left;">Host RAM unreadable</td>
+<td style="text-align: left;">✅ TDX memory encryption with integrity</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU HBM unreadable</td>
+<td style="text-align: left;">✅ <code>cc_mode == ON</code> asserted in the release policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">The provider can verify all of the above itself</td>
+<td style="text-align: left;">✅ Provider-operated verifier over raw evidence</td>
+</tr>
+</tbody>
+</table>
+<p>Six of six — with one honest asterisk on the third row, which is the reference-value problem and the reason Module 3, §7 exists.</p>
+<hr />
+<h2 id="lab-end-to-end-confidential-inference">Lab: End-to-End Confidential Inference<a class="headerlink" href="#lab-end-to-end-confidential-inference" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> run a small model in a Confidential Space instance with an H100 in CC mode, releasing the weight key only on composite CPU + GPU + image attestation, and have a client verify the attestation before sending a prompt.</p>
+<p><strong>Cost:</strong> ⚠️ <strong>Expensive.</strong> An A3 instance for the duration. Budget two hours and delete everything after. <strong>Status:</strong> this lab composes verified pieces from the Module 3, 4, and 5 labs; the composition itself is presented as a design exercise. Verify each command against current documentation.</p>
+<h3 id="step-1-encrypt-a-model">Step 1 — Encrypt a model<a class="headerlink" href="#step-1-encrypt-a-model" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Generate a DEK, encrypt the model, wrap the DEK under a KEK you control</span>
+openssl<span class="w"> </span>rand<span class="w"> </span>-out<span class="w"> </span>dek.bin<span class="w"> </span><span class="m">32</span>
+tar<span class="w"> </span>czf<span class="w"> </span>-<span class="w"> </span>./model<span class="w"> </span><span class="p">|</span><span class="w"> </span>openssl<span class="w"> </span>enc<span class="w"> </span>-aes-256-gcm<span class="w"> </span>-kfile<span class="w"> </span>dek.bin<span class="w"> </span>&gt;<span class="w"> </span>model.enc
+gcloud<span class="w"> </span>kms<span class="w"> </span>encrypt<span class="w"> </span>--key<span class="o">=</span>weights-kek<span class="w"> </span>--keyring<span class="o">=</span>cc-lab<span class="w"> </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--plaintext-file<span class="o">=</span>dek.bin<span class="w"> </span>--ciphertext-file<span class="o">=</span>dek.wrapped
+gsutil<span class="w"> </span>cp<span class="w"> </span>model.enc<span class="w"> </span>dek.wrapped<span class="w"> </span>gs://YOUR_BUCKET/
+shred<span class="w"> </span>-u<span class="w"> </span>dek.bin<span class="w">   </span><span class="c1"># the plaintext DEK must not survive this step</span>
+</code></pre></div>
+<h3 id="step-2-build-the-inference-image">Step 2 — Build the inference image<a class="headerlink" href="#step-2-build-the-inference-image" title="Permanent link">&para;</a></h3>
+<p>The container should, in order: request the attestation token from the launcher socket; exchange it for a credential; unwrap the DEK; fetch and decrypt the model into <code>tmpfs</code>; start vLLM; and expose an endpoint that returns its own attestation token so a client can verify it.</p>
+<p>Sign the image with cosign and record the digest.</p>
+<h3 id="step-3-write-the-composite-release-policy">Step 3 — Write the composite release policy<a class="headerlink" href="#step-3-write-the-composite-release-policy" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>cc-infer-provider<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">    assertion.swname == &#39;CONFIDENTIAL_SPACE&#39;</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39;</span>
+<span class="s2">    &amp;&amp; &#39;sha256:YOUR_DIGEST&#39; in assertion.submods.container.image_digest</span>
+<span class="s2">    &amp;&amp; assertion.submods.nvidia_gpu.cc_mode == &#39;ON&#39;</span>
+<span class="s2">  &quot;</span>
+</code></pre></div>
+<h3 id="step-4-deploy-and-time-each-phase">Step 4 — Deploy and time each phase<a class="headerlink" href="#step-4-deploy-and-time-each-phase" title="Permanent link">&para;</a></h3>
+<p>Instrument the container to log a timestamp at each cold-start milestone from §4.1: boot complete, attestation complete, key released, weights fetched, weights decrypted and loaded, first token served. <strong>Produce the actual budget table for your configuration.</strong> This artifact is more valuable than the rest of the lab combined — it is the number every capacity and pricing conversation will need.</p>
+<h3 id="step-5-verify-from-the-client-side">Step 5 — Verify from the client side<a class="headerlink" href="#step-5-verify-from-the-client-side" title="Permanent link">&para;</a></h3>
+<p>Write a client that, before sending any prompt:</p>
+<ol>
+<li>Fetches the server's attestation token.</li>
+<li>Verifies the signature and the claims — including <code>cc_mode</code> and the image digest.</li>
+<li><strong>Refuses to send anything if verification fails.</strong></li>
+</ol>
+<p>Then break it: deploy an image whose digest is not in the allowlist and confirm the client refuses. That refusal is P3 working.</p>
+<h3 id="step-6-demonstrate-the-prefix-cache-oracle">Step 6 — Demonstrate the prefix-cache oracle<a class="headerlink" href="#step-6-demonstrate-the-prefix-cache-oracle" title="Permanent link">&para;</a></h3>
+<p>With prefix caching enabled and shared, send a distinctive long prompt, then measure TTFT for a second request sharing that prefix versus a fresh one. The difference should be clearly measurable.</p>
+<p><strong>That measurable difference is §6.2's leak, in your own numbers.</strong> Then disable cross-request prefix sharing and confirm the difference disappears. This is the most convincing demonstration in the book that a confidentiality failure need not involve reading any memory at all.</p>
+<h3 id="step-7-clean-up">Step 7 — Clean up<a class="headerlink" href="#step-7-clean-up" title="Permanent link">&para;</a></h3>
+<p>Delete the instance, the node pool, the bucket contents, and the KMS key version.</p>
+<hr />
+<h2 id="summary-the-design-checklist">Summary: The Design Checklist<a class="headerlink" href="#summary-the-design-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Decision</th>
+<th style="text-align: left;">Recommendation</th>
+<th style="text-align: left;">Consequence of the alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Confidential runtime</td>
+<td style="text-align: left;">Confidential Space, orchestrated from regular GKE</td>
+<td style="text-align: left;">Confidential GKE Nodes leave the Google control plane inside the boundary</td>
+</tr>
+<tr>
+<td style="text-align: left;">CPU TEE</td>
+<td style="text-align: left;">TDX</td>
+<td style="text-align: left;">SEV-SNP lacks native runtime measurement and is not the GPU path</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU</td>
+<td style="text-align: left;">H100 CC mode, <code>cc_mode == ON</code> asserted</td>
+<td style="text-align: left;">Weights in plaintext HBM</td>
+</tr>
+<tr>
+<td style="text-align: left;">Verifier</td>
+<td style="text-align: left;">Provider-operated, over raw evidence</td>
+<td style="text-align: left;">P3 becomes a promise by Google</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key manager</td>
+<td style="text-align: left;">Provider-operated external KMS</td>
+<td style="text-align: left;">The guarantee reduces to a Google IAM policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">TLS termination</td>
+<td style="text-align: left;">Client-side payload encryption, plus L4 passthrough</td>
+<td style="text-align: left;">A managed L7 LB holds plaintext prompts</td>
+</tr>
+<tr>
+<td style="text-align: left;">Weight delivery</td>
+<td style="text-align: left;">Envelope encryption; decrypt to memory only</td>
+<td style="text-align: left;">Plaintext weights on disk are readable by the platform</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cold start</td>
+<td style="text-align: left;">Warm pools; overlap fetch with attest; never VM snapshots</td>
+<td style="text-align: left;">Reactive autoscaling does not work at multi-minute cold start</td>
+</tr>
+<tr>
+<td style="text-align: left;">Prefix caching</td>
+<td style="text-align: left;">Per-tenant only, never shared across tenants</td>
+<td style="text-align: left;">A timing oracle over other tenants' prompt content</td>
+</tr>
+<tr>
+<td style="text-align: left;">Disaggregation</td>
+<td style="text-align: left;">Not in v1; if adopted, RA-TLS between nodes</td>
+<td style="text-align: left;">KV cache — prompt content — crosses the network in plaintext</td>
+</tr>
+<tr>
+<td style="text-align: left;">Multi-tenancy</td>
+<td style="text-align: left;">Batched per model, with the software-isolation caveat disclosed</td>
+<td style="text-align: left;">Customers assume hardware isolation between tenants and are wrong</td>
+</tr>
+<tr>
+<td style="text-align: left;">Observability</td>
+<td style="text-align: left;">Field allowlist; no content, ever; no stack traces</td>
+<td style="text-align: left;">An exception message leaks a prompt through an unreviewed path</td>
+</tr>
+<tr>
+<td style="text-align: left;">Safety monitoring</td>
+<td style="text-align: left;">In-TEE classifiers plus attested consented telemetry; disclose the gap</td>
+<td style="text-align: left;">Either a silent confidentiality breach or an unmonitored abuse surface</td>
+</tr>
+</tbody>
+</table>
+<p>The design is complete. What remains is proving it performs, operating it without the tools you are used to, and being able to defend its claims against a sophisticated counterparty — including honestly comparing it to what AWS, Azure, and Apple have published. That is <strong>Module 7: Performance, Operations, and Evaluation (<code>07_performance_operations_and_evaluation.md</code>)</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

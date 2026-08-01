@@ -1,0 +1,2370 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../02_hardware_tee_architectures/">
+      
+      
+        <link rel="next" href="../04_confidential_gpus_and_accelerators/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/03_remote_attestation_and_key_release/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 3 - Remote Attestation and Key Release - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-3-remote-attestation-and-attested-key-release" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 3 - Remote Attestation and Key Release
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/03_remote_attestation_and_key_release/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-rats-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: The RATS Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: The RATS Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-passport-versus-background-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Passport versus Background-Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-question-that-decides-everything-who-is-the-verifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Question That Decides Everything: Who Is the Verifier?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-measurement-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Measurement Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Measurement Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-from-silicon-to-container-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 From Silicon to Container Digest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-three-places-it-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Three Places It Breaks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 The Three Places It Breaks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-gap-between-firmware-and-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The gap between firmware and kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-the-mutable-root-filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The mutable root filesystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-runtime-mutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Runtime mutability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Time-of-Check to Time-of-Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-evidence-formats-and-certificate-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Evidence Formats and Certificate Chains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Evidence Formats and Certificate Chains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-three-evidence-types-you-will-meet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Three Evidence Types You Will Meet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-amd-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The AMD Chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-intel-chain-and-dcap-collateral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The Intel Chain and DCAP Collateral
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-where-the-ecosystem-is-heading-eat-and-corim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Where the Ecosystem Is Heading: EAT and CoRIM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-freshness-revocation-and-tcb-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Freshness, Revocation, and TCB Versioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Freshness, Revocation, and TCB Versioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-freshness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Freshness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-tcb-versioning-and-its-fleet-wide-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 TCB Versioning and Its Fleet-Wide Consequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-attested-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Attested Key Release
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Attested Key Release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-policy-is-the-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The Policy Is the Product
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-platform-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Platform Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-the-question-worth-asking-out-loud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 The Question Worth Asking Out Loud
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-ra-tls-binding-attestation-to-a-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: RA-TLS — Binding Attestation to a Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: RA-TLS — Binding Attestation to a Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-relay-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Relay Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-why-this-matters-more-for-llm-serving-than-for-almost-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Why This Matters More for LLM Serving Than for Almost Anything Else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-practical-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Practical Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-the-reference-value-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7: The Reference-Value Problem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7: The Reference-Value Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-hardest-unsolved-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The Hardest Unsolved Part
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-the-approaches-honestly-rated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 The Approaches, Honestly Rated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-what-strong-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 What Strong Looks Like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-what-this-means-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 What This Means in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-from-evidence-to-a-released-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: From Evidence to a Released Key
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-get-a-token-and-read-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — Get a token and read it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-find-every-claim-from-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Find every claim from §5.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-c-bind-a-kms-key-to-the-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C — Bind a KMS key to the attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-d-break-it-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D — Break it three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-e-the-question-to-sit-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part E — The question to sit with
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-attestation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The Attestation Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-rats-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: The RATS Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: The RATS Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-passport-versus-background-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Passport versus Background-Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-question-that-decides-everything-who-is-the-verifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Question That Decides Everything: Who Is the Verifier?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-measurement-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Measurement Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Measurement Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-from-silicon-to-container-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 From Silicon to Container Digest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-three-places-it-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Three Places It Breaks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 The Three Places It Breaks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-gap-between-firmware-and-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The gap between firmware and kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-the-mutable-root-filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The mutable root filesystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-runtime-mutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Runtime mutability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-time-of-check-to-time-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Time-of-Check to Time-of-Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-evidence-formats-and-certificate-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Evidence Formats and Certificate Chains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Evidence Formats and Certificate Chains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-three-evidence-types-you-will-meet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Three Evidence Types You Will Meet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-amd-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The AMD Chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-intel-chain-and-dcap-collateral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The Intel Chain and DCAP Collateral
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-where-the-ecosystem-is-heading-eat-and-corim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Where the Ecosystem Is Heading: EAT and CoRIM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-freshness-revocation-and-tcb-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Freshness, Revocation, and TCB Versioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Freshness, Revocation, and TCB Versioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-freshness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Freshness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-tcb-versioning-and-its-fleet-wide-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 TCB Versioning and Its Fleet-Wide Consequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-attested-key-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Attested Key Release
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Attested Key Release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-policy-is-the-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The Policy Is the Product
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-platform-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Platform Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-the-question-worth-asking-out-loud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 The Question Worth Asking Out Loud
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-ra-tls-binding-attestation-to-a-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: RA-TLS — Binding Attestation to a Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: RA-TLS — Binding Attestation to a Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-relay-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Relay Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-why-this-matters-more-for-llm-serving-than-for-almost-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Why This Matters More for LLM Serving Than for Almost Anything Else
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-practical-complications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Practical Complications
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-the-reference-value-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7: The Reference-Value Problem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7: The Reference-Value Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-hardest-unsolved-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The Hardest Unsolved Part
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-the-approaches-honestly-rated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 The Approaches, Honestly Rated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-what-strong-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 What Strong Looks Like
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-what-this-means-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 What This Means in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-from-evidence-to-a-released-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: From Evidence to a Released Key
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-get-a-token-and-read-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — Get a token and read it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-find-every-claim-from-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Find every claim from §5.2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-c-bind-a-kms-key-to-the-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C — Bind a KMS key to the attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-d-break-it-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D — Break it three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-e-the-question-to-sit-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part E — The question to sit with
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-the-attestation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: The Attestation Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-3-remote-attestation-and-attested-key-release">Module 3: Remote Attestation and Attested Key Release<a class="headerlink" href="#module-3-remote-attestation-and-attested-key-release" title="Permanent link">&para;</a></h1>
+<p>Module 2 ended with a hardware-signed report and three reasons it was worthless: no reference value to compare the measurement against, no coverage of anything loaded after boot, and no binding to the channel you are talking over. This module closes all three, and then uses the result to do the thing that makes confidential computing commercially meaningful — release a decryption key to a machine on the basis of what it is running, rather than on the basis of who is asking.</p>
+<p>This is the longest module in the book, and deliberately so. The trusted execution environment is a component you buy; attestation is the system you design. Almost every real-world failure of a confidential computing deployment is an attestation failure, not a TEE failure.</p>
+<p>This module covers <strong>the RATS architecture and who verifies whom</strong>, <strong>the measurement chain from silicon to container digest</strong>, <strong>evidence formats and their certificate chains</strong>, <strong>freshness, revocation, and TCB versioning</strong>, <strong>attested key release</strong>, <strong>RA-TLS</strong>, and <strong>the reference-value problem</strong>.</p>
+<hr />
+<h2 id="part-1-the-rats-architecture">Part 1: The RATS Architecture<a class="headerlink" href="#part-1-the-rats-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-roles">1.1 The Roles<a class="headerlink" href="#11-the-roles" title="Permanent link">&para;</a></h3>
+<p>IETF RFC 9334 gives the field its vocabulary. The value of using it is not pedantry — it is that the roles are separable, and <em>who plays each role</em> is the single most consequential decision in a confidential computing design.</p>
+<pre class="mermaid"><code>flowchart TD
+    RVP["📋 Reference Value Provider&lt;br&gt;publishes expected measurements&lt;br&gt;(e.g. the image builder)"] --&gt;|"Reference Values"| V
+    END["🏭 Endorser&lt;br&gt;vouches for the hardware&lt;br&gt;(AMD, Intel, NVIDIA)"] --&gt;|"Endorsements&lt;br&gt;cert chains"| V
+    VO["⚖️ Verifier Owner&lt;br&gt;sets the appraisal policy"] --&gt;|"Appraisal Policy"| V
+
+    A["🔒 Attester&lt;br&gt;the confidential workload"] --&gt;|"Evidence&lt;br&gt;SNP report / TD quote"| V
+    V["🔍 Verifier&lt;br&gt;appraises Evidence against&lt;br&gt;Reference Values + Endorsements"] --&gt;|"Attestation Result"| RP
+    RP["🎯 Relying Party&lt;br&gt;decides whether to release&lt;br&gt;the secret / accept the connection"]</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Role</th>
+<th style="text-align: left;">What it does</th>
+<th style="text-align: left;">Who plays it in a 3P MaaS design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Attester</strong></td>
+<td style="text-align: left;">Produces Evidence about itself</td>
+<td style="text-align: left;">The inference pod in the confidential GKE node</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Verifier</strong></td>
+<td style="text-align: left;">Appraises Evidence, emits an Attestation Result</td>
+<td style="text-align: left;">⚠️ <strong>The critical choice</strong> — see §1.3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Relying Party</strong></td>
+<td style="text-align: left;">Consumes the result and acts on it</td>
+<td style="text-align: left;">The KMS releasing the weight key; the client deciding to send a prompt</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Endorser</strong></td>
+<td style="text-align: left;">Vouches that the hardware is genuine</td>
+<td style="text-align: left;">AMD (KDS), Intel (PCS), NVIDIA (NRAS)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reference Value Provider</strong></td>
+<td style="text-align: left;">Publishes what the measurements <em>should</em> be</td>
+<td style="text-align: left;">The party that built the image — often the weakest link (§7)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Verifier Owner</strong></td>
+<td style="text-align: left;">Sets the appraisal policy</td>
+<td style="text-align: left;">Whoever gets to say "debug must be off, TCB ≥ X, image digest ∈ {…}"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-passport-versus-background-check">1.2 Passport versus Background-Check<a class="headerlink" href="#12-passport-versus-background-check" title="Permanent link">&para;</a></h3>
+<p>Two topologies, with materially different trust and availability properties.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph PASS ["Passport Model"]
+        PA["Attester"] --&gt;|"1 Evidence"| PV["Verifier"]
+        PV --&gt;|"2 Attestation Result&lt;br&gt;(a signed token)"| PA
+        PA --&gt;|"3 presents the token"| PRP["Relying Party"]
+        PRP --&gt;|"4 verifies the token signature only"| PRP
+    end
+
+    subgraph BG ["Background-Check Model"]
+        BA["Attester"] --&gt;|"1 Evidence"| BRP["Relying Party"]
+        BRP --&gt;|"2 forwards Evidence"| BV["Verifier"]
+        BV --&gt;|"3 Attestation Result"| BRP
+        BRP --&gt;|"4 acts"| BRP
+    end</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Passport</th>
+<th style="text-align: left;">Background-check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Who talks to the verifier</td>
+<td style="text-align: left;">The attester</td>
+<td style="text-align: left;">The relying party</td>
+</tr>
+<tr>
+<td style="text-align: left;">Relying party complexity</td>
+<td style="text-align: left;">Low — just verify a JWT signature</td>
+<td style="text-align: left;">High — must integrate a verifier</td>
+</tr>
+<tr>
+<td style="text-align: left;">Freshness</td>
+<td style="text-align: left;">Bounded by token lifetime; needs care</td>
+<td style="text-align: left;">Naturally fresh, driven by the relying party's nonce</td>
+</tr>
+<tr>
+<td style="text-align: left;">Verifier availability on the request path</td>
+<td style="text-align: left;">No (token can be pre-fetched)</td>
+<td style="text-align: left;">Yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Who the relying party must trust</td>
+<td style="text-align: left;">The verifier's signing key</td>
+<td style="text-align: left;">The verifier's live response</td>
+</tr>
+</tbody>
+</table>
+<p>Google Cloud's Confidential Space uses the <strong>passport model</strong>: the workload obtains an OIDC token from the Google Cloud Attestation service and presents it to a relying party such as Cloud KMS, which only checks the JWT signature and the claims. AWS Nitro Enclaves is closer to background-check: the enclave hands an attestation document to KMS, which does the appraisal itself.</p>
+<h3 id="13-the-question-that-decides-everything-who-is-the-verifier">1.3 The Question That Decides Everything: Who Is the Verifier?<a class="headerlink" href="#13-the-question-that-decides-everything-who-is-the-verifier" title="Permanent link">&para;</a></h3>
+<p>Here is the trap, and it is the reason P3 (mutual verifiability) from Module 1 fails silently in so many real designs.</p>
+<p>If Google operates the verifier, then the attestation result is a statement <strong>by Google</strong> that the environment was correct. For a model provider whose threat model explicitly includes Google (adversary A3), that is not evidence — it is a promise, of exactly the kind confidential computing was supposed to replace. The trust chain has a Google-shaped link in the middle of it.</p>
+<p>There are three ways out, in increasing order of strength:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Approach</th>
+<th style="text-align: left;">Mechanism</th>
+<th style="text-align: left;">Residual trust in the cloud operator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Cloud-operated verifier</strong></td>
+<td style="text-align: left;">Google Cloud Attestation issues the token; KMS enforces the policy</td>
+<td style="text-align: left;">Full — you trust Google's verifier and Google's KMS</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Independent verifier, cloud evidence</strong></td>
+<td style="text-align: left;">The provider runs its own verifier over raw SEV-SNP/TDX evidence, chaining to AMD/Intel certs</td>
+<td style="text-align: left;">Minimal for appraisal; Google still controls scheduling and availability</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Independent verifier + external key manager</strong></td>
+<td style="text-align: left;">As above, and the key that decrypts the weights lives in provider-controlled infrastructure (EKM)</td>
+<td style="text-align: left;">Minimal — Google can stop the workload but cannot decrypt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The design rule</strong>: the verifier and the key holder should be operated by the party whose asset is at risk. A model provider protecting weights should run the verifier that appraises the environment and should hold the key that unlocks them. Anything else reduces "hardware-enforced" to "contractually promised" with extra latency.</p>
+<p>This is a genuinely awkward conversation to have with a cloud platform team, because the convenient path — use the platform's attestation service and the platform's KMS — is precisely the one that dissolves the property the customer is paying for. It is better to have the conversation during design than during a security review.</p>
+<hr />
+<h2 id="part-2-the-measurement-chain">Part 2: The Measurement Chain<a class="headerlink" href="#part-2-the-measurement-chain" title="Permanent link">&para;</a></h2>
+<h3 id="21-from-silicon-to-container-digest">2.1 From Silicon to Container Digest<a class="headerlink" href="#21-from-silicon-to-container-digest" title="Permanent link">&para;</a></h3>
+<p>A launch measurement covers firmware. A container digest is what you actually care about. Everything between them has to be chained, and the chain is only as strong as its weakest link.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["🔩 Hardware Root of Trust&lt;br&gt;AMD PSP / Intel TDX Module&lt;br&gt;fused key, immutable"] --&gt;|"measures"| B["Guest firmware — OVMF&lt;br&gt;+ config, VMSA"]
+    B --&gt;|"captured as"| B2["📌 Launch Measurement&lt;br&gt;SNP MEASUREMENT / TDX MRTD&lt;br&gt;IMMUTABLE after launch"]
+    B --&gt;|"measures + extends"| C["Bootloader / kernel / initrd&lt;br&gt;+ kernel command line"]
+    C --&gt;|"extends"| C2["📌 RTMR1 / PCR 4,8,9"]
+    C --&gt;|"measures"| D["Root filesystem&lt;br&gt;dm-verity root hash"]
+    D --&gt;|"extends"| D2["📌 RTMR2 / PCR 10"]
+    D --&gt;|"launcher measures"| E["Container image&lt;br&gt;OCI digest sha256:…"]
+    E --&gt;|"extends"| E2["📌 RTMR3 / vTPM PCR&lt;br&gt;or a token claim"]
+
+    B2 --&gt; F["🔍 Verifier appraises the&lt;br&gt;COMPLETE chain"]
+    C2 --&gt; F
+    D2 --&gt; F
+    E2 --&gt; F</code></pre>
+<h3 id="22-the-three-places-it-breaks">2.2 The Three Places It Breaks<a class="headerlink" href="#22-the-three-places-it-breaks" title="Permanent link">&para;</a></h3>
+<h4 id="1-the-gap-between-firmware-and-kernel">1. The gap between firmware and kernel<a class="headerlink" href="#1-the-gap-between-firmware-and-kernel" title="Permanent link">&para;</a></h4>
+<p>The launch measurement covers the initial memory image. If your firmware then loads a kernel from an unmeasured disk, an attacker who can modify that disk controls the kernel while the launch measurement stays valid. The fix is either to build the kernel <em>into</em> the measured initial image (a direct-boot, measured-kernel arrangement), or to measure it into a vTPM before executing it.</p>
+<p>On SEV-SNP this is acute, because there is no architectural runtime measurement register (Module 2, §4.1) — you need a vTPM, and the vTPM must live inside the trust boundary (an SVSM at VMPL0), not be provided by the hypervisor. <strong>A vTPM implemented by the hypervisor in a confidential VM provides no security whatsoever</strong>, because the adversary is the hypervisor. This is a real and recurring architecture-review finding.</p>
+<h4 id="2-the-mutable-root-filesystem">2. The mutable root filesystem<a class="headerlink" href="#2-the-mutable-root-filesystem" title="Permanent link">&para;</a></h4>
+<p>If the rootfs can be modified after measurement, measuring it once proves nothing. The standard answer is <code>dm-verity</code>: a Merkle tree over the filesystem whose root hash is measured, with the kernel verifying every block on read. Any modification is detected at access time, not just at boot.</p>
+<p>This is why hardened confidential images (Confidential Space's image, Apple PCC's, Azure's CVM images) are read-only with <code>dm-verity</code> and a small writable overlay in <code>tmpfs</code> — and it is why "just add our agent to the node image" is a request that has to be refused in a confidential design.</p>
+<h4 id="3-runtime-mutability">3. Runtime mutability<a class="headerlink" href="#3-runtime-mutability" title="Permanent link">&para;</a></h4>
+<p>Even with a verified rootfs, <code>kubectl exec</code>, a debug sidecar, or a privileged DaemonSet can introduce unmeasured code after attestation. The measurement was accurate <em>at the time it was taken</em>; it is not a continuous property.</p>
+<p>This is the strongest argument for the Confidential Space model over plain Confidential GKE Nodes (Module 5, §6): Confidential Space runs exactly one container image, measured into the attestation token, with no interactive access in the production image. A confidential GKE node runs a full kubelet that will start whatever the control plane tells it to.</p>
+<h3 id="23-time-of-check-to-time-of-use">2.3 Time-of-Check to Time-of-Use<a class="headerlink" href="#23-time-of-check-to-time-of-use" title="Permanent link">&para;</a></h3>
+<p>Attestation happens at a moment. Execution continues afterward. Nothing in the architecture re-verifies the workload while it runs.</p>
+<p>Mitigations, in order of practicality:</p>
+<ul>
+<li><strong>Make the window small.</strong> Attest immediately before releasing a key, not at node join and then reuse forever.</li>
+<li><strong>Make post-attestation mutation impossible.</strong> Immutable rootfs, no shell, no exec, no dynamic code loading — this is the real defense.</li>
+<li><strong>Re-attest periodically.</strong> Bound the damage window; note this does not detect a compromise that leaves no measurement trace, which is most of them.</li>
+<li><strong>Bind secrets to the measurement.</strong> Sealing (Module 1, §3.5) means that even if the attacker replaces the code, the new code cannot unseal the old secrets.</li>
+</ul>
+<hr />
+<h2 id="part-3-evidence-formats-and-certificate-chains">Part 3: Evidence Formats and Certificate Chains<a class="headerlink" href="#part-3-evidence-formats-and-certificate-chains" title="Permanent link">&para;</a></h2>
+<h3 id="31-the-three-evidence-types-you-will-meet">3.1 The Three Evidence Types You Will Meet<a class="headerlink" href="#31-the-three-evidence-types-you-will-meet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>SEV-SNP report</strong></th>
+<th style="text-align: left;"><strong>TDX quote</strong></th>
+<th style="text-align: left;"><strong>TPM quote + event log</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Produced by</td>
+<td style="text-align: left;">AMD Secure Processor</td>
+<td style="text-align: left;">TD Quoting Enclave</td>
+<td style="text-align: left;">TPM / vTPM</td>
+</tr>
+<tr>
+<td style="text-align: left;">Signed with</td>
+<td style="text-align: left;">VCEK or VLEK</td>
+<td style="text-align: left;">ECDSA Attestation Key</td>
+<td style="text-align: left;">Attestation Identity Key</td>
+</tr>
+<tr>
+<td style="text-align: left;">Chains to</td>
+<td style="text-align: left;">AMD ARK → ASK → VCEK</td>
+<td style="text-align: left;">Intel Root CA → PCK → QE → AK</td>
+<td style="text-align: left;">Manufacturer EK certificate</td>
+</tr>
+<tr>
+<td style="text-align: left;">Endorsement service</td>
+<td style="text-align: left;">AMD KDS</td>
+<td style="text-align: left;">Intel PCS (DCAP collateral)</td>
+<td style="text-align: left;">Vendor EK CA; on GCE, Google</td>
+</tr>
+<tr>
+<td style="text-align: left;">Carries measurement</td>
+<td style="text-align: left;"><code>MEASUREMENT</code> (launch only)</td>
+<td style="text-align: left;"><code>MRTD</code> + <code>RTMR0-3</code></td>
+<td style="text-align: left;">PCR values + a replayable event log</td>
+</tr>
+<tr>
+<td style="text-align: left;">Caller-supplied bytes</td>
+<td style="text-align: left;"><code>REPORT_DATA</code> (64 B)</td>
+<td style="text-align: left;"><code>REPORTDATA</code> (64 B)</td>
+<td style="text-align: left;">Qualifying data / nonce</td>
+</tr>
+<tr>
+<td style="text-align: left;">Freshness</td>
+<td style="text-align: left;">Caller must put a nonce in <code>REPORT_DATA</code></td>
+<td style="text-align: left;">Same</td>
+<td style="text-align: left;">Same</td>
+</tr>
+</tbody>
+</table>
+<p>The TPM row is the one people underestimate. A TPM quote alone gives you PCR values, which are opaque hashes. The <strong>event log</strong> is what makes them interpretable: it records what was measured, in order, so a verifier can <em>replay</em> the log, recompute the PCRs, confirm they match the quote, and then inspect the individual events ("this kernel, this command line, this initrd"). Without the event log you can only compare against a golden PCR value, which means you must have booted an identical machine yourself to know what to expect. With the log, you can appraise the individual components.</p>
+<h3 id="32-the-amd-chain">3.2 The AMD Chain<a class="headerlink" href="#32-the-amd-chain" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    ARK["AMD Root Key (ARK)&lt;br&gt;per CPU generation&lt;br&gt;trust anchor — pin this"] --&gt; ASK["AMD SEV Signing Key (ASK)"]
+    ASK --&gt; VCEK["VCEK&lt;br&gt;derived from chip-unique secrets&lt;br&gt;+ the current TCB_VERSION"]
+    VCEK --&gt;|"signs"| REP["Attestation Report"]
+
+    ASK -.-&gt; VLEK["VLEK — alternative&lt;br&gt;keyed to the cloud service provider&lt;br&gt;rather than the individual chip"]
+    VLEK -.-&gt;|"signs"| REP</code></pre>
+<p>The VCEK/VLEK distinction matters for a cloud deployment:</p>
+<ul>
+<li><strong>VCEK</strong> is derived from chip-unique secrets. It uniquely identifies the physical CPU. Great for security, and a privacy and correlation concern for the cloud provider, since it lets a tenant fingerprint individual machines in the fleet.</li>
+<li><strong>VLEK</strong> is issued to a cloud service provider, so reports identify "an AMD part operated by CSP X at TCB level Y" rather than a specific chip. The tenant loses the ability to distinguish physical machines.</li>
+</ul>
+<p>You must know which one your platform uses, because the certificate-fetch path and the meaning of the resulting identity both change.</p>
+<p>The key operational fact, repeated from Module 2 because it causes real outages: <strong>the VCEK is derived from the TCB version</strong>. Firmware update ⇒ new TCB version ⇒ new VCEK ⇒ every cached certificate is stale and every verifier that pinned one starts failing.</p>
+<h3 id="33-the-intel-chain-and-dcap-collateral">3.3 The Intel Chain and DCAP Collateral<a class="headerlink" href="#33-the-intel-chain-and-dcap-collateral" title="Permanent link">&para;</a></h3>
+<p>Intel verification needs more than a signature — it needs <em>collateral</em>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Collateral item</th>
+<th style="text-align: left;">What it establishes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">PCK certificate chain</td>
+<td style="text-align: left;">This quote came from a genuine Intel CPU with a given PPID and TCB</td>
+</tr>
+<tr>
+<td style="text-align: left;">TCB info (per FMSPC)</td>
+<td style="text-align: left;">Which TCB levels are currently up-to-date, out-of-date, or revoked</td>
+</tr>
+<tr>
+<td style="text-align: left;">QE identity</td>
+<td style="text-align: left;">The Quoting Enclave itself is genuine and at an acceptable version</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRLs</td>
+<td style="text-align: left;">Nothing in the chain has been revoked</td>
+</tr>
+</tbody>
+</table>
+<p>This is fetched from Intel's Provisioning Certification Service, typically via a locally-run <strong>PCCS</strong> cache. The design consequence is unavoidable: <strong>verification has a network dependency on a vendor service.</strong> In production you run a caching service and you decide, explicitly and in advance, what happens when the cache is stale and the upstream is unreachable — fail closed (no key release, no serving) or fail open (accept possibly-revoked evidence). There is no third option, and choosing by accident means choosing fail-open.</p>
+<h3 id="34-where-the-ecosystem-is-heading-eat-and-corim">3.4 Where the Ecosystem Is Heading: EAT and CoRIM<a class="headerlink" href="#34-where-the-ecosystem-is-heading-eat-and-corim" title="Permanent link">&para;</a></h3>
+<p>Three vendors, three incompatible binary formats, three verification libraries. The IETF RATS working group's answer:</p>
+<ul>
+<li><strong>EAT</strong> (Entity Attestation Token, RFC 9711) — a common CBOR/JWT claims format for attestation evidence and results. Google's Confidential Space token is EAT-influenced, which is why it has claims named <code>eat_nonce</code>, <code>dbgstat</code>, <code>hwmodel</code>, and <code>swname</code> rather than vendor-specific field names.</li>
+<li><strong>CoRIM</strong> (Concise Reference Integrity Manifest) — a standard format for <em>reference values</em>, so the expected-measurement problem (§7) can be solved by publishing a signed manifest rather than by everyone inventing a bespoke JSON schema.</li>
+<li><strong>CoSWID</strong> — software identification tags, so a reference value can be tied to an identifiable piece of software.</li>
+</ul>
+<p>None of this removes the need to understand the underlying vendor formats today, but it tells you where the abstraction boundary will eventually sit, and it is why writing your verification logic against a claims-based abstraction rather than against raw SEV-SNP structs is the right call.</p>
+<hr />
+<h2 id="part-4-freshness-revocation-and-tcb-versioning">Part 4: Freshness, Revocation, and TCB Versioning<a class="headerlink" href="#part-4-freshness-revocation-and-tcb-versioning" title="Permanent link">&para;</a></h2>
+<h3 id="41-freshness">4.1 Freshness<a class="headerlink" href="#41-freshness" title="Permanent link">&para;</a></h3>
+<p>A report with no nonce proves an environment existed at <em>some</em> point. It does not prove it exists now. Replay is trivial: capture a valid report from a healthy machine, then present it forever from a compromised one.</p>
+<p>Two mechanisms:</p>
+<ul>
+<li><strong>Nonce (challenge-response).</strong> The relying party generates a random value, the attester puts it in <code>REPORT_DATA</code> / <code>REPORTDATA</code> / <code>eat_nonce</code>, the report proves it was produced after the challenge. Strongest, requires a round trip, natural fit for background-check.</li>
+<li><strong>Timestamp with a short lifetime.</strong> The token carries <code>iat</code>/<code>exp</code> and the relying party rejects old ones. Fits the passport model. The security is exactly the token lifetime — a token valid for an hour is an hour-long replay window on a machine that may have been compromised thirty minutes ago.</li>
+</ul>
+<p>Confidential Space supports both: tokens carry <code>iat</code>, <code>nbf</code>, and <code>exp</code>, and up to six caller-supplied <code>eat_nonce</code> values. <strong>If you can supply a nonce, supply one.</strong> Relying on lifetime alone is a choice to accept a replay window, and it should be a documented choice rather than a default.</p>
+<h3 id="42-tcb-versioning-and-its-fleet-wide-consequences">4.2 TCB Versioning and Its Fleet-Wide Consequences<a class="headerlink" href="#42-tcb-versioning-and-its-fleet-wide-consequences" title="Permanent link">&para;</a></h3>
+<p>This is the operational reality that surprises teams in month three.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["AMD or Intel publishes&lt;br&gt;a firmware / TDX Module update&lt;br&gt;(often fixing a disclosed attack)"] --&gt; B["Platform TCB version advances"]
+    B --&gt; C["🔑 Signing key changes&lt;br&gt;VCEK is derived from TCB_VERSION"]
+    B --&gt; D["📉 Old TCB level is marked&lt;br&gt;OutOfDate in Intel TCB info"]
+
+    C --&gt; E["Cached certificates are stale&lt;br&gt;→ verification fails"]
+    D --&gt; F["Verifier policy decision:&lt;br&gt;reject OutOfDate → outage&lt;br&gt;accept OutOfDate → you shipped the vulnerability"]
+
+    E --&gt; G["⚠️ Fleet-wide re-attestation&lt;br&gt;and re-key-release"]
+    F --&gt; G</code></pre>
+<p>The policy dilemma in the middle box has no clean answer, and it must be decided in advance:</p>
+<ul>
+<li><strong>Reject out-of-date TCB immediately</strong>: every node still on old firmware stops being able to obtain keys. If your fleet updates over days, you have a days-long partial outage.</li>
+<li><strong>Accept out-of-date TCB</strong>: you are serving customer prompts on hardware with a known, published vulnerability, having told the customer the environment is attested.</li>
+</ul>
+<p>The workable answer is a <strong>graceful window with a hard deadline</strong>: accept the previous TCB level for a bounded period, alarm loudly on any node still using it, and enforce the new floor at a pre-committed date. That is a policy and a runbook, not a code change — which is why it needs to exist before the first firmware advisory, not after.</p>
+<p>Practical guidance:</p>
+<ol>
+<li>Never pin an exact TCB version. Pin a <em>minimum</em>, and have a documented process for raising the floor.</li>
+<li>Cache endorsement collateral aggressively, but treat cache misses as a first-class failure mode with a tested behavior.</li>
+<li>Instrument the TCB version distribution across your fleet as a dashboard. You will need it the day an advisory lands.</li>
+<li>Decide fail-closed vs fail-open explicitly, write it down, and make sure the on-call engineer knows which one is configured.</li>
+</ol>
+<hr />
+<h2 id="part-5-attested-key-release">Part 5: Attested Key Release<a class="headerlink" href="#part-5-attested-key-release" title="Permanent link">&para;</a></h2>
+<p>This is the payoff. Everything so far has been about producing a trustworthy statement; this part is about doing something useful with it.</p>
+<h3 id="51-the-pattern">5.1 The Pattern<a class="headerlink" href="#51-the-pattern" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph PROV ["🏭 Model Provider Domain"]
+        K["KEK — Key Encryption Key&lt;br&gt;in provider-controlled KMS/HSM/EKM&lt;br&gt;policy: release ONLY on attestation"]
+        POL["Release Policy&lt;br&gt;measurement ∈ approved set&lt;br&gt;debug = disabled&lt;br&gt;TCB ≥ minimum&lt;br&gt;GPU cc_mode = ON"]
+    end
+
+    subgraph STORE ["☁️ Untrusted Storage"]
+        W["weights.enc&lt;br&gt;encrypted with DEK"]
+        DEKW["wrapped DEK&lt;br&gt;encrypted under the KEK"]
+    end
+
+    subgraph TEE ["🔒 Attested TEE on GKE"]
+        WL["Inference workload"]
+    end
+
+    WL --&gt;|"1 fetch encrypted weights&lt;br&gt;(no secret needed)"| W
+    WL --&gt;|"2 Evidence + nonce"| VER["🔍 Verifier"]
+    VER --&gt;|"3 Attestation Result"| K
+    POL --&gt; K
+    K --&gt;|"4 unwrap the DEK&lt;br&gt;ONLY if policy passes"| WL
+    DEKW --&gt; K
+    WL --&gt;|"5 decrypt in TEE memory,&lt;br&gt;load into protected GPU memory"| WL</code></pre>
+<p>Envelope encryption is what makes this practical: the multi-hundred-gigabyte weights are encrypted once with a symmetric DEK; only the small wrapped DEK travels through the attestation-gated path. Rotating access means rewrapping a key, not re-encrypting a model.</p>
+<h3 id="52-the-policy-is-the-product">5.2 The Policy Is the Product<a class="headerlink" href="#52-the-policy-is-the-product" title="Permanent link">&para;</a></h3>
+<p>The release policy is where all the security lives, and where the bugs are. A policy for a 3P MaaS inference workload should assert, at minimum:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Assertion</th>
+<th style="text-align: left;">Claim / field</th>
+<th style="text-align: left;">Failure if omitted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Genuine hardware TEE</td>
+<td style="text-align: left;">Signature chains to AMD/Intel root</td>
+<td style="text-align: left;">Anyone can fabricate evidence</td>
+</tr>
+<tr>
+<td style="text-align: left;">Correct TEE type</td>
+<td style="text-align: left;"><code>hwmodel</code> ∈ {<code>GCP_INTEL_TDX</code>, …}</td>
+<td style="text-align: left;">You accept a Shielded VM as if it were a TEE</td>
+</tr>
+<tr>
+<td style="text-align: left;">Debug disabled</td>
+<td style="text-align: left;"><code>dbgstat = disabled-since-boot</code>; SNP <code>POLICY</code> bits</td>
+<td style="text-align: left;">The operator can attach a debugger and read memory</td>
+</tr>
+<tr>
+<td style="text-align: left;">Firmware not stale</td>
+<td style="text-align: left;"><code>TCB_VERSION</code> ≥ floor; Intel TCB status</td>
+<td style="text-align: left;">Known-vulnerable platform</td>
+</tr>
+<tr>
+<td style="text-align: left;">Approved image</td>
+<td style="text-align: left;"><code>submods.container.image_digest</code> ∈ allowlist</td>
+<td style="text-align: left;">Any image on the platform gets your weights</td>
+</tr>
+<tr>
+<td style="text-align: left;">Image signed by the right party</td>
+<td style="text-align: left;"><code>submods.container.image_signatures[].key_id</code></td>
+<td style="text-align: left;">Digest allowlists rot; signatures scale</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU in CC mode</td>
+<td style="text-align: left;"><code>submods.nvidia_gpu.cc_mode = ON</code></td>
+<td style="text-align: left;"><strong>Weights land in unprotected HBM — the whole design fails</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Expected GPU model</td>
+<td style="text-align: left;"><code>submods.nvidia_gpu.gpus[].hwmodel</code></td>
+<td style="text-align: left;">Attestation of the wrong accelerator class</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fresh</td>
+<td style="text-align: left;"><code>eat_nonce</code> matches, <code>exp</code> in the future</td>
+<td style="text-align: left;">Replay</td>
+</tr>
+</tbody>
+</table>
+<p>The GPU rows are the ones most often missing, and they are the most damaging omission — a policy that checks everything about the CPU TEE and nothing about the GPU produces a perfectly attested environment that loads your weights into plaintext HBM. Module 4 develops this.</p>
+<h3 id="53-platform-comparison">5.3 Platform Comparison<a class="headerlink" href="#53-platform-comparison" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>GCP</strong></th>
+<th style="text-align: left;"><strong>AWS</strong></th>
+<th style="text-align: left;"><strong>Azure</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Evidence to relying party</td>
+<td style="text-align: left;">OIDC JWT attestation token (passport)</td>
+<td style="text-align: left;">Attestation document (background-check)</td>
+<td style="text-align: left;">JWT from MAA</td>
+</tr>
+<tr>
+<td style="text-align: left;">Policy expressed in</td>
+<td style="text-align: left;">Workload Identity Federation attribute conditions (CEL) + IAM</td>
+<td style="text-align: left;">KMS key policy condition keys (<code>kms:RecipientAttestation:*</code>)</td>
+<td style="text-align: left;">Managed HSM SKR policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key store</td>
+<td style="text-align: left;">Cloud KMS / Cloud HSM / Cloud EKM</td>
+<td style="text-align: left;">AWS KMS</td>
+<td style="text-align: left;">Managed HSM</td>
+</tr>
+<tr>
+<td style="text-align: left;">Independent verification possible?</td>
+<td style="text-align: left;">Yes, via raw evidence — but the ergonomic path is Google's verifier</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes, via MAA or your own</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is identical everywhere; only the policy language differs. On GCP the mechanism is Workload Identity Federation: an attribute condition over the token's claims decides whether the token can be exchanged for a Google credential, and IAM then decides what that credential may decrypt. Module 5, §4 covers the concrete syntax.</p>
+<h3 id="54-the-question-worth-asking-out-loud">5.4 The Question Worth Asking Out Loud<a class="headerlink" href="#54-the-question-worth-asking-out-loud" title="Permanent link">&para;</a></h3>
+<p>Every attested-key-release design should be able to answer: <strong>if the cloud operator wanted the plaintext key, what would they have to do?</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Design</th>
+<th style="text-align: left;">What the operator would have to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Key in cloud KMS, cloud IAM policy</td>
+<td style="text-align: left;">Change an IAM policy. This is an internal operation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key in cloud KMS, policy over attestation claims</td>
+<td style="text-align: left;">Forge an attestation token — requires compromising the cloud verifier's signing key.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key in provider-run external KMS, provider-run verifier</td>
+<td style="text-align: left;">Break AMD/Intel hardware attestation, or compromise the model provider.</td>
+</tr>
+</tbody>
+</table>
+<p>Only the third row is a hardware-rooted guarantee. The first is a policy control wearing a confidential-computing costume. Being able to state which row your design occupies — plainly, to a model provider's security team — is the single most valuable output of this module.</p>
+<hr />
+<h2 id="part-6-ra-tls-binding-attestation-to-a-channel">Part 6: RA-TLS — Binding Attestation to a Channel<a class="headerlink" href="#part-6-ra-tls-binding-attestation-to-a-channel" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-relay-problem">6.1 The Relay Problem<a class="headerlink" href="#61-the-relay-problem" title="Permanent link">&para;</a></h3>
+<p>Attestation proves that <em>a</em> TEE exists with certain properties. It does not prove that the TEE is the endpoint you are connected to. A man-in-the-middle can obtain a genuine report from a real, correctly-configured TEE and present it while terminating your connection at a machine of its choosing.</p>
+<p>The fix is Module 1, §3.4's fourth field: put a hash of the endpoint's public key into the report's caller-supplied data.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["1️⃣ Inside the TEE:&lt;br&gt;generate an ephemeral keypair&lt;br&gt;the private key NEVER leaves"] --&gt; B["2️⃣ Request an attestation report with&lt;br&gt;REPORT_DATA = SHA-512(pubkey ‖ nonce)"]
+    B --&gt; C["3️⃣ Build a self-signed X.509 cert&lt;br&gt;embedding the report in a&lt;br&gt;custom extension"]
+    C --&gt; D["4️⃣ Serve TLS with that certificate"]
+    D --&gt; E["5️⃣ Client verifies:&lt;br&gt;report signature → vendor chain&lt;br&gt;measurement → reference values&lt;br&gt;policy → debug off, TCB ok&lt;br&gt;SHA-512(cert pubkey) == REPORT_DATA ✅"]
+    E --&gt; F["🔐 TLS session terminates inside&lt;br&gt;the attested TEE, provably"]</code></pre>
+<p>The client's final check is the whole point: the key that terminates this TLS session is a key that the attested TEE holds. A relayed report fails, because the relay does not hold the private key matching the hash inside the report.</p>
+<h3 id="62-why-this-matters-more-for-llm-serving-than-for-almost-anything-else">6.2 Why This Matters More for LLM Serving Than for Almost Anything Else<a class="headerlink" href="#62-why-this-matters-more-for-llm-serving-than-for-almost-anything-else" title="Permanent link">&para;</a></h3>
+<p>Consider the alternative. A managed L7 load balancer terminates TLS with a certificate whose private key the <em>cloud provider</em> holds, and re-encrypts to the backend. The prompt is plaintext in the load balancer's memory — a machine that is emphatically not in your TEE.</p>
+<p>Everything downstream can be perfectly confidential, and the guarantee is already gone before the first token is processed. This is not a hypothetical: it is the default configuration of essentially every managed ingress on every cloud, and it is the most common way a confidential inference design silently fails. Module 6, §5 is devoted to the options.</p>
+<h3 id="63-practical-complications">6.3 Practical Complications<a class="headerlink" href="#63-practical-complications" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Standard TLS libraries do not do this.</strong> A client must be given custom verification logic. For a public API this is a real adoption barrier — you are asking every customer to use your SDK. For a first-party or enterprise integration it is entirely feasible.</li>
+<li><strong>Certificate lifetime.</strong> The certificate is ephemeral and tied to the attestation. Rotation is frequent and must be automated.</li>
+<li><strong>Nonce vs freshness.</strong> The nonce must come from the client for full freshness, which means either a pre-handshake exchange or accepting time-based freshness.</li>
+<li><strong>Composite evidence.</strong> For GPU workloads the report must cover the GPU too, or the client has verified that the <em>CPU</em> holding the TLS key is confidential while the GPU doing the inference may not be.</li>
+</ul>
+<hr />
+<h2 id="part-7-the-reference-value-problem">Part 7: The Reference-Value Problem<a class="headerlink" href="#part-7-the-reference-value-problem" title="Permanent link">&para;</a></h2>
+<h3 id="71-the-hardest-unsolved-part">7.1 The Hardest Unsolved Part<a class="headerlink" href="#71-the-hardest-unsolved-part" title="Permanent link">&para;</a></h3>
+<p>Everything up to here assumed the verifier knows what measurement to expect. That assumption is doing enormous work, and in practice it is where confidential computing deployments are weakest.</p>
+<p>You have a report saying <code>MEASUREMENT = 0x3f2a…</code>. How do you know that is the right value?</p>
+<ul>
+<li><strong>You cannot compute it from the source.</strong> It depends on firmware version, memory layout, vCPU count, and the exact build of everything in the initial image.</li>
+<li><strong>You cannot ask the cloud provider.</strong> That reintroduces exactly the trust you were trying to eliminate — "Google told me this hash is the good one."</li>
+<li><strong>You can boot it yourself and record it</strong> — but that only proves you and the production machine ran the same bits, which is genuinely useful and is what most deployments actually do.</li>
+</ul>
+<h3 id="72-the-approaches-honestly-rated">7.2 The Approaches, Honestly Rated<a class="headerlink" href="#72-the-approaches-honestly-rated" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Approach</th>
+<th style="text-align: left;">How it works</th>
+<th style="text-align: left;">Strength</th>
+<th style="text-align: left;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Golden value from your own boot</strong></td>
+<td style="text-align: left;">Boot the image yourself in a controlled environment, record the measurement, pin it</td>
+<td style="text-align: left;">Moderate — proves bit-identity with what <em>you</em> ran</td>
+<td style="text-align: left;">Low; brittle across firmware and shape changes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vendor-published reference values</strong></td>
+<td style="text-align: left;">The image publisher signs a manifest of expected measurements (CoRIM, NVIDIA RIM)</td>
+<td style="text-align: left;">Moderate — you now trust the publisher</td>
+<td style="text-align: left;">Low, if the publisher provides it</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reproducible builds</strong></td>
+<td style="text-align: left;">Anyone can rebuild the image bit-for-bit from source and derive the measurement independently</td>
+<td style="text-align: left;"><strong>Strong</strong> — removes trust in the builder</td>
+<td style="text-align: left;">High engineering cost</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Binary transparency log</strong></td>
+<td style="text-align: left;">Measurements are published to an append-only, verifiable log; an equivocating publisher is detectable</td>
+<td style="text-align: left;"><strong>Strong</strong>, complements reproducibility</td>
+<td style="text-align: left;">Moderate; needs ecosystem support</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Third-party audit</strong></td>
+<td style="text-align: left;">An independent party inspects the image and endorses its measurement</td>
+<td style="text-align: left;">Weak-to-moderate — a human process</td>
+<td style="text-align: left;">Recurring</td>
+</tr>
+</tbody>
+</table>
+<p>The honest state of the art: most production confidential computing deployments use golden values recorded from their own builds, plus image signing. That is meaningfully better than nothing and meaningfully short of the guarantee the marketing implies.</p>
+<h3 id="73-what-strong-looks-like">7.3 What Strong Looks Like<a class="headerlink" href="#73-what-strong-looks-like" title="Permanent link">&para;</a></h3>
+<p>Apple's Private Cloud Compute is the most complete published attempt, and it is worth studying precisely because it treats the reference-value problem as <em>the</em> problem rather than a detail:</p>
+<ol>
+<li>Software images are built reproducibly.</li>
+<li>Every production image is published to an append-only transparency log.</li>
+<li>Client devices verify that the server they are talking to is running an image present in that log before sending data — the enforcement is <em>client-side</em>, not operator-side.</li>
+<li>Researchers are given the images and tooling to inspect them.</li>
+</ol>
+<p>The pieces that make it work are (2) and (3) together: publishing measurements is worthless if clients do not refuse to talk to unpublished ones. This is the bar a genuinely verifiable 3P MaaS design should be measured against, and Module 7, §6 examines how far a GKE-based design can get toward it.</p>
+<h3 id="74-what-this-means-in-practice">7.4 What This Means in Practice<a class="headerlink" href="#74-what-this-means-in-practice" title="Permanent link">&para;</a></h3>
+<p>For the design you will actually build:</p>
+<ol>
+<li><strong>Minimize the measured surface.</strong> A distroless image with one static binary has a measurement you can reason about. A general-purpose base image with a package manager does not.</li>
+<li><strong>Make builds reproducible where you can.</strong> Even partial reproducibility (pinned digests, locked dependencies, <code>SOURCE_DATE_EPOCH</code>) narrows the gap.</li>
+<li><strong>Sign images and put signature verification in the release policy.</strong> <code>image_signatures[].key_id</code> scales where digest allowlists do not.</li>
+<li><strong>Publish your reference values.</strong> If the model provider is meant to verify independently, they need a signed, versioned, publicly retrievable manifest of acceptable measurements.</li>
+<li><strong>Be explicit about the residual trust.</strong> Write the sentence: "the customer trusts that image digest X behaves as documented, on the basis of [signature | reproducible build | audit]." If you cannot complete that sentence, P3 does not hold.</li>
+</ol>
+<hr />
+<h2 id="lab-from-evidence-to-a-released-key">Lab: From Evidence to a Released Key<a class="headerlink" href="#lab-from-evidence-to-a-released-key" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> perform a complete attested key release — obtain a Confidential Space attestation token, inspect its claims, bind a Cloud KMS key to a policy over those claims, and then break the policy and watch the release fail. The final step is the one that teaches; a policy you have never seen deny anything is a policy you do not know is enforced.</p>
+<p><strong>Cost:</strong> one small confidential VM plus KMS operations — well under a dollar. <strong>Status:</strong> structure and claim names verified against Google Cloud documentation; exact <code>gcloud</code> syntax varies by CLI version — verify with <code>--help</code> and consult the Confidential Space documentation as you go.</p>
+<h3 id="part-a-get-a-token-and-read-it">Part A — Get a token and read it<a class="headerlink" href="#part-a-get-a-token-and-read-it" title="Permanent link">&para;</a></h3>
+<p>Build a trivial workload that reads the attestation token and prints it. Inside a Confidential Space workload the token is available from the launcher's socket:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Inside the workload container</span>
+curl<span class="w"> </span>-s<span class="w"> </span>--unix-socket<span class="w"> </span>/run/container_launcher/teeserver.sock<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>http://localhost/v1/token<span class="w"> </span>&gt;<span class="w"> </span>token.jwt
+
+<span class="c1"># Decode the payload (this is a JWT; the payload is base64url in the middle field)</span>
+cut<span class="w"> </span>-d.<span class="w"> </span>-f2<span class="w"> </span>token.jwt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;_-&#39;</span><span class="w"> </span><span class="s1">&#39;/+&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</code></pre></div>
+<h3 id="part-b-find-every-claim-from-52">Part B — Find every claim from §5.2<a class="headerlink" href="#part-b-find-every-claim-from-52" title="Permanent link">&para;</a></h3>
+<p>In the decoded payload, locate and write down:</p>
+<ul>
+<li><code>iss</code> — should be <code>https://confidentialcomputing.googleapis.com</code></li>
+<li><code>hwmodel</code> — <code>GCP_AMD_SEV</code>, <code>GCP_INTEL_TDX</code>, or, revealingly, <code>GCP_SHIELDED_VM</code></li>
+<li><code>dbgstat</code> — <code>disabled-since-boot</code> in production, <code>enabled</code> on a DEBUG image</li>
+<li><code>swname</code> / <code>swversion</code> — <code>CONFIDENTIAL_SPACE</code> and the image version</li>
+<li><code>submods.container.image_digest</code> — the workload identity that matters</li>
+<li><code>submods.container.image_signatures[]</code> — present only if you signed the image</li>
+<li><code>submods.gce.*</code> — project, zone, instance</li>
+<li><code>submods.confidential_space.support_attributes</code> — <code>STABLE</code>, <code>LATEST</code>, <code>EXPERIMENTAL</code></li>
+<li><code>eat_nonce</code> — absent unless you requested one</li>
+<li><code>exp</code> − <code>iat</code> — compute the token lifetime, and note that this is your replay window if you do not use a nonce</li>
+</ul>
+<p><strong>Exercise:</strong> run the same workload on a DEBUG Confidential Space image and diff the two tokens. Watch <code>dbgstat</code> flip to <code>enabled</code> and <code>support_attributes</code> change. Then answer: which single claim, if unchecked by a relying party, makes the entire deployment non-confidential?</p>
+<h3 id="part-c-bind-a-kms-key-to-the-attestation">Part C — Bind a KMS key to the attestation<a class="headerlink" href="#part-c-bind-a-kms-key-to-the-attestation" title="Permanent link">&para;</a></h3>
+<p>Create a workload identity pool with a provider whose attribute condition requires the claims you care about:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--display-name<span class="o">=</span><span class="s2">&quot;Confidential Space lab pool&quot;</span>
+
+gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>cc-lab-provider<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;assertion.swname == &#39;CONFIDENTIAL_SPACE&#39; \</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39; \</span>
+<span class="s2">    &amp;&amp; &#39;sha256:YOUR_IMAGE_DIGEST&#39; in assertion.submods.container.image_digest&quot;</span>
+</code></pre></div>
+<p>Then grant that federated identity <code>roles/cloudkms.cryptoKeyDecrypter</code> on a key holding your test secret, and have the workload exchange its token via STS for a Google credential and decrypt.</p>
+<h3 id="part-d-break-it-three-ways">Part D — Break it three ways<a class="headerlink" href="#part-d-break-it-three-ways" title="Permanent link">&para;</a></h3>
+<p>This is the part that produces understanding. For each, predict the failure before you run it:</p>
+<ol>
+<li><strong>Change the image.</strong> Rebuild with one byte different, deploy, watch the digest change and the exchange fail with a condition mismatch.</li>
+<li><strong>Use a DEBUG image.</strong> <code>dbgstat</code> becomes <code>enabled</code>, the condition fails. Now remove the <code>dbgstat</code> clause from the attribute condition and observe that the release <em>succeeds</em> — on an image where the operator can inspect memory. This is the single most instructive failure in the lab.</li>
+<li><strong>Replay a token.</strong> Capture a token, wait past <code>exp</code>, and try again. Then reason about what an attacker could have done inside that window.</li>
+</ol>
+<h3 id="part-e-the-question-to-sit-with">Part E — The question to sit with<a class="headerlink" href="#part-e-the-question-to-sit-with" title="Permanent link">&para;</a></h3>
+<p>You have now released a key to an attested environment. Ask: <strong>who decided that this image digest was acceptable, and who could change that decision?</strong> If the answer is "an IAM policy in the same Google Cloud project the workload runs in," then a Google Cloud project administrator can add their own image digest to the allowlist — and the guarantee reduces to IAM. That observation is §1.3 arriving in concrete form, and it is what motivates external key management in Module 6.</p>
+<hr />
+<h2 id="summary-the-attestation-checklist">Summary: The Attestation Checklist<a class="headerlink" href="#summary-the-attestation-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Answer</th>
+<th style="text-align: left;">Consequence of getting it wrong</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Who is the Verifier?</td>
+<td style="text-align: left;">Should be the party whose asset is at risk</td>
+<td style="text-align: left;">The guarantee reduces to a promise by the operator</td>
+</tr>
+<tr>
+<td style="text-align: left;">Passport or background-check?</td>
+<td style="text-align: left;">GCP is passport; AWS Nitro is closer to background-check</td>
+<td style="text-align: left;">Determines freshness handling and availability coupling</td>
+</tr>
+<tr>
+<td style="text-align: left;">Does the chain reach the container digest?</td>
+<td style="text-align: left;">Launch measurement → runtime registers → image digest</td>
+<td style="text-align: left;">You attest firmware and learn nothing about the workload</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is the rootfs immutable?</td>
+<td style="text-align: left;"><code>dm-verity</code> + read-only + no exec</td>
+<td style="text-align: left;">Measurement becomes meaningless after boot</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is there a nonce?</td>
+<td style="text-align: left;">Use <code>eat_nonce</code> / <code>REPORT_DATA</code> whenever possible</td>
+<td style="text-align: left;">Token lifetime becomes your replay window</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is <code>dbgstat</code> / <code>POLICY.DEBUG</code> checked?</td>
+<td style="text-align: left;">Must be</td>
+<td style="text-align: left;">You accept an environment whose memory the operator can read</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is the TCB floor enforced, and is it a floor?</td>
+<td style="text-align: left;">Minimum, never an exact pin, with a raise process</td>
+<td style="text-align: left;">Either a fleet outage or serving on known-vulnerable firmware</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is the GPU in the policy?</td>
+<td style="text-align: left;"><code>cc_mode = ON</code> plus the GPU model</td>
+<td style="text-align: left;">Weights land in unprotected HBM; the design fails silently</td>
+</tr>
+<tr>
+<td style="text-align: left;">Is the report bound to the TLS key?</td>
+<td style="text-align: left;">RA-TLS, via caller-supplied report data</td>
+<td style="text-align: left;">Attestation can be relayed from a different machine</td>
+</tr>
+<tr>
+<td style="text-align: left;">Where do reference values come from?</td>
+<td style="text-align: left;">Ideally reproducible builds + a transparency log; realistically signed golden values</td>
+<td style="text-align: left;">This is the weakest link in most real deployments</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fail-closed or fail-open when the verifier is unreachable?</td>
+<td style="text-align: left;">Decide explicitly and write it down</td>
+<td style="text-align: left;">Choosing by accident means choosing fail-open</td>
+</tr>
+</tbody>
+</table>
+<p>Every policy in this module referred to a GPU claim without explaining it. That is the largest remaining gap: the CPU TEE is now well-defended, and the weights, activations, and KV cache all live somewhere else entirely. Closing that gap — and understanding what it costs in throughput — is <strong>Module 4: Confidential GPUs and Accelerators (<code>04_confidential_gpus_and_accelerators.md</code>)</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

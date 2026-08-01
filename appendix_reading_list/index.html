@@ -1,0 +1,2056 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../appendix_glossary_and_terminology/">
+      
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/appendix_reading_list/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Appendix B - Primary Source Reading List - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#appendix-b-primary-source-reading-list" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Appendix B - Primary Source Reading List
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/appendix_reading_list/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-standards-and-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Standards and Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Standards and Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9334-remote-attestation-procedures-rats-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9334 — Remote ATtestation procedureS (RATS) Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9711-the-entity-attestation-token-eat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9711 — The Entity Attestation Token (EAT)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9180-hybrid-public-key-encryption-hpke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9180 — Hybrid Public Key Encryption (HPKE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ietf-rats-working-group-corim-and-coswid-drafts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IETF RATS Working Group — CoRIM and CoSWID drafts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmtf-security-protocol-and-data-model-spdm-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMTF — Security Protocol and Data Model (SPDM) Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pci-sig-tdisp-and-ide-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCI-SIG — TDISP and IDE specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Computing Consortium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-secure-nested-paging-firmware-abi-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV Secure Nested Paging Firmware ABI Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-snp-platform-attestation-using-virteesev-publication-58217" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV-SNP Platform Attestation Using VirTEE/SEV (Publication 58217)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-snp-attestation-establishing-trust-in-guests-jeremy-powell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV-SNP Attestation: Establishing Trust in Guests (Jeremy Powell)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virteesnpguest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        virtee/snpguest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#googlego-sev-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        google/go-sev-guest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intel-trust-domain-extensions-tdx-module-architecture-specification-and-the-tdx-whitepaper-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — Trust Domain Extensions (TDX) Module Architecture Specification and the TDX whitepaper series
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-device-attestation-model-in-confidential-computing-environment-whitepaper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — Device Attestation Model in Confidential Computing Environment (whitepaper)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-trust-authority-attestation-patterns-and-eat-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel Trust Authority — Attestation Patterns and EAT Profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-dcap-data-center-attestation-primitives-documentation-and-sgxdatacenterattestationprimitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — DCAP (Data Center Attestation Primitives) documentation and SGXDataCenterAttestationPrimitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-confidential-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Confidential GPUs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Confidential GPUs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-confidential-computing-on-nvidia-h100-gpus-for-secure-and-trustworthy-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA — Confidential Computing on NVIDIA H100 GPUs for Secure and Trustworthy AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-hardware-rooted-ai-security-that-wont-slow-you-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA — Hardware-Rooted AI Security That Won't Slow You Down
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-first-confidential-gpus-communications-of-the-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the First Confidential GPUs — Communications of the ACM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rob-nertney-remote-attestation-for-nvidia-hopper-and-blackwell-gpus-cpus-and-beyond-oc3-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rob Nertney — Remote Attestation for NVIDIA Hopper and Blackwell GPUs, CPUs, and Beyond (OC3 2025)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidianvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA/nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm-overview-supported-configurations-and-release-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM — overview, supported configurations, and release notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes-with-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes with GPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space-overview-and-attestation-token-claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space — overview and attestation token claims
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#salrashid123confidential_space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        salrashid123/confidential_space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-how-confidential-computing-lays-the-foundation-for-trusted-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud — How Confidential Computing Lays the Foundation for Trusted AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-comparative-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Comparative Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Comparative Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apple-private-cloud-compute-a-new-frontier-for-ai-privacy-in-the-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Private Cloud Compute: A New Frontier for AI Privacy in the Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apple-expanding-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Expanding Private Cloud Compute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apple-stateless-computation-and-enforceable-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Stateless Computation and Enforceable Guarantees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-attest-an-amazon-ec2-instance-with-amd-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS — Attest an Amazon EC2 instance with AMD SEV-SNP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-confidential-containers-and-the-cncf-confidential-containers-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Confidential Containers and the CNCF Confidential Containers project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-attack-literature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Attack Literature
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Attack Literature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cipherleaks-breaking-constant-time-cryptography-on-amd-sev-via-the-ciphertext-side-channel-usenix-security-2021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIPHERLEAKS — Breaking Constant-time Cryptography on AMD SEV via the Ciphertext Side Channel (USENIX Security 2021)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipherh-automated-detection-of-ciphertext-side-channel-vulnerabilities-usenix-security-2023" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CipherH — Automated Detection of Ciphertext Side-channel Vulnerabilities (USENIX Security 2023)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipherfix-cipherguard-zebrafix-mitigation-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cipherfix, CipherGuard, Zebrafix — mitigation approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdxdown-single-stepping-and-instruction-counting-attacks-against-intel-tdx-ccs-2024" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDXdown — Single-Stepping and Instruction Counting Attacks against Intel TDX (CCS 2024)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heracles-chosen-plaintext-attack-on-amd-sev-snp-ccs-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heracles — Chosen Plaintext Attack on AMD SEV-SNP (CCS 2025)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heckler-wesee-cachewarp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heckler, WeSee, CacheWarp
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-performance-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Performance Studies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Performance Studies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-computing-on-nvidia-hopper-gpus-a-performance-benchmark-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Computing on NVIDIA Hopper GPUs: A Performance Benchmark Study
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-of-confidential-computing-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance of Confidential Computing GPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-llm-inference-performance-and-cost-across-cpu-and-gpu-tees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential LLM Inference: Performance and Cost Across CPU and GPU TEEs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarking-confidential-gpu-inference-on-nvidia-h100-under-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarking Confidential GPU Inference on NVIDIA H100 under Intel TDX
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use This List
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-standards-and-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Standards and Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Standards and Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9334-remote-attestation-procedures-rats-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9334 — Remote ATtestation procedureS (RATS) Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9711-the-entity-attestation-token-eat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9711 — The Entity Attestation Token (EAT)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rfc-9180-hybrid-public-key-encryption-hpke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RFC 9180 — Hybrid Public Key Encryption (HPKE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ietf-rats-working-group-corim-and-coswid-drafts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IETF RATS Working Group — CoRIM and CoSWID drafts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmtf-security-protocol-and-data-model-spdm-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMTF — Security Protocol and Data Model (SPDM) Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pci-sig-tdisp-and-ide-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCI-SIG — TDISP and IDE specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-computing-consortium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Computing Consortium
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-amd-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. AMD SEV-SNP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. AMD SEV-SNP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-secure-nested-paging-firmware-abi-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV Secure Nested Paging Firmware ABI Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-snp-platform-attestation-using-virteesev-publication-58217" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV-SNP Platform Attestation Using VirTEE/SEV (Publication 58217)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amd-sev-snp-attestation-establishing-trust-in-guests-jeremy-powell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMD — SEV-SNP Attestation: Establishing Trust in Guests (Jeremy Powell)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virteesnpguest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        virtee/snpguest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#googlego-sev-guest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        google/go-sev-guest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Intel TDX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Intel TDX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intel-trust-domain-extensions-tdx-module-architecture-specification-and-the-tdx-whitepaper-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — Trust Domain Extensions (TDX) Module Architecture Specification and the TDX whitepaper series
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-device-attestation-model-in-confidential-computing-environment-whitepaper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — Device Attestation Model in Confidential Computing Environment (whitepaper)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-trust-authority-attestation-patterns-and-eat-profile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel Trust Authority — Attestation Patterns and EAT Profile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intel-dcap-data-center-attestation-primitives-documentation-and-sgxdatacenterattestationprimitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intel — DCAP (Data Center Attestation Primitives) documentation and SGXDataCenterAttestationPrimitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-confidential-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Confidential GPUs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Confidential GPUs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-confidential-computing-on-nvidia-h100-gpus-for-secure-and-trustworthy-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA — Confidential Computing on NVIDIA H100 GPUs for Secure and Trustworthy AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidia-hardware-rooted-ai-security-that-wont-slow-you-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA — Hardware-Rooted AI Security That Won't Slow You Down
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-first-confidential-gpus-communications-of-the-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the First Confidential GPUs — Communications of the ACM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rob-nertney-remote-attestation-for-nvidia-hopper-and-blackwell-gpus-cpus-and-beyond-oc3-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rob Nertney — Remote Attestation for NVIDIA Hopper and Blackwell GPUs, CPUs, and Beyond (OC3 2025)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvidianvtrust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA/nvtrust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Google Cloud
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Google Cloud">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-vm-overview-supported-configurations-and-release-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential VM — overview, supported configurations, and release notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-gke-nodes-with-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential GKE Nodes with GPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-space-overview-and-attestation-token-claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Space — overview and attestation token claims
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#salrashid123confidential_space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        salrashid123/confidential_space
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#google-cloud-how-confidential-computing-lays-the-foundation-for-trusted-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Google Cloud — How Confidential Computing Lays the Foundation for Trusted AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-comparative-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Comparative Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Comparative Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apple-private-cloud-compute-a-new-frontier-for-ai-privacy-in-the-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Private Cloud Compute: A New Frontier for AI Privacy in the Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apple-expanding-private-cloud-compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Expanding Private Cloud Compute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apple-stateless-computation-and-enforceable-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apple — Stateless Computation and Enforceable Guarantees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-attest-an-amazon-ec2-instance-with-amd-sev-snp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS — Attest an Amazon EC2 instance with AMD SEV-SNP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-confidential-containers-and-the-cncf-confidential-containers-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Confidential Containers and the CNCF Confidential Containers project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-attack-literature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Attack Literature
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Attack Literature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cipherleaks-breaking-constant-time-cryptography-on-amd-sev-via-the-ciphertext-side-channel-usenix-security-2021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIPHERLEAKS — Breaking Constant-time Cryptography on AMD SEV via the Ciphertext Side Channel (USENIX Security 2021)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipherh-automated-detection-of-ciphertext-side-channel-vulnerabilities-usenix-security-2023" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CipherH — Automated Detection of Ciphertext Side-channel Vulnerabilities (USENIX Security 2023)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipherfix-cipherguard-zebrafix-mitigation-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cipherfix, CipherGuard, Zebrafix — mitigation approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdxdown-single-stepping-and-instruction-counting-attacks-against-intel-tdx-ccs-2024" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDXdown — Single-Stepping and Instruction Counting Attacks against Intel TDX (CCS 2024)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heracles-chosen-plaintext-attack-on-amd-sev-snp-ccs-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heracles — Chosen Plaintext Attack on AMD SEV-SNP (CCS 2025)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heckler-wesee-cachewarp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heckler, WeSee, CacheWarp
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-performance-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Performance Studies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Performance Studies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confidential-computing-on-nvidia-hopper-gpus-a-performance-benchmark-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Computing on NVIDIA Hopper GPUs: A Performance Benchmark Study
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-of-confidential-computing-gpus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance of Confidential Computing GPUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-llm-inference-performance-and-cost-across-cpu-and-gpu-tees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential LLM Inference: Performance and Cost Across CPU and GPU TEEs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarking-confidential-gpu-inference-on-nvidia-h100-under-intel-tdx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarking Confidential GPU Inference on NVIDIA H100 under Intel TDX
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use This List
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="appendix-b-primary-source-reading-list">Appendix B: Primary Source Reading List<a class="headerlink" href="#appendix-b-primary-source-reading-list" title="Permanent link">&para;</a></h1>
+<p>This book has a shelf life. The architecture is stable; the availability matrices, GPU generations, and attack literature are not. This appendix exists so that any claim in these notes can be re-verified at its source.</p>
+<p>Entries are annotated with what each source is actually good for. Links marked <strong>(verified)</strong> were fetched or confirmed while writing these notes; entries without a link are cited by title and publisher because I did not verify a stable URL — search by title rather than trusting a guessed one.</p>
+<hr />
+<h2 id="1-standards-and-architecture">1. Standards and Architecture<a class="headerlink" href="#1-standards-and-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="rfc-9334-remote-attestation-procedures-rats-architecture"><code>RFC 9334</code> — Remote ATtestation procedureS (RATS) Architecture<a class="headerlink" href="#rfc-9334-remote-attestation-procedures-rats-architecture" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.rfc-editor.org/info/rfc9334/">https://www.rfc-editor.org/info/rfc9334/</a> · <a href="https://datatracker.ietf.org/doc/html/rfc9334">https://datatracker.ietf.org/doc/html/rfc9334</a></p>
+<p>The vocabulary the whole field uses: Attester, Verifier, Relying Party, Endorser, Reference Value Provider, and the passport versus background-check models. Short, readable, and worth reading in full once. → Module 3, §1</p>
+<h3 id="rfc-9711-the-entity-attestation-token-eat"><code>RFC 9711</code> — The Entity Attestation Token (EAT)<a class="headerlink" href="#rfc-9711-the-entity-attestation-token-eat" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://datatracker.ietf.org/doc/rfc9711/">https://datatracker.ietf.org/doc/rfc9711/</a></p>
+<p>The standard claims format that GCP's attestation token follows in spirit — this is why the token has <code>eat_nonce</code>, <code>dbgstat</code>, <code>hwmodel</code>, and <code>swname</code> rather than vendor-specific field names. → Module 3, §3.4</p>
+<h3 id="rfc-9180-hybrid-public-key-encryption-hpke"><code>RFC 9180</code> — Hybrid Public Key Encryption (HPKE)<a class="headerlink" href="#rfc-9180-hybrid-public-key-encryption-hpke" title="Permanent link">&para;</a></h3>
+<p>The primitive for client-side payload encryption to an attested public key. → Module 6, §5.2</p>
+<h3 id="ietf-rats-working-group-corim-and-coswid-drafts">IETF RATS Working Group — CoRIM and CoSWID drafts<a class="headerlink" href="#ietf-rats-working-group-corim-and-coswid-drafts" title="Permanent link">&para;</a></h3>
+<p>Standard formats for publishing reference values and software identity. Watch these; they are the eventual answer to the reference-value problem. Track via the RATS working group's datatracker page. → Module 3, §3.4</p>
+<h3 id="dmtf-security-protocol-and-data-model-spdm-specification">DMTF — Security Protocol and Data Model (SPDM) Specification<a class="headerlink" href="#dmtf-security-protocol-and-data-model-spdm-specification" title="Permanent link">&para;</a></h3>
+<p>The device authentication and key-exchange protocol underlying confidential GPU session establishment. Published by DMTF. → Module 4, §2.3</p>
+<h3 id="pci-sig-tdisp-and-ide-specifications">PCI-SIG — TDISP and IDE specifications<a class="headerlink" href="#pci-sig-tdisp-and-ide-specifications" title="Permanent link">&para;</a></h3>
+<p>TEE Device Interface Security Protocol and Integrity and Data Encryption. The standardization endpoint that eventually removes bounce buffers. Membership-gated; the DMTF and vendor whitepapers below are the accessible summaries. → Module 4, §6.2</p>
+<h3 id="confidential-computing-consortium">Confidential Computing Consortium<a class="headerlink" href="#confidential-computing-consortium" title="Permanent link">&para;</a></h3>
+<p><a href="https://confidentialcomputing.io/">https://confidentialcomputing.io/</a></p>
+<p>The Linux Foundation body whose definition anchors Module 1, §1.3. Its published whitepapers are a reasonable neutral overview when you need something vendor-independent to hand to a stakeholder.</p>
+<hr />
+<h2 id="2-amd-sev-snp">2. AMD SEV-SNP<a class="headerlink" href="#2-amd-sev-snp" title="Permanent link">&para;</a></h2>
+<h3 id="amd-sev-secure-nested-paging-firmware-abi-specification">AMD — <em>SEV Secure Nested Paging Firmware ABI Specification</em><a class="headerlink" href="#amd-sev-secure-nested-paging-firmware-abi-specification" title="Permanent link">&para;</a></h3>
+<p>The authoritative reference for the attestation report structure, guest policy bits, <code>TCB_VERSION</code>, and the firmware interface. <strong>This is the document to consult when you need to know exactly what a report field means.</strong> Published on AMD's developer site under the SEV documentation section.</p>
+<h3 id="amd-sev-snp-platform-attestation-using-virteesev-publication-58217">AMD — <em>SEV-SNP Platform Attestation Using VirTEE/SEV</em> (Publication 58217)<a class="headerlink" href="#amd-sev-snp-platform-attestation-using-virteesev-publication-58217" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.amd.com/content/dam/amd/en/documents/developer/58217-epyc-9004-ug-platform-attestation-using-virtee-snp.pdf">https://www.amd.com/content/dam/amd/en/documents/developer/58217-epyc-9004-ug-platform-attestation-using-virtee-snp.pdf</a></p>
+<p>A practical walkthrough of obtaining and verifying an attestation report with the open-source tooling. The closest thing to a hands-on guide from the vendor. → Module 2, lab</p>
+<h3 id="amd-sev-snp-attestation-establishing-trust-in-guests-jeremy-powell">AMD — <em>SEV-SNP Attestation: Establishing Trust in Guests</em> (Jeremy Powell)<a class="headerlink" href="#amd-sev-snp-attestation-establishing-trust-in-guests-jeremy-powell" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.amd.com/content/dam/amd/en/documents/developer/lss-snp-attestation.pdf">https://www.amd.com/content/dam/amd/en/documents/developer/lss-snp-attestation.pdf</a></p>
+<p>A clear presentation of the attestation flow, the VCEK derivation, and the certificate chain. Good for building intuition before reading the ABI spec.</p>
+<h3 id="virteesnpguest"><code>virtee/snpguest</code><a class="headerlink" href="#virteesnpguest" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://github.com/virtee/snpguest">https://github.com/virtee/snpguest</a></p>
+<p>The CLI used in the Module 2 lab: request a report, fetch the CA and VCEK from AMD's KDS, verify the chain. Reading its source is an efficient way to understand what verification actually entails.</p>
+<h3 id="googlego-sev-guest"><code>google/go-sev-guest</code><a class="headerlink" href="#googlego-sev-guest" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://github.com/google/go-sev-guest">https://github.com/google/go-sev-guest</a></p>
+<p>A Go library wrapping <code>/dev/sev-guest</code> plus attestation verification. The reference implementation to read if you are building your own verifier — which Module 3, §1.3 argues you should be.</p>
+<hr />
+<h2 id="3-intel-tdx">3. Intel TDX<a class="headerlink" href="#3-intel-tdx" title="Permanent link">&para;</a></h2>
+<h3 id="intel-trust-domain-extensions-tdx-module-architecture-specification-and-the-tdx-whitepaper-series">Intel — <em>Trust Domain Extensions (TDX) Module Architecture Specification</em> and the TDX whitepaper series<a class="headerlink" href="#intel-trust-domain-extensions-tdx-module-architecture-specification-and-the-tdx-whitepaper-series" title="Permanent link">&para;</a></h3>
+<p>The authoritative description of SEAM mode, the TDX Module, secure EPT, <code>MRTD</code>/<code>RTMR</code>, and the TDREPORT-to-Quote path. Published on Intel's TDX documentation portal.</p>
+<h3 id="intel-device-attestation-model-in-confidential-computing-environment-whitepaper">Intel — <em>Device Attestation Model in Confidential Computing Environment</em> (whitepaper)<a class="headerlink" href="#intel-device-attestation-model-in-confidential-computing-environment-whitepaper" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://cdrdv2-public.intel.com/783079/whitepaper-device-attestation-model-in-confidential-computing-environment-v0.6.4.pdf">https://cdrdv2-public.intel.com/783079/whitepaper-device-attestation-model-in-confidential-computing-environment-v0.6.4.pdf</a></p>
+<p>How device (accelerator) attestation composes with CPU TEE attestation. Directly relevant to the composite-attestation argument in Module 4, §3.2.</p>
+<h3 id="intel-trust-authority-attestation-patterns-and-eat-profile">Intel Trust Authority — Attestation Patterns and EAT Profile<a class="headerlink" href="#intel-trust-authority-attestation-patterns-and-eat-profile" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.trustauthority.intel.com/main/articles/articles/ita/concept-patterns.html">https://docs.trustauthority.intel.com/main/articles/articles/ita/concept-patterns.html</a> · <a href="https://portal.trustauthority.intel.com/eat_profile.html">https://portal.trustauthority.intel.com/eat_profile.html</a></p>
+<p>A clear articulation of passport versus background-check in a production service, and a concrete EAT profile. Useful even if you never use the product.</p>
+<h3 id="intel-dcap-data-center-attestation-primitives-documentation-and-sgxdatacenterattestationprimitives">Intel — DCAP (Data Center Attestation Primitives) documentation and <code>SGXDataCenterAttestationPrimitives</code><a class="headerlink" href="#intel-dcap-data-center-attestation-primitives-documentation-and-sgxdatacenterattestationprimitives" title="Permanent link">&para;</a></h3>
+<p>The collateral model, PCCS caching, and the verification library. Read this before deciding your fail-closed / fail-open posture. → Module 3, §3.3</p>
+<hr />
+<h2 id="4-confidential-gpus">4. Confidential GPUs<a class="headerlink" href="#4-confidential-gpus" title="Permanent link">&para;</a></h2>
+<h3 id="nvidia-confidential-computing-on-nvidia-h100-gpus-for-secure-and-trustworthy-ai">NVIDIA — <em>Confidential Computing on NVIDIA H100 GPUs for Secure and Trustworthy AI</em><a class="headerlink" href="#nvidia-confidential-computing-on-nvidia-h100-gpus-for-secure-and-trustworthy-ai" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://developer.nvidia.com/blog/confidential-computing-on-h100-gpus-for-secure-and-trustworthy-ai/">https://developer.nvidia.com/blog/confidential-computing-on-h100-gpus-for-secure-and-trustworthy-ai/</a></p>
+<p>The canonical introduction to CC mode, protected memory, bounce buffers, and the attestation flow. Start here for Module 4.</p>
+<h3 id="nvidia-hardware-rooted-ai-security-that-wont-slow-you-down">NVIDIA — <em>Hardware-Rooted AI Security That Won't Slow You Down</em><a class="headerlink" href="#nvidia-hardware-rooted-ai-security-that-wont-slow-you-down" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://developer.nvidia.com/blog/hardware-rooted-ai-security-that-wont-slow-you-down">https://developer.nvidia.com/blog/hardware-rooted-ai-security-that-wont-slow-you-down</a></p>
+<p>Covers the Blackwell-generation multi-GPU confidential computing story, including NVLink encryption and 1/2/4/8-GPU assignment — the change that determines which models are servable at all. → Module 4, §4.2</p>
+<h3 id="creating-the-first-confidential-gpus-communications-of-the-acm"><em>Creating the First Confidential GPUs</em> — Communications of the ACM<a class="headerlink" href="#creating-the-first-confidential-gpus-communications-of-the-acm" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://cacm.acm.org/practice/creating-the-first-confidential-gpus/">https://cacm.acm.org/practice/creating-the-first-confidential-gpus/</a></p>
+<p>The design retrospective, written by the engineers who built it. The best available explanation of <em>why</em> the architecture looks the way it does, as opposed to what it does.</p>
+<h3 id="rob-nertney-remote-attestation-for-nvidia-hopper-and-blackwell-gpus-cpus-and-beyond-oc3-2025">Rob Nertney — <em>Remote Attestation for NVIDIA Hopper and Blackwell GPUs, CPUs, and Beyond</em> (OC3 2025)<a class="headerlink" href="#rob-nertney-remote-attestation-for-nvidia-hopper-and-blackwell-gpus-cpus-and-beyond-oc3-2025" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://cdn.prod.website-files.com/63c54a346e01f30e726f97cf/67f00a27564271b2f87c4988_Rob%20Nertney%20OC3%202025%20-%20Nvidia%20Blackwell.pdf">https://cdn.prod.website-files.com/63c54a346e01f30e726f97cf/67f00a27564271b2f87c4988_Rob%20Nertney%20OC3%202025%20-%20Nvidia%20Blackwell.pdf</a></p>
+<p>Composite CPU + GPU attestation from NVIDIA's perspective, including RIMs and the NRAS-versus-local-verifier decision. → Module 4, §3</p>
+<h3 id="nvidianvtrust"><code>NVIDIA/nvtrust</code><a class="headerlink" href="#nvidianvtrust" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://github.com/NVIDIA/nvtrust">https://github.com/NVIDIA/nvtrust</a></p>
+<p>The attestation SDK and local verifier used in the Module 4 lab. The issue tracker is unusually informative about real-world failure modes — measurement mismatches, ready-state problems, CPU/GPU pairing constraints.</p>
+<hr />
+<h2 id="5-google-cloud">5. Google Cloud<a class="headerlink" href="#5-google-cloud" title="Permanent link">&para;</a></h2>
+<h3 id="confidential-vm-overview-supported-configurations-and-release-notes">Confidential VM — overview, supported configurations, and release notes<a class="headerlink" href="#confidential-vm-overview-supported-configurations-and-release-notes" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.cloud.google.com/confidential-computing/confidential-vm/docs/confidential-vm-overview">https://docs.cloud.google.com/confidential-computing/confidential-vm/docs/confidential-vm-overview</a></p>
+<p>The supported-configurations page is the one to bookmark: machine types, CC technologies, and zones, which change often enough that nothing in Module 5 should be trusted over it.</p>
+<h3 id="confidential-gke-nodes">Confidential GKE Nodes<a class="headerlink" href="#confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.cloud.google.com/kubernetes-engine/docs/how-to/confidential-gke-nodes">https://docs.cloud.google.com/kubernetes-engine/docs/how-to/confidential-gke-nodes</a></p>
+<p>Enablement flags, limitations, and the explicit statement that Confidential GKE Nodes does not change the security measures applied to cluster control planes — the sentence Module 5, §2.3 is built on.</p>
+<h3 id="confidential-gke-nodes-with-gpus">Confidential GKE Nodes with GPUs<a class="headerlink" href="#confidential-gke-nodes-with-gpus" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.cloud.google.com/kubernetes-engine/docs/how-to/gpus-confidential-nodes">https://docs.cloud.google.com/kubernetes-engine/docs/how-to/gpus-confidential-nodes</a></p>
+<p>The GPU constraints: machine type, one H100, TDX, no GPU sharing, and the GKE version requirements. → Module 4, §4.1</p>
+<h3 id="confidential-space-overview-and-attestation-token-claims">Confidential Space — overview and attestation token claims<a class="headerlink" href="#confidential-space-overview-and-attestation-token-claims" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.cloud.google.com/confidential-computing/confidential-space/docs/confidential-space-overview">https://docs.cloud.google.com/confidential-computing/confidential-space/docs/confidential-space-overview</a> · <a href="https://docs.cloud.google.com/confidential-computing/confidential-space/docs/reference/token-claims">https://docs.cloud.google.com/confidential-computing/confidential-space/docs/reference/token-claims</a></p>
+<p>The token-claims reference is the single most useful GCP page in this book. Every claim in the Module 3, §5.2 policy checklist comes from it, including the <code>submods.nvidia_gpu</code> structure.</p>
+<h3 id="salrashid123confidential_space"><code>salrashid123/confidential_space</code><a class="headerlink" href="#salrashid123confidential_space" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://github.com/salrashid123/confidential_space">https://github.com/salrashid123/confidential_space</a></p>
+<p>Extensive worked examples of Confidential Space with attested key release. More detailed and more honest about edge cases than the official quickstarts.</p>
+<h3 id="google-cloud-how-confidential-computing-lays-the-foundation-for-trusted-ai">Google Cloud — <em>How Confidential Computing Lays the Foundation for Trusted AI</em><a class="headerlink" href="#google-cloud-how-confidential-computing-lays-the-foundation-for-trusted-ai" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://cloud.google.com/blog/products/identity-security/how-confidential-computing-lays-the-foundation-for-trusted-ai/">https://cloud.google.com/blog/products/identity-security/how-confidential-computing-lays-the-foundation-for-trusted-ai/</a></p>
+<p>Google's own framing of the confidential AI story. Useful for understanding the vocabulary a Google-internal audience will expect, and worth reading alongside Module 7, §5.2 on where framing outruns mechanism.</p>
+<hr />
+<h2 id="6-comparative-architectures">6. Comparative Architectures<a class="headerlink" href="#6-comparative-architectures" title="Permanent link">&para;</a></h2>
+<h3 id="apple-private-cloud-compute-a-new-frontier-for-ai-privacy-in-the-cloud">Apple — <em>Private Cloud Compute: A New Frontier for AI Privacy in the Cloud</em><a class="headerlink" href="#apple-private-cloud-compute-a-new-frontier-for-ai-privacy-in-the-cloud" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://security.apple.com/blog/private-cloud-compute/">https://security.apple.com/blog/private-cloud-compute/</a></p>
+<p><strong>The single most valuable document in this list.</strong> The five requirements — stateless computation, enforceable guarantees, no privileged runtime access, non-targetability, verifiable transparency — are the most rigorous published statement of what confidential inference should mean. Read it before designing anything. → Module 7, §6.2</p>
+<h3 id="apple-expanding-private-cloud-compute">Apple — <em>Expanding Private Cloud Compute</em><a class="headerlink" href="#apple-expanding-private-cloud-compute" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://security.apple.com/blog/expanding-pcc/">https://security.apple.com/blog/expanding-pcc/</a></p>
+<p>PCC extended onto Google Cloud with Intel TDX, NVIDIA Confidential Computing, and Google's Titan chip. Component for component, the architecture Module 6 describes — and an explicit demonstration that the model provider can retain software control and independent verification while running on another party's infrastructure. → Module 7, §6.3</p>
+<h3 id="apple-stateless-computation-and-enforceable-guarantees">Apple — <em>Stateless Computation and Enforceable Guarantees</em><a class="headerlink" href="#apple-stateless-computation-and-enforceable-guarantees" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://security.apple.com/documentation/private-cloud-compute/statelessandenforcable">https://security.apple.com/documentation/private-cloud-compute/statelessandenforcable</a></p>
+<p>The detailed technical documentation behind the first two requirements.</p>
+<h3 id="aws-attest-an-amazon-ec2-instance-with-amd-sev-snp">AWS — <em>Attest an Amazon EC2 instance with AMD SEV-SNP</em><a class="headerlink" href="#aws-attest-an-amazon-ec2-instance-with-amd-sev-snp" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snp-attestation.html">https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snp-attestation.html</a></p>
+<p>Useful as a contrast to GCP's model, and AWS's KMS condition-key approach to attested key release is the cleanest in the industry — worth understanding even if you never deploy on AWS. → Module 7, §6.2</p>
+<h3 id="azure-confidential-containers-and-the-cncf-confidential-containers-project">Azure Confidential Containers and the CNCF Confidential Containers project<a class="headerlink" href="#azure-confidential-containers-and-the-cncf-confidential-containers-project" title="Permanent link">&para;</a></h3>
+<p>The pod-sandbox model that Module 1, §4.4 and Module 5, §6 argue is the architecturally better unit of confidentiality for Kubernetes. Track via the CNCF Confidential Containers project and Microsoft's AKS confidential containers documentation.</p>
+<hr />
+<h2 id="7-attack-literature">7. Attack Literature<a class="headerlink" href="#7-attack-literature" title="Permanent link">&para;</a></h2>
+<p>Read at least the first of these. A model provider's security team will know this work, and being able to discuss it accurately is what separates a credible security claim from a marketing one.</p>
+<h3 id="cipherleaks-breaking-constant-time-cryptography-on-amd-sev-via-the-ciphertext-side-channel-usenix-security-2021">CIPHERLEAKS — <em>Breaking Constant-time Cryptography on AMD SEV via the Ciphertext Side Channel</em> (USENIX Security 2021)<a class="headerlink" href="#cipherleaks-breaking-constant-time-cryptography-on-amd-sev-via-the-ciphertext-side-channel-usenix-security-2021" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.usenix.org/conference/usenixsecurity21/presentation/li-mengyuan">https://www.usenix.org/conference/usenixsecurity21/presentation/li-mengyuan</a></p>
+<p>The foundational ciphertext side-channel result. Establishes that deterministic memory encryption leaks value-change information, and that constant-time code is not a defense. → Module 2, §5.1</p>
+<h3 id="cipherh-automated-detection-of-ciphertext-side-channel-vulnerabilities-usenix-security-2023">CipherH — <em>Automated Detection of Ciphertext Side-channel Vulnerabilities</em> (USENIX Security 2023)<a class="headerlink" href="#cipherh-automated-detection-of-ciphertext-side-channel-vulnerabilities-usenix-security-2023" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.usenix.org/system/files/usenixsecurity23-deng-sen.pdf">https://www.usenix.org/system/files/usenixsecurity23-deng-sen.pdf</a></p>
+<p>Automated discovery of the vulnerability class. Relevant if you need to assess your own code.</p>
+<h3 id="cipherfix-cipherguard-zebrafix-mitigation-approaches">Cipherfix, CipherGuard, Zebrafix — mitigation approaches<a class="headerlink" href="#cipherfix-cipherguard-zebrafix-mitigation-approaches" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://arxiv.org/pdf/2210.13124">https://arxiv.org/pdf/2210.13124</a> · <a href="https://arxiv.org/html/2502.13401">https://arxiv.org/html/2502.13401</a> · <a href="https://arxiv.org/pdf/2502.09139">https://arxiv.org/pdf/2502.09139</a></p>
+<p>Software and compiler mitigations that break plaintext-to-ciphertext determinism. Read one to understand why the mitigation is expensive and why "just keep keys out of guest DRAM" is often the better answer.</p>
+<h3 id="tdxdown-single-stepping-and-instruction-counting-attacks-against-intel-tdx-ccs-2024">TDXdown — <em>Single-Stepping and Instruction Counting Attacks against Intel TDX</em> (CCS 2024)<a class="headerlink" href="#tdxdown-single-stepping-and-instruction-counting-attacks-against-intel-tdx-ccs-2024" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://dl.acm.org/doi/10.1145/3658644.3690230">https://dl.acm.org/doi/10.1145/3658644.3690230</a></p>
+<p>Defeats TDX's built-in single-stepping mitigation. The reference for Module 2, §5.3 and for why the TDX Module's patchability is both an advantage and a source of TCB churn.</p>
+<h3 id="heracles-chosen-plaintext-attack-on-amd-sev-snp-ccs-2025">Heracles — <em>Chosen Plaintext Attack on AMD SEV-SNP</em> (CCS 2025)<a class="headerlink" href="#heracles-chosen-plaintext-attack-on-amd-sev-snp-ccs-2025" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://heracles-attack.github.io/Heracles-CCS2025.pdf">https://heracles-attack.github.io/Heracles-CCS2025.pdf</a></p>
+<p>The current state of the art against SEV-SNP. Read the threat model section carefully — the assumptions matter for whether it applies to your deployment.</p>
+<h3 id="heckler-wesee-cachewarp">Heckler, WeSee, CacheWarp<a class="headerlink" href="#heckler-wesee-cachewarp" title="Permanent link">&para;</a></h3>
+<p>Interrupt-injection and cache-manipulation attacks against SEV-SNP. Search by name; each has a project page. The structural lesson — anything the hypervisor retains control of is an attack surface — matters more than the individual results. → Module 2, §5.2</p>
+<hr />
+<h2 id="8-performance-studies">8. Performance Studies<a class="headerlink" href="#8-performance-studies" title="Permanent link">&para;</a></h2>
+<h3 id="confidential-computing-on-nvidia-hopper-gpus-a-performance-benchmark-study"><em>Confidential Computing on NVIDIA Hopper GPUs: A Performance Benchmark Study</em><a class="headerlink" href="#confidential-computing-on-nvidia-hopper-gpus-a-performance-benchmark-study" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://arxiv.org/pdf/2409.03992">https://arxiv.org/pdf/2409.03992</a></p>
+<p>The most-cited H100 CC benchmark. Establishes that overhead is dominated by CPU–GPU PCIe transfer and shrinks with model size, batch size, and sequence length. The empirical basis for Module 4, §5.2.</p>
+<h3 id="performance-of-confidential-computing-gpus"><em>Performance of Confidential Computing GPUs</em><a class="headerlink" href="#performance-of-confidential-computing-gpus" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://arxiv.org/pdf/2505.16501">https://arxiv.org/pdf/2505.16501</a></p>
+<p>A broader treatment across workload types.</p>
+<h3 id="confidential-llm-inference-performance-and-cost-across-cpu-and-gpu-tees"><em>Confidential LLM Inference: Performance and Cost Across CPU and GPU TEEs</em><a class="headerlink" href="#confidential-llm-inference-performance-and-cost-across-cpu-and-gpu-tees" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://www.arxiv.org/pdf/2509.18886">https://www.arxiv.org/pdf/2509.18886</a></p>
+<p>Separates CPU TEE cost from GPU TEE cost — the decomposition Module 7, §1.1 insists on — and includes a cost model.</p>
+<h3 id="benchmarking-confidential-gpu-inference-on-nvidia-h100-under-intel-tdx"><em>Benchmarking Confidential GPU Inference on NVIDIA H100 under Intel TDX</em><a class="headerlink" href="#benchmarking-confidential-gpu-inference-on-nvidia-h100-under-intel-tdx" title="Permanent link">&para;</a></h3>
+<p><strong>(verified)</strong> <a href="https://arxiv.org/html/2607.19353v1">https://arxiv.org/html/2607.19353v1</a></p>
+<p>The configuration closest to the Module 6 reference architecture, and the source of the 15–25% capacity-reservation heuristic.</p>
+<hr />
+<h2 id="how-to-use-this-list">How to Use This List<a class="headerlink" href="#how-to-use-this-list" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Designing?</strong> Apple PCC first, then RFC 9334, then the Confidential Space token-claims reference.</li>
+<li><strong>Debugging attestation?</strong> The AMD ABI spec or Intel TDX spec for field semantics, then <code>snpguest</code> / <code>go-sev-guest</code> / <code>nvtrust</code> source.</li>
+<li><strong>Justifying a security claim?</strong> The attack literature in §7. Volunteering the qualifications is what makes the claim credible.</li>
+<li><strong>Capacity planning?</strong> The performance studies in §8, then replace them with your own measurements as soon as you have them.</li>
+<li><strong>Checking whether something in these notes is still true?</strong> The Google Cloud documentation in §5, which changes on a scale of months.</li>
+</ul>
+<hr />
+<p>Return to the <a href="../">curriculum index</a> or <a href="../appendix_glossary_and_terminology/">Appendix A: Master Glossary</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

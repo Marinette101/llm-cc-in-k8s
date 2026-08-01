@@ -1,0 +1,2276 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../02_hardware_tee_architectures/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/01_confidential_computing_foundations/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 1 - Confidential Computing Foundations - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-1-confidential-computing-foundations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 1 - Confidential Computing Foundations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/01_confidential_computing_foundations/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-three-states-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: The Three States of Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: The Three States of Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-canonical-split-and-the-gap-it-hides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Canonical Split, and the Gap It Hides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-privilege-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The Privilege Ladder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-confidential-computing-consortium-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Confidential Computing Consortium Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-why-inference-is-the-forcing-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Why Inference Is the Forcing Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-threat-models-and-the-adversary-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Threat Models and the Adversary Taxonomy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Threat Models and the Adversary Taxonomy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-naming-the-adversary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Naming the Adversary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-what-each-adversary-can-actually-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 What Each Adversary Can Actually Do
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 What Each Adversary Can Actually Do">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-a1-the-malicious-co-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. A1 — The malicious co-tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-a2-the-compromised-hypervisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A2 — The compromised hypervisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a3-the-cloud-insider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. A3 — The cloud insider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-a4-the-physical-attacker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. A4 — The physical attacker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-b1b2-code-inside-the-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. B1/B2 — Code inside the enclave
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-b3-the-tee-vendor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. B3 — The TEE vendor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-c1c4-out-of-scope-permanently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. C1–C4 — Out of scope, permanently
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-tcb-minimization-as-a-design-discipline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 TCB Minimization as a Design Discipline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-the-building-blocks-of-a-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: The Building Blocks of a TEE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: The Building Blocks of a TEE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-hardware-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Hardware Root of Trust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-measurement-and-measured-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Measurement and Measured Boot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-memory-protection-encryption-is-necessary-not-sufficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Memory Protection: Encryption Is Necessary, Not Sufficient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Sealing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-process-tees-versus-vm-tees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Process TEEs versus VM TEEs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Process TEEs versus VM TEEs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-two-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Two Architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-tradeoff-stated-honestly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The Tradeoff, Stated Honestly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-why-vm-tees-won-for-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Why VM TEEs Won for AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-confidential-containers-the-kubernetes-shaped-middle-ground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Confidential Containers: The Kubernetes-Shaped Middle Ground
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-third-party-maas-problem-formalized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Third-Party MaaS Problem, Formalized
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Third-Party MaaS Problem, Formalized">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-four-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Four Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-what-google-cannot-see-the-weights-must-mean-technically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 What "Google Cannot See the Weights" Must Mean Technically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-property-that-is-hardest-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The Property That Is Hardest, and Why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-making-the-tee-announce-itself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Making the TEE Announce Itself
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Making the TEE Announce Itself">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-find-what-your-project-can-actually-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Find what your project can actually run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-boot-a-baseline-non-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Boot a baseline (non-confidential) VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-boot-an-amd-sev-snp-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Boot an AMD SEV-SNP Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-ask-each-guest-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Ask each guest what it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-confirm-the-negative-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Confirm the negative result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-foundations-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Foundations Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-three-states-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: The Three States of Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: The Three States of Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-canonical-split-and-the-gap-it-hides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Canonical Split, and the Gap It Hides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-privilege-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The Privilege Ladder
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-confidential-computing-consortium-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Confidential Computing Consortium Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-why-inference-is-the-forcing-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Why Inference Is the Forcing Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-threat-models-and-the-adversary-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: Threat Models and the Adversary Taxonomy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Threat Models and the Adversary Taxonomy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-naming-the-adversary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Naming the Adversary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-what-each-adversary-can-actually-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 What Each Adversary Can Actually Do
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 What Each Adversary Can Actually Do">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-a1-the-malicious-co-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. A1 — The malicious co-tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-a2-the-compromised-hypervisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. A2 — The compromised hypervisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a3-the-cloud-insider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. A3 — The cloud insider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-a4-the-physical-attacker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. A4 — The physical attacker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-b1b2-code-inside-the-enclave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. B1/B2 — Code inside the enclave
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-b3-the-tee-vendor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. B3 — The TEE vendor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-c1c4-out-of-scope-permanently" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. C1–C4 — Out of scope, permanently
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-tcb-minimization-as-a-design-discipline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 TCB Minimization as a Design Discipline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-the-building-blocks-of-a-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: The Building Blocks of a TEE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: The Building Blocks of a TEE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-hardware-root-of-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The Hardware Root of Trust
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-measurement-and-measured-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Measurement and Measured Boot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-memory-protection-encryption-is-necessary-not-sufficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Memory Protection: Encryption Is Necessary, Not Sufficient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Attestation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-sealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Sealing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-process-tees-versus-vm-tees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Process TEEs versus VM TEEs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Process TEEs versus VM TEEs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-two-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The Two Architectures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-tradeoff-stated-honestly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The Tradeoff, Stated Honestly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-why-vm-tees-won-for-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Why VM TEEs Won for AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-confidential-containers-the-kubernetes-shaped-middle-ground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Confidential Containers: The Kubernetes-Shaped Middle Ground
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-the-third-party-maas-problem-formalized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: The Third-Party MaaS Problem, Formalized
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: The Third-Party MaaS Problem, Formalized">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-four-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The Four Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-what-google-cannot-see-the-weights-must-mean-technically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 What "Google Cannot See the Weights" Must Mean Technically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-property-that-is-hardest-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The Property That Is Hardest, and Why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-making-the-tee-announce-itself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Making the TEE Announce Itself
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Making the TEE Announce Itself">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-find-what-your-project-can-actually-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Find what your project can actually run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-boot-a-baseline-non-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Boot a baseline (non-confidential) VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-boot-an-amd-sev-snp-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Boot an AMD SEV-SNP Confidential VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-ask-each-guest-what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Ask each guest what it is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-confirm-the-negative-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Confirm the negative result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-foundations-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Foundations Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-1-confidential-computing-foundations">Module 1: Confidential Computing Foundations<a class="headerlink" href="#module-1-confidential-computing-foundations" title="Permanent link">&para;</a></h1>
+<p>Confidential computing is one of those fields where the vocabulary is small and the precision demands are high. "Trusted," "secure," "encrypted," and "attested" are used interchangeably in vendor material and mean four different things. This module establishes the vocabulary carefully, because every later chapter depends on it: a claim about SEV-SNP in Module 2, or about GPU attestation in Module 4, is only checkable if you already know exactly what a TCB is and what a measurement measures.</p>
+<p>This module covers <strong>the three states of data and why "in use" was left open</strong>, <strong>the adversary taxonomy and the discipline of threat modeling</strong>, <strong>the building blocks of a TEE</strong>, <strong>process-based versus VM-based TEEs</strong>, and <strong>the formal statement of the third-party MaaS problem</strong> that the rest of the book solves.</p>
+<hr />
+<h2 id="part-1-the-three-states-of-data">Part 1: The Three States of Data<a class="headerlink" href="#part-1-the-three-states-of-data" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-canonical-split-and-the-gap-it-hides">1.1 The Canonical Split, and the Gap It Hides<a class="headerlink" href="#11-the-canonical-split-and-the-gap-it-hides" title="Permanent link">&para;</a></h3>
+<p>Security practice divides data into three states, and for two of them the industry converged on an answer decades ago.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["📦 Data at Rest&lt;br&gt;on disk, in object storage"] --&gt;|"AES-XTS full-disk encryption&lt;br&gt;CMEK, envelope encryption"| A1["✅ Solved&lt;br&gt;~2005"]
+    B["🌐 Data in Transit&lt;br&gt;on the wire"] --&gt;|"TLS 1.3, mTLS,&lt;br&gt;IPsec, service mesh"| B1["✅ Solved&lt;br&gt;~2015 at scale"]
+    C["⚙️ Data in Use&lt;br&gt;in DRAM, in registers,&lt;br&gt;in GPU HBM"] --&gt;|"???"| C1["❌ The Gap&lt;br&gt;plaintext, addressable by&lt;br&gt;anything more privileged&lt;br&gt;than the workload"]
+
+    C1 --&gt; D["Confidential Computing&lt;br&gt;hardware memory encryption&lt;br&gt;+ integrity + attestation"]</code></pre>
+<p>The gap is not an oversight. It is a direct consequence of how computers work: a CPU cannot execute on ciphertext. At some point the bytes must be plaintext in a register file. The only question is <em>who else can see them at that moment</em>, and historically the answer was "anything running at a higher privilege level," which on a cloud host means the hypervisor, the host kernel, the firmware, the management plane, and anyone with physical access to the DIMM.</p>
+<h3 id="12-the-privilege-ladder">1.2 The Privilege Ladder<a class="headerlink" href="#12-the-privilege-ladder" title="Permanent link">&para;</a></h3>
+<p>The reason "in use" is hard is that classical operating-system security is built on a <em>strictly nested</em> privilege model. Each ring can inspect everything above it.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Level</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Can read guest memory?</th>
+<th style="text-align: left;">Owned by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Ring 3</td>
+<td style="text-align: left;">Your inference process</td>
+<td style="text-align: left;">Its own only</td>
+<td style="text-align: left;">You</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ring 0</td>
+<td style="text-align: left;">Guest kernel</td>
+<td style="text-align: left;">All guest memory</td>
+<td style="text-align: left;">You</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ring -1</td>
+<td style="text-align: left;">Hypervisor (KVM)</td>
+<td style="text-align: left;">All guest memory</td>
+<td style="text-align: left;">Cloud operator</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ring -2</td>
+<td style="text-align: left;">SMM / firmware</td>
+<td style="text-align: left;">All memory</td>
+<td style="text-align: left;">OEM + cloud operator</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ring -3</td>
+<td style="text-align: left;">Management engine / BMC</td>
+<td style="text-align: left;">All memory</td>
+<td style="text-align: left;">OEM + cloud operator</td>
+</tr>
+<tr>
+<td style="text-align: left;">Physical</td>
+<td style="text-align: left;">DIMM, PCIe bus, interposer</td>
+<td style="text-align: left;">All memory</td>
+<td style="text-align: left;">Whoever is in the datacenter</td>
+</tr>
+</tbody>
+</table>
+<p>Every layer below your guest kernel is operated by someone who is not you. In an ordinary cloud, you accept this. The entire premise of confidential computing is to <strong>invert the nesting</strong>: to make a region of memory that the <em>more</em> privileged layers cannot read, enforced by silicon rather than by software policy.</p>
+<h3 id="13-the-confidential-computing-consortium-definition">1.3 The Confidential Computing Consortium Definition<a class="headerlink" href="#13-the-confidential-computing-consortium-definition" title="Permanent link">&para;</a></h3>
+<p>The Confidential Computing Consortium's working definition is worth quoting precisely, because each clause is load-bearing:</p>
+<blockquote>
+<p>Confidential computing is the protection of data in use by performing computation in a hardware-based, attested Trusted Execution Environment.</p>
+</blockquote>
+<ul>
+<li><strong>Data in use</strong> — the state above, not a re-branding of disk or transit encryption.</li>
+<li><strong>Hardware-based</strong> — enforced by the CPU/SoC, not by a hypervisor promising to behave. A software-only sandbox is not confidential computing regardless of how good it is.</li>
+<li><strong>Attested</strong> — the environment can <em>prove</em> what it is to a remote party. Without this clause the definition would admit "trust me, it's a TEE," which is worthless (Principle 2).</li>
+<li><strong>Trusted Execution Environment</strong> — a specific bounded region, not the whole machine.</li>
+</ul>
+<p>A useful test: if a vendor claim survives deleting the word "attested," the claim is probably marketing.</p>
+<h3 id="14-why-inference-is-the-forcing-function">1.4 Why Inference Is the Forcing Function<a class="headerlink" href="#14-why-inference-is-the-forcing-function" title="Permanent link">&para;</a></h3>
+<p>Most workloads have a comfortable ratio of at-rest data to in-use data. A database holds terabytes on disk and a few gigabytes in a buffer pool; encrypting the disk covers most of the exposure. LLM inference inverts this completely:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Asset</th>
+<th style="text-align: left;">Where it lives during a request</th>
+<th style="text-align: left;">At rest?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Model weights</td>
+<td style="text-align: left;">Entirely resident in GPU HBM, hot, for the process lifetime</td>
+<td style="text-align: left;">Only before the first load</td>
+</tr>
+<tr>
+<td style="text-align: left;">Prompt</td>
+<td style="text-align: left;">Plaintext in host RAM the instant TLS terminates; then tokenized into device memory</td>
+<td style="text-align: left;">Never, unless you log it</td>
+</tr>
+<tr>
+<td style="text-align: left;">KV cache</td>
+<td style="text-align: left;">GPU HBM for the duration of the request (and longer, with prefix caching)</td>
+<td style="text-align: left;">Never</td>
+</tr>
+<tr>
+<td style="text-align: left;">Completion</td>
+<td style="text-align: left;">Host RAM and the response buffer, streamed token by token</td>
+<td style="text-align: left;">Never</td>
+</tr>
+</tbody>
+</table>
+<p>There is no point in the request lifecycle at which the valuable data is at rest. Disk encryption protects a model checkpoint sitting in a bucket and <em>nothing else that matters</em>. This is why LLM serving, more than any other workload, is the one that dragged confidential computing from a compliance checkbox into a functional requirement.</p>
+<hr />
+<h2 id="part-2-threat-models-and-the-adversary-taxonomy">Part 2: Threat Models and the Adversary Taxonomy<a class="headerlink" href="#part-2-threat-models-and-the-adversary-taxonomy" title="Permanent link">&para;</a></h2>
+<h3 id="21-naming-the-adversary">2.1 Naming the Adversary<a class="headerlink" href="#21-naming-the-adversary" title="Permanent link">&para;</a></h3>
+<p>"Protected in use" is meaningless without an adversary. The following taxonomy is the one used throughout this book; every architecture is evaluated against it.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph OUT ["🚫 Moved OUTSIDE the trust boundary by a VM TEE"]
+        A1["A1: Malicious Co-Tenant&lt;br&gt;another VM on the same host&lt;br&gt;attempting cross-VM memory reads"]
+        A2["A2: Compromised Hypervisor&lt;br&gt;attacker with KVM/host-kernel code execution"]
+        A3["A3: Cloud Insider&lt;br&gt;SRE with legitimate host root,&lt;br&gt;live-migration and memory-dump tooling"]
+        A4["A4: Physical Attacker&lt;br&gt;cold boot, DIMM interposer,&lt;br&gt;bus probing, DMA over PCIe"]
+    end
+
+    subgraph IN ["⚠️ Still INSIDE the trust boundary"]
+        B1["B1: Malicious Guest Code&lt;br&gt;your own image, if compromised&lt;br&gt;or if the supply chain is"]
+        B2["B2: Malicious Model Provider&lt;br&gt;the code you attested to&lt;br&gt;may itself exfiltrate prompts"]
+        B3["B3: Firmware / TEE Vendor&lt;br&gt;AMD PSP, Intel TDX Module,&lt;br&gt;NVIDIA GSP microcode"]
+    end
+
+    subgraph NEVER ["❌ NOT addressed by confidential computing at all"]
+        C1["C1: Denial of Service&lt;br&gt;the operator can always&lt;br&gt;refuse to run your workload"]
+        C2["C2: Traffic Analysis&lt;br&gt;request count, size, timing,&lt;br&gt;arrival pattern"]
+        C3["C3: Side Channels&lt;br&gt;ciphertext, cache, power,&lt;br&gt;single-stepping"]
+        C4["C4: The Legitimate Endpoint&lt;br&gt;the customer's own client&lt;br&gt;can log its own plaintext"]
+    end</code></pre>
+<h3 id="22-what-each-adversary-can-actually-do">2.2 What Each Adversary Can Actually Do<a class="headerlink" href="#22-what-each-adversary-can-actually-do" title="Permanent link">&para;</a></h3>
+<h4 id="1-a1-the-malicious-co-tenant">1. A1 — The malicious co-tenant<a class="headerlink" href="#1-a1-the-malicious-co-tenant" title="Permanent link">&para;</a></h4>
+<p>Historically the headline cloud risk, and the one most thoroughly addressed even <em>before</em> confidential computing: hardware virtualization, IOMMU, and EPT/NPT already prevent one guest from addressing another's memory. Confidential computing adds defense in depth here, but if this is your only adversary you do not need a TEE. <strong>If a design document justifies confidential computing solely by "multi-tenant isolation," it has not identified a real requirement.</strong></p>
+<h4 id="2-a2-the-compromised-hypervisor">2. A2 — The compromised hypervisor<a class="headerlink" href="#2-a2-the-compromised-hypervisor" title="Permanent link">&para;</a></h4>
+<p>The first adversary that genuinely requires new hardware. A hypervisor escape or a host-kernel vulnerability historically gives the attacker plaintext access to every guest on the machine. Under SEV-SNP or TDX, the hypervisor retains full <em>control</em> over the guest — it can schedule it, stop it, deny it memory — but the memory it can read is ciphertext under a key it does not hold.</p>
+<p>This distinction between <strong>control</strong> and <strong>confidentiality</strong> is the single most important asymmetry in the field, and it recurs everywhere: the hypervisor is deliberately left in charge of resource management (that is what makes VM TEEs practical) and deliberately locked out of data.</p>
+<h4 id="3-a3-the-cloud-insider">3. A3 — The cloud insider<a class="headerlink" href="#3-a3-the-cloud-insider" title="Permanent link">&para;</a></h4>
+<p>Commercially, this is the adversary that matters. A model provider deciding whether to host weights on Google Cloud is not primarily worried about a hypervisor 0-day; it is worried about whether some combination of Google employees, legal process, and internal tooling could produce a copy of the weights. Confidential computing's real product is a <em>technical</em> answer — "the key material required to decrypt those weights is only released to an environment whose measurement matches a value you chose, and no Google process holds that key" — rather than a <em>policy</em> answer.</p>
+<p>Note the sharp edge: this only holds if the key release policy is enforced by something the model provider trusts. If the provider's key lives in a Google-managed KMS under a Google-controlled IAM policy, the guarantee is substantially weaker than if it lives in a provider-operated external key manager. Module 3 returns to this at length.</p>
+<h4 id="4-a4-the-physical-attacker">4. A4 — The physical attacker<a class="headerlink" href="#4-a4-the-physical-attacker" title="Permanent link">&para;</a></h4>
+<p>Cold-boot attacks, DIMM interposers, and bus probing. Memory encryption addresses these directly and is genuinely strong: the DRAM contents are ciphertext, and with SEV-SNP or TDX they are also integrity-protected, so an interposer cannot inject or replay values undetected. The residual exposure is the <em>pattern</em> of accesses and, for SEV-SNP specifically, the deterministic relationship between plaintext and ciphertext that the ciphertext side channel exploits (Module 2, Part 5).</p>
+<h4 id="5-b1b2-code-inside-the-enclave">5. B1/B2 — Code inside the enclave<a class="headerlink" href="#5-b1b2-code-inside-the-enclave" title="Permanent link">&para;</a></h4>
+<p>The most frequently misunderstood point in the field: <strong>a TEE protects the workload from the platform; it does nothing to protect anyone from the workload.</strong> If your inference server has a bug that writes prompts to an external logging endpoint, the TEE faithfully protects that exfiltration from the hypervisor on its way out. If the model provider's container is designed to phone home with customer prompts, attestation proves only that it is running <em>the exact image the provider published</em> — which is precisely the image that phones home.</p>
+<p>This is why attestation policy and image transparency are not optional add-ons. The guarantee attestation gives is "you are talking to image <code>sha256:abc…</code>." Whether image <code>sha256:abc…</code> deserves your prompts is a <em>separate</em> question that must be answered by source availability, reproducible builds, or third-party audit. Module 3, Part 7 and Module 6, Part 8 both live in this gap.</p>
+<h4 id="6-b3-the-tee-vendor">6. B3 — The TEE vendor<a class="headerlink" href="#6-b3-the-tee-vendor" title="Permanent link">&para;</a></h4>
+<p>Every TEE has an irreducible vendor-trust root. Under SEV-SNP you trust AMD's PSP firmware and the key AMD fused into the chip. Under TDX you trust the Intel TDX Module and Intel's provisioning service. Under NVIDIA CC you trust the GPU's fused signing key and GSP firmware. There is no way to remove this; the honest posture is to <em>name</em> it in the design document rather than pretend the trust chain is empty.</p>
+<h4 id="7-c1c4-out-of-scope-permanently">7. C1–C4 — Out of scope, permanently<a class="headerlink" href="#7-c1c4-out-of-scope-permanently" title="Permanent link">&para;</a></h4>
+<p>These deserve to be stated as loudly as the protections, because a design that implies otherwise is dishonest:</p>
+<ul>
+<li><strong>Availability</strong>: the operator can always refuse to schedule, or simply power off the machine. Confidential computing is a confidentiality-and-integrity technology, never an availability one.</li>
+<li><strong>Traffic analysis</strong>: request counts, payload sizes, inter-token timing, and arrival patterns are all visible to the host. For an LLM, token-generation timing observed from outside the TEE is a genuine information leak — output length is directly observable, and there is published work on recovering information from streaming-response packet sizes.</li>
+<li><strong>Side channels</strong>: covered in Module 2, Part 5. Real, actively researched, and generally not in the vendors' threat models.</li>
+<li><strong>The legitimate endpoint</strong>: if the customer's own application logs prompts to its own observability stack, no cloud-side mechanism helps.</li>
+</ul>
+<h3 id="23-tcb-minimization-as-a-design-discipline">2.3 TCB Minimization as a Design Discipline<a class="headerlink" href="#23-tcb-minimization-as-a-design-discipline" title="Permanent link">&para;</a></h3>
+<p>The <strong>Trusted Computing Base</strong> is the set of components whose compromise breaks the guarantee. Not "the components you like" — the components whose failure is fatal.</p>
+<p>The discipline is mechanical: enumerate every component, ask "if this were malicious, would the guarantee hold?", and if the answer is no, it is in the TCB. Then make the list as short as you can bear.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">In the TCB of a Confidential GKE inference pod?</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">CPU silicon + microcode</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">Irreducible</td>
+</tr>
+<tr>
+<td style="text-align: left;">AMD PSP / Intel TDX Module</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">Irreducible; note the TDX Module is <em>additional</em> software in the TCB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest firmware (OVMF)</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">Measured into the launch measurement</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest kernel + initrd</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">The whole point of the VM-TEE tradeoff</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest userspace + container image</td>
+<td style="text-align: left;"><strong>Yes</strong></td>
+<td style="text-align: left;">Including every dependency you <code>pip install</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU silicon + GSP firmware + VBIOS</td>
+<td style="text-align: left;"><strong>Yes</strong>, if the GPU holds plaintext</td>
+<td style="text-align: left;">Module 4</td>
+</tr>
+<tr>
+<td style="text-align: left;">Hypervisor / host kernel</td>
+<td style="text-align: left;"><strong>No</strong></td>
+<td style="text-align: left;">Removed by SEV-SNP / TDX</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cloud control plane, IAM, orchestration</td>
+<td style="text-align: left;"><strong>No</strong> for confidentiality, <strong>yes</strong> for availability</td>
+<td style="text-align: left;">Can stop you, cannot read you</td>
+</tr>
+<tr>
+<td style="text-align: left;">Kubernetes control plane</td>
+<td style="text-align: left;"><strong>No</strong> for data, <strong>yes</strong> for what gets scheduled</td>
+<td style="text-align: left;">Module 5, Part 2</td>
+</tr>
+</tbody>
+</table>
+<p>The uncomfortable row is "guest kernel + userspace." A VM TEE puts an entire Linux distribution, your Python environment, and every transitive dependency inside the TCB. That is a TCB of tens of millions of lines. It is a real cost, accepted deliberately in exchange for being able to run unmodified software — see Part 4.</p>
+<hr />
+<h2 id="part-3-the-building-blocks-of-a-tee">Part 3: The Building Blocks of a TEE<a class="headerlink" href="#part-3-the-building-blocks-of-a-tee" title="Permanent link">&para;</a></h2>
+<p>Every TEE, regardless of vendor, is assembled from the same five primitives. Recognizing them makes Module 2 a matter of noting <em>how</em> AMD and Intel each implement them rather than learning two unrelated architectures.</p>
+<pre class="mermaid"><code>flowchart TD
+    RoT["1️⃣ Hardware Root of Trust&lt;br&gt;fused, unextractable key&lt;br&gt;+ immutable boot ROM"] --&gt; M["2️⃣ Measurement&lt;br&gt;hash each stage before&lt;br&gt;transferring control to it"]
+    M --&gt; ME["3️⃣ Memory Protection&lt;br&gt;encryption (confidentiality)&lt;br&gt;+ integrity (anti-replay/remap)"]
+    M --&gt; ATT["4️⃣ Attestation&lt;br&gt;sign (measurement ‖ nonce ‖&lt;br&gt;user data) with a key&lt;br&gt;chaining to the RoT"]
+    RoT --&gt; SEAL["5️⃣ Sealing&lt;br&gt;derive a key bound to&lt;br&gt;the measurement, so only&lt;br&gt;this exact code can unseal"]
+
+    ATT --&gt; USE["Remote party verifies signature&lt;br&gt;+ certificate chain + reference values&lt;br&gt;→ releases secrets"]</code></pre>
+<h3 id="31-the-hardware-root-of-trust">3.1 The Hardware Root of Trust<a class="headerlink" href="#31-the-hardware-root-of-trust" title="Permanent link">&para;</a></h3>
+<p>An unextractable secret fused into the silicon at manufacture, plus immutable boot code that runs before anything mutable. On AMD this is the Platform Security Processor; on Intel, the combination of microcode, the TDX Module loader, and the provisioning key hierarchy; on an NVIDIA Hopper or Blackwell GPU, a per-device private signing key fused at manufacture and never exposed to software, firmware, or the host.</p>
+<p>Two properties matter and they are frequently confused:</p>
+<ul>
+<li><strong>Unextractable</strong> — no software path reads the key, only <em>uses</em> it. This is what makes device identity meaningful.</li>
+<li><strong>Endorsed</strong> — the vendor publishes a certificate chain asserting that the corresponding public key belongs to a genuine part. Without endorsement, a signature proves only that <em>something</em> signed it. The certificate chain is what turns a signature into "a genuine AMD EPYC in SNP mode signed this."</li>
+</ul>
+<h3 id="32-measurement-and-measured-boot">3.2 Measurement and Measured Boot<a class="headerlink" href="#32-measurement-and-measured-boot" title="Permanent link">&para;</a></h3>
+<p>A <strong>measurement</strong> is a cryptographic hash of code and configuration, recorded before that code is given control. Measured boot chains them: each stage measures the next, records the hash into a protected register, then jumps.</p>
+<p>The critical property is that measurement registers are <strong>append-only</strong>. You cannot set them; you can only extend them:</p>
+<div class="arithmatex">\[
+\text{PCR}_{new} = \text{SHA256}\left(\text{PCR}_{old} \,\|\, \text{measurement}\right)
+\]</div>
+<p>This is what makes the chain unforgeable from within: malicious code that gains control <em>after</em> being measured cannot rewind the register to hide itself. It can only extend it further, which produces a different final value than the legitimate boot path — and different means rejected.</p>
+<p>A second distinction runs through the whole book:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Launch measurement</strong></th>
+<th style="text-align: left;"><strong>Runtime measurement</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Examples</td>
+<td style="text-align: left;">SEV-SNP launch digest, TDX <code>MRTD</code></td>
+<td style="text-align: left;">TDX <code>RTMR0-3</code>, TPM <code>PCR</code> extensions</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fixed at</td>
+<td style="text-align: left;">VM launch, then immutable</td>
+<td style="text-align: left;">Extendable during boot and runtime</td>
+</tr>
+<tr>
+<td style="text-align: left;">Covers</td>
+<td style="text-align: left;">Initial memory image, firmware, VMSA</td>
+<td style="text-align: left;">Kernel, initrd, rootfs, container digest</td>
+</tr>
+<tr>
+<td style="text-align: left;">Verifier use</td>
+<td style="text-align: left;">"Is this the image I approved?"</td>
+<td style="text-align: left;">"What did it load afterwards?"</td>
+</tr>
+</tbody>
+</table>
+<p>Neither alone is sufficient. The launch measurement without runtime measurements tells you the firmware was right and nothing about what it booted; runtime measurements without a launch measurement have no anchor.</p>
+<h3 id="33-memory-protection-encryption-is-necessary-not-sufficient">3.3 Memory Protection: Encryption Is Necessary, Not Sufficient<a class="headerlink" href="#33-memory-protection-encryption-is-necessary-not-sufficient" title="Permanent link">&para;</a></h3>
+<p>Memory encryption uses a key held in the memory controller, generated per-VM, never exposed to software — not even to the guest, and emphatically not to the hypervisor. Ciphertext goes out to the DIMM; plaintext exists only inside the SoC.</p>
+<p>The subtlety is <em>mode of operation</em>, and it explains a real vulnerability class:</p>
+<ul>
+<li><strong>AES-XTS</strong> (used for memory encryption, as for disk) is a tweakable block cipher keyed to the physical address. It is length-preserving and deterministic: the same plaintext at the same address always produces the same ciphertext. Length preservation is mandatory — a memory encryption engine cannot expand 64 bytes into 80, because the DIMM has no room for the extra bytes.</li>
+<li><strong>AES-GCM</strong> (used for the <em>PCIe</em> path in GPU confidential computing, Module 4) is authenticated and non-deterministic, but expands the data with a nonce and a tag. That is affordable over a bus, where you can send more bytes, and unaffordable in DRAM, where you cannot.</li>
+</ul>
+<p>Determinism is exactly what the <strong>ciphertext side channel</strong> exploits: an attacker who can read the ciphertext repeatedly can tell when a plaintext value changed, and when it returned to a previously-seen value. Module 2, Part 5 covers the consequences.</p>
+<p>Now the part that gets skipped. <strong>Encryption alone does not stop an attacker who controls the memory system</strong>, because two attacks need no decryption at all:</p>
+<ol>
+<li><strong>Replay</strong> — record the ciphertext of a page at time <span class="arithmatex">\(t_0\)</span>; write it back at time <span class="arithmatex">\(t_1\)</span>. The guest decrypts it successfully, because it is validly encrypted under the right key at the right address. You have just rolled back the guest's state — for instance, reverting a "login failed, lock the account" counter.</li>
+<li><strong>Remap / aliasing</strong> — repoint the guest's physical address <span class="arithmatex">\(X\)</span> at the ciphertext that legitimately lives at address <span class="arithmatex">\(Y\)</span>. With address-tweaked XTS this usually yields garbage, but the hypervisor can also simply <em>alias two guest pages to the same physical page</em> and observe or induce corruption.</li>
+</ol>
+<p>Defeating these requires <strong>integrity and ownership tracking</strong>, which is precisely the difference between AMD's SEV-ES and SEV-SNP (the Reverse Map Table) and what Intel TDX provides through the secure EPT and the TDX Module. The one-line summary to carry into Module 2:</p>
+<blockquote>
+<p><strong>SEV/SEV-ES gave confidentiality. SEV-SNP and TDX added integrity. Only the second generation defends against an actively malicious hypervisor rather than a merely curious one.</strong></p>
+</blockquote>
+<h3 id="34-attestation">3.4 Attestation<a class="headerlink" href="#34-attestation" title="Permanent link">&para;</a></h3>
+<p>Attestation is the TEE signing a structure that binds together:</p>
+<div class="arithmatex">\[
+\text{Report} = \text{Sign}_{K_{RoT}}\Big( \text{measurement} \,\|\, \text{platform state} \,\|\, \text{nonce} \,\|\, \text{user data} \Big)
+\]</div>
+<p>The four inputs each do a distinct job, and dropping any one breaks something:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Purpose</th>
+<th style="text-align: left;">What breaks without it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Measurement</td>
+<td style="text-align: left;"><em>What code is running</em></td>
+<td style="text-align: left;">The verifier learns nothing about the workload</td>
+</tr>
+<tr>
+<td style="text-align: left;">Platform state</td>
+<td style="text-align: left;">Firmware version, TCB/SVN, debug flags, policy bits</td>
+<td style="text-align: left;">You accept an environment with debug enabled or known-vulnerable firmware</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nonce</td>
+<td style="text-align: left;">Freshness</td>
+<td style="text-align: left;">Replay of an old report from a machine that has since been compromised</td>
+</tr>
+<tr>
+<td style="text-align: left;">User data</td>
+<td style="text-align: left;">Binds an application value (typically a public key hash) into the report</td>
+<td style="text-align: left;">The report attests to a machine but not to <em>the channel you are talking over</em></td>
+</tr>
+</tbody>
+</table>
+<p>That last row is the one people miss, and it is the entire idea behind RA-TLS: without binding the TLS public key into the report, an attacker can relay a genuine report from a real TEE while terminating your connection somewhere else. Module 3, Part 6.</p>
+<h3 id="35-sealing">3.5 Sealing<a class="headerlink" href="#35-sealing" title="Permanent link">&para;</a></h3>
+<p>Sealing derives an encryption key from the root of trust <em>and</em> the current measurement:</p>
+<div class="arithmatex">\[
+K_{seal} = \text{KDF}\left(K_{RoT},\ \text{measurement},\ \text{context}\right)
+\]</div>
+<p>Because the measurement is an input, data sealed by one code version cannot be unsealed by different code on the same machine. It is the local analogue of attested key release, and it is how a confidential workload can cache decrypted state on local disk without handing the operator a key. It also has a sharp operational edge: <strong>update your image and you lose access to everything you sealed under the old measurement.</strong> That is a feature, and it is also the reason sealed local caches need a migration path (Module 6, Part 4).</p>
+<hr />
+<h2 id="part-4-process-tees-versus-vm-tees">Part 4: Process TEEs versus VM TEEs<a class="headerlink" href="#part-4-process-tees-versus-vm-tees" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-two-architectures">4.1 The Two Architectures<a class="headerlink" href="#41-the-two-architectures" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph PROC ["Process TEE — Intel SGX model"]
+        P1["Untrusted host app"] --&gt;|"ECALL"| P2["🔒 Enclave&lt;br&gt;trusted partition only"]
+        P2 --&gt;|"OCALL"| P1
+        P3["Guest OS — UNTRUSTED"] -.-&gt;|"cannot read enclave"| P2
+        P4["Hypervisor — UNTRUSTED"] -.-&gt; P2
+        P5["TCB: enclave code only&lt;br&gt;~megabytes"]
+    end
+
+    subgraph VM ["VM TEE — SEV-SNP / TDX model"]
+        V1["🔒 Entire Guest VM&lt;br&gt;kernel + userspace + your app&lt;br&gt;unmodified"]
+        V2["Hypervisor — UNTRUSTED&lt;br&gt;retains scheduling and&lt;br&gt;resource control"] -.-&gt;|"cannot read guest"| V1
+        V3["TCB: whole guest OS&lt;br&gt;~tens of millions of lines"]
+    end</code></pre>
+<h3 id="42-the-tradeoff-stated-honestly">4.2 The Tradeoff, Stated Honestly<a class="headerlink" href="#42-the-tradeoff-stated-honestly" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;">Process TEE (SGX)</th>
+<th style="text-align: left;">VM TEE (SEV-SNP / TDX)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">TCB size</td>
+<td style="text-align: left;">Small — only the enclave partition</td>
+<td style="text-align: left;">Large — entire guest OS and userspace</td>
+</tr>
+<tr>
+<td style="text-align: left;">Porting cost</td>
+<td style="text-align: left;">High — partition the app, define the ECALL/OCALL boundary, no direct syscalls</td>
+<td style="text-align: left;">~Zero — lift and shift an existing image</td>
+</tr>
+<tr>
+<td style="text-align: left;">Memory ceiling</td>
+<td style="text-align: left;">Historically constrained by the EPC; a hard wall for model weights</td>
+<td style="text-align: left;">Full VM memory, hundreds of GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Device / accelerator access</td>
+<td style="text-align: left;">Very awkward — no direct device access from an enclave</td>
+<td style="text-align: left;">Normal — passthrough works, which is what makes confidential GPUs possible</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation granularity</td>
+<td style="text-align: left;">Precisely the enclave binary</td>
+<td style="text-align: left;">The whole VM image + runtime measurements</td>
+</tr>
+<tr>
+<td style="text-align: left;">Failure mode of a large TCB</td>
+<td style="text-align: left;">A bug in unrelated userspace is outside the TCB</td>
+<td style="text-align: left;">A bug in <em>any</em> in-guest component is inside the TCB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-why-vm-tees-won-for-ai">4.3 Why VM TEEs Won for AI<a class="headerlink" href="#43-why-vm-tees-won-for-ai" title="Permanent link">&para;</a></h3>
+<p>Four reasons, in descending order of importance:</p>
+<ol>
+<li><strong>Accelerators.</strong> An SGX enclave has no clean way to own a PCIe device. Confidential GPU computing requires a device assigned to the confidential guest and a secure session negotiated between them — which is a VM-shaped operation. This alone settles the question for LLM serving.</li>
+<li><strong>Memory.</strong> A 70B model in bf16 needs roughly 140 GB of weights. Process TEEs with encrypted-page-cache limits were never in this game.</li>
+<li><strong>Software stack reality.</strong> The inference stack is CUDA, PyTorch, NCCL, vLLM, and a large Python dependency tree. Partitioning that into a small trusted enclave is not an engineering project; it is a rewrite.</li>
+<li><strong>Operational familiarity.</strong> A confidential VM boots a normal image, runs a normal kubelet, and joins a normal cluster. This is why "Confidential GKE Nodes" can be approximately a flag on a node pool rather than a new compute product.</li>
+</ol>
+<p>The price is the TCB. You are asserting that your entire guest image is trustworthy, which shifts the security problem from <em>isolation</em> to <em>supply chain</em> — which is why image signing, reproducible builds, and minimal base images stop being hygiene and become load-bearing (Module 3, Part 7).</p>
+<h3 id="44-confidential-containers-the-kubernetes-shaped-middle-ground">4.4 Confidential Containers: The Kubernetes-Shaped Middle Ground<a class="headerlink" href="#44-confidential-containers-the-kubernetes-shaped-middle-ground" title="Permanent link">&para;</a></h3>
+<p>Between "confidential VM you manage" and "confidential enclave you rewrite for" sits a third model, relevant because Kubernetes is the deployment target.</p>
+<p>The idea: run each pod (or each pod sandbox) inside its own lightweight VM TEE, using a Kata-style VM-per-pod runtime, so the <em>pod</em> rather than the <em>node</em> is the unit of confidentiality. The kubelet and the node agent stay outside the trust boundary. This is the model behind Azure's confidential containers and the CNCF Confidential Containers project.</p>
+<p>The contrast with the Confidential GKE Nodes model matters and is developed in Module 5:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Confidential node</strong> (GKE today)</th>
+<th style="text-align: left;"><strong>Confidential pod sandbox</strong> (CoCo model)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Unit of confidentiality</td>
+<td style="text-align: left;">The whole node</td>
+<td style="text-align: left;">The individual pod</td>
+</tr>
+<tr>
+<td style="text-align: left;">Kubelet / node agent</td>
+<td style="text-align: left;">Inside the TEE</td>
+<td style="text-align: left;">Outside the TEE</td>
+</tr>
+<tr>
+<td style="text-align: left;">Who can exec into your workload</td>
+<td style="text-align: left;">Anyone with node-level access, subject to k8s RBAC</td>
+<td style="text-align: left;">Blocked by the sandbox boundary</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation identity</td>
+<td style="text-align: left;">The node image</td>
+<td style="text-align: left;">The pod's container image</td>
+</tr>
+<tr>
+<td style="text-align: left;">Maturity on GCP</td>
+<td style="text-align: left;">Available</td>
+<td style="text-align: left;">Not the productized path</td>
+</tr>
+</tbody>
+</table>
+<p>The honest summary for a GKE design: <strong>Confidential GKE Nodes put the kubelet inside your TCB.</strong> If your threat model includes "a Kubernetes control plane operated by the cloud provider can schedule a debug container next to my workload," a confidential node alone does not address it, and you need either Confidential Space or a pod-level sandbox. Module 5, Part 6 makes this decision explicitly.</p>
+<hr />
+<h2 id="part-5-the-third-party-maas-problem-formalized">Part 5: The Third-Party MaaS Problem, Formalized<a class="headerlink" href="#part-5-the-third-party-maas-problem-formalized" title="Permanent link">&para;</a></h2>
+<h3 id="51-the-four-properties">5.1 The Four Properties<a class="headerlink" href="#51-the-four-properties" title="Permanent link">&para;</a></h3>
+<p>Everything in Modules 2 through 7 exists to establish these four statements. They are the evaluation checklist reused in Module 6.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph P ["The Four Security Properties"]
+        P1["P1 — Weight Confidentiality&lt;br&gt;weights are never plaintext outside&lt;br&gt;an attested TEE"]
+        P2["P2 — Prompt/Completion Confidentiality&lt;br&gt;user content is never plaintext outside&lt;br&gt;an attested TEE"]
+        P3["P3 — Mutual Verifiability&lt;br&gt;each party can independently verify&lt;br&gt;P1 and P2 without trusting the others"]
+        P4["P4 — Production Viability&lt;br&gt;P1–P3 hold at acceptable&lt;br&gt;latency, cost, and operability"]
+    end
+
+    P1 --&gt; M["Mechanisms"]
+    P2 --&gt; M
+    P3 --&gt; M
+    P4 --&gt; M
+    M --&gt; M1["Memory encryption + integrity&lt;br&gt;Module 2"]
+    M --&gt; M2["Attestation + key release&lt;br&gt;Module 3"]
+    M --&gt; M3["GPU TEE&lt;br&gt;Module 4"]
+    M --&gt; M4["Platform surface&lt;br&gt;Module 5"]
+    M --&gt; M5["Architecture&lt;br&gt;Module 6"]
+    M --&gt; M6["Operations&lt;br&gt;Module 7"]</code></pre>
+<p>Stated precisely, each against a named adversary:</p>
+<ul>
+<li><strong>P1 — Weight confidentiality.</strong> Model weights exist in plaintext only inside a TEE whose measurement the model provider approved in advance. <em>Held against:</em> the cloud operator (A2, A3, A4) and the end customer.</li>
+<li><strong>P2 — Prompt and completion confidentiality.</strong> User content exists in plaintext only inside such a TEE. <em>Held against:</em> the cloud operator (A2, A3, A4) and — this is the hard one — the model provider, who wrote the code that is processing it.</li>
+<li><strong>P3 — Mutual verifiability.</strong> Each party can verify P1 and P2 from evidence rooted in silicon vendor certificates, without relying on an assertion by any other party. <em>This is the property that fails silently in most designs</em>, usually because the verifier is operated by the party being distrusted.</li>
+<li><strong>P4 — Production viability.</strong> All of the above at competitive TTFT and throughput, with a workable cold start, on hardware you can actually get capacity for.</li>
+</ul>
+<h3 id="52-what-google-cannot-see-the-weights-must-mean-technically">5.2 What "Google Cannot See the Weights" Must Mean Technically<a class="headerlink" href="#52-what-google-cannot-see-the-weights-must-mean-technically" title="Permanent link">&para;</a></h3>
+<p>The marketing sentence decomposes into six checkable claims. Each is a chapter in this book.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Claim</th>
+<th style="text-align: left;">Mechanism</th>
+<th style="text-align: left;">Where it is developed</th>
+<th style="text-align: left;">Failure mode if omitted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Weights are encrypted at rest with a key Google does not hold</td>
+<td style="text-align: left;">Provider-controlled KMS/EKM, envelope encryption</td>
+<td style="text-align: left;">M3.5, M6.3</td>
+<td style="text-align: left;">Google's KMS admin can decrypt; property collapses to policy</td>
+</tr>
+<tr>
+<td style="text-align: left;">Weights are decrypted only inside a TEE</td>
+<td style="text-align: left;">Attested key release</td>
+<td style="text-align: left;">M3.5</td>
+<td style="text-align: left;">An operator can decrypt them anywhere</td>
+</tr>
+<tr>
+<td style="text-align: left;">The TEE runs exactly the approved image</td>
+<td style="text-align: left;">Launch + runtime measurement, reference values</td>
+<td style="text-align: left;">M3.2, M3.7</td>
+<td style="text-align: left;">Attestation proves "a TEE," not "the right code"</td>
+</tr>
+<tr>
+<td style="text-align: left;">Host RAM holding the weights is unreadable</td>
+<td style="text-align: left;">SEV-SNP / TDX memory encryption + integrity</td>
+<td style="text-align: left;">M2</td>
+<td style="text-align: left;">A host memory dump reads them</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU HBM holding the weights is unreadable</td>
+<td style="text-align: left;">GPU CC mode, protected memory, encrypted PCIe</td>
+<td style="text-align: left;">M4</td>
+<td style="text-align: left;">The most valuable copy is in the clear</td>
+</tr>
+<tr>
+<td style="text-align: left;">The provider can verify all of the above itself</td>
+<td style="text-align: left;">Independent verifier, vendor cert chains</td>
+<td style="text-align: left;">M3.1, M3.3</td>
+<td style="text-align: left;">"Google says it attested successfully" — worthless</td>
+</tr>
+</tbody>
+</table>
+<p>Any design that satisfies five of six satisfies none, because the adversary attacks the missing one. This checklist is the single most useful artifact in this module; the rest of the book is an expansion of its middle column.</p>
+<h3 id="53-the-property-that-is-hardest-and-why">5.3 The Property That Is Hardest, and Why<a class="headerlink" href="#53-the-property-that-is-hardest-and-why" title="Permanent link">&para;</a></h3>
+<p>P2 held <em>against the model provider</em> is the genuinely difficult one, and it is worth understanding why before Module 6 attempts it.</p>
+<p>The model provider writes the inference code. That code, by construction, has the prompt in plaintext — it must, in order to run the model. So P2-against-the-provider cannot be achieved by hiding the prompt from the code. It can only be achieved by constraining what the code is <em>able to do with it</em>: no egress, no persistent storage, no logging of content, and — critically — an attestation policy that the customer verifies, over an image whose behavior the customer can somehow assess.</p>
+<p>That last dependency is unavoidable and worth stating plainly: <strong>attestation reduces "trust the provider's intentions" to "trust the provider's published image," but it cannot reduce it to nothing.</strong> Closing the remaining gap requires transparency mechanisms outside the hardware — reproducible builds, published source, binary transparency logs, third-party audit. Apple's Private Cloud Compute is the most complete published attempt at this, and Module 7, Part 6 examines what it does that a straightforward GKE design does not.</p>
+<hr />
+<h2 id="lab-making-the-tee-announce-itself">Lab: Making the TEE Announce Itself<a class="headerlink" href="#lab-making-the-tee-announce-itself" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> boot an ordinary VM and a Confidential VM side by side and find the difference from inside the guest. The point is to establish that the TEE is observable and not a billing-only abstraction.</p>
+<p><strong>Cost:</strong> two small VMs for a few minutes — cents. <strong>Status:</strong> commands transcribed from Google Cloud documentation; verify flag names against <code>gcloud compute instances create --help</code> for your CLI version.</p>
+<h3 id="step-1-find-what-your-project-can-actually-run">Step 1 — Find what your project can actually run<a class="headerlink" href="#step-1-find-what-your-project-can-actually-run" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Which zones offer SEV-SNP and TDX-capable machine families</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>machine-types<span class="w"> </span>list<span class="w"> </span>--filter<span class="o">=</span><span class="s2">&quot;name~&#39;^n2d-standard&#39; OR name~&#39;^c3-standard&#39;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--format<span class="o">=</span><span class="s2">&quot;table(name, zone, guestCpus, memoryMb)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-40
+
+<span class="c1"># Confirm the confidential-compute flag values your gcloud supports</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>--help<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s2">&quot;confidential-compute-type&quot;</span>
+</code></pre></div>
+<h3 id="step-2-boot-a-baseline-non-confidential-vm">Step 2 — Boot a baseline (non-confidential) VM<a class="headerlink" href="#step-2-boot-a-baseline-non-confidential-vm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-baseline<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
+</code></pre></div>
+<h3 id="step-3-boot-an-amd-sev-snp-confidential-vm">Step 3 — Boot an AMD SEV-SNP Confidential VM<a class="headerlink" href="#step-3-boot-an-amd-sev-snp-confidential-vm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-snp<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
+</code></pre></div>
+<p>Note <code>--maintenance-policy=TERMINATE</code>. SEV-SNP instances cannot be live-migrated, so host maintenance stops the instance rather than moving it. This is not a CLI quirk — it is the first concrete operational consequence of the architecture, and Module 2, Part 4 explains why integrity protection and live migration are fundamentally in tension.</p>
+<h3 id="step-4-ask-each-guest-what-it-is">Step 4 — Ask each guest what it is<a class="headerlink" href="#step-4-ask-each-guest-what-it-is" title="Permanent link">&para;</a></h3>
+<p>On both machines:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># The kernel logs the memory-encryption state at boot</span>
+sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;sev|tdx|memory encryption|ccp&#39;</span>
+
+<span class="c1"># CPU feature flags</span>
+lscpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;sev|tdx|flags&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;sev|tdx&#39;</span>
+
+<span class="c1"># Does a guest attestation device exist?</span>
+ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest<span class="w"> </span>/dev/tdx_guest<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</code></pre></div>
+<p><strong>Expected difference.</strong> On the baseline VM the <code>dmesg</code> grep is empty and <code>/dev/sev-guest</code> does not exist. On the SEV-SNP VM you should see a line reporting active memory encryption (typically of the form <code>Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP</code>) and the character device <code>/dev/sev-guest</code> should be present.</p>
+<p>That device is the entire subject of Module 3 in one node: it is the guest's only channel for asking the PSP to produce a signed attestation report.</p>
+<h3 id="step-5-confirm-the-negative-result">Step 5 — Confirm the negative result<a class="headerlink" href="#step-5-confirm-the-negative-result" title="Permanent link">&para;</a></h3>
+<p>The interesting part of this lab is what you <em>cannot</em> see. From inside the confidential guest, there is no API that reveals the memory encryption key, and from the host there is no supported path to read guest plaintext. Try to articulate, in one sentence, which adversary from §2.1 you have just excluded — and which four you have not.</p>
+<h3 id="step-6-clean-up">Step 6 — Clean up<a class="headerlink" href="#step-6-clean-up" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-lab-baseline<span class="w"> </span>cc-lab-snp<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+</code></pre></div>
+<hr />
+<h2 id="summary-foundations-checklist">Summary: Foundations Checklist<a class="headerlink" href="#summary-foundations-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Concept</th>
+<th style="text-align: left;">One-line statement</th>
+<th style="text-align: left;">Where it comes back</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>The in-use gap</strong></td>
+<td style="text-align: left;">CPUs cannot compute on ciphertext, so plaintext must exist somewhere; the question is who else can see it</td>
+<td style="text-align: left;">Everywhere</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Control vs confidentiality</strong></td>
+<td style="text-align: left;">VM TEEs deliberately leave the hypervisor in control of resources while locking it out of data</td>
+<td style="text-align: left;">M2.1, M2.2</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TCB</strong></td>
+<td style="text-align: left;">The set of components whose compromise is fatal; VM TEEs trade a large TCB for zero porting cost</td>
+<td style="text-align: left;">M2.4, M3.7</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Measurement</strong></td>
+<td style="text-align: left;">Append-only hash chain recorded before control transfer; unforgeable from within</td>
+<td style="text-align: left;">M3.2</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Encryption ≠ integrity</strong></td>
+<td style="text-align: left;">Confidentiality alone permits replay and remap; SEV-SNP and TDX add the missing half</td>
+<td style="text-align: left;">M2.1, M2.2</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Attestation binds four things</strong></td>
+<td style="text-align: left;">Measurement, platform state, nonce, and user data — dropping any one breaks a specific property</td>
+<td style="text-align: left;">M3.1, M3.6</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sealing</strong></td>
+<td style="text-align: left;">A key derived from the measurement, so new code cannot read old secrets</td>
+<td style="text-align: left;">M6.4</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>A TEE does not protect you from the workload</strong></td>
+<td style="text-align: left;">Attestation proves <em>which</em> image runs, never that the image is benign</td>
+<td style="text-align: left;">M3.7, M6.8</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>The four properties P1–P4</strong></td>
+<td style="text-align: left;">Weight confidentiality, prompt confidentiality, mutual verifiability, production viability</td>
+<td style="text-align: left;">M6.1, M6.9</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>The six-claim decomposition</strong></td>
+<td style="text-align: left;">"Google cannot see the weights" is six separate checkable claims; five of six is zero</td>
+<td style="text-align: left;">M6.9</td>
+</tr>
+</tbody>
+</table>
+<p>With the vocabulary fixed, the next question is mechanical: how do AMD and Intel actually build the memory protection and measurement primitives from §3.3 and §3.2, what do their attestation reports contain, and what stops working when you turn them on? That is <strong>Module 2: Hardware TEE Architectures (<code>02_hardware_tee_architectures.md</code>)</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2094 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../06_designing_confidential_llm_serving_on_gke/">
+      
+      
+        <link rel="next" href="../appendix_glossary_and_terminology/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../zh/07_performance_operations_and_evaluation/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Module 7 - Performance, Operations, and Evaluation - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-7-performance-operations-and-evaluation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Module 7 - Performance, Operations, and Evaluation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../zh/07_performance_operations_and_evaluation/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model & Curriculum
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 1 - Confidential Computing Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 2 - Hardware TEE Architectures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 3 - Remote Attestation and Key Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 4 - Confidential GPUs and Accelerators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 5 - The Google Cloud Confidential Surface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 6 - Designing Confidential LLM Serving on GKE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module 7 - Performance, Operations, and Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-benchmarking-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Benchmarking Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Benchmarking Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-four-configuration-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Four-Configuration Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-a-defensible-benchmark-controls-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What a Defensible Benchmark Controls For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-metrics-that-matter-for-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Metrics That Matter for Serving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-the-honest-framing-of-published-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 The Honest Framing of Published Numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-overhead-and-cost-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Overhead and Cost Budget
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Overhead and Cost Budget">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-where-the-cost-actually-comes-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Where the Cost Actually Comes From
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Cost Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-this-means-commercially" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What This Means Commercially
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-debuggability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Debuggability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Debuggability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-what-you-lose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 What You Lose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-how-to-work-within-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 How to Work Within It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-incident-response-without-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Incident Response Without Evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-fleet-lifecycle-under-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Fleet Lifecycle Under Attestation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Fleet Lifecycle Under Attestation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-attestation-adds-to-every-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What Attestation Adds to Every Operation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-tcb-advance-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The TCB Advance Runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-autoscaling-reconsidered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Autoscaling Reconsidered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-compliance-and-positioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Compliance and Positioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Compliance and Positioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-confidential-computing-genuinely-supports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What Confidential Computing Genuinely Supports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-where-the-marketing-outruns-the-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Where the Marketing Outruns the Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-comparative-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Comparative Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Comparative Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-what-each-gets-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 What Each Gets Right
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-development-worth-knowing-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The Development Worth Knowing About
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-what-a-gke-design-should-aim-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 What a GKE Design Should Aim For
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Build the Benchmark Harness and Run a Rotation Drill
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run a Rotation Drill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-the-four-configuration-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — The four-configuration matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-decompose-the-cold-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Decompose the cold start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-c-the-key-rotation-drill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C — The key rotation drill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-d-the-tcb-advance-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D — The TCB advance simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-operating-a-confidential-inference-fleet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Operating a Confidential Inference Fleet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Go Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix A - Master Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix B - Primary Source Reading List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-benchmarking-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: Benchmarking Methodology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: Benchmarking Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-four-configuration-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The Four-Configuration Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-what-a-defensible-benchmark-controls-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 What a Defensible Benchmark Controls For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-metrics-that-matter-for-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The Metrics That Matter for Serving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-the-honest-framing-of-published-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 The Honest Framing of Published Numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-overhead-and-cost-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: The Overhead and Cost Budget
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: The Overhead and Cost Budget">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-where-the-cost-actually-comes-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Where the Cost Actually Comes From
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-cost-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The Cost Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-what-this-means-commercially" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 What This Means Commercially
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-debuggability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3: Debuggability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Debuggability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-what-you-lose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 What You Lose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-how-to-work-within-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 How to Work Within It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-incident-response-without-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Incident Response Without Evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-fleet-lifecycle-under-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4: Fleet Lifecycle Under Attestation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Fleet Lifecycle Under Attestation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-attestation-adds-to-every-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What Attestation Adds to Every Operation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-tcb-advance-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The TCB Advance Runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-autoscaling-reconsidered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Autoscaling Reconsidered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-compliance-and-positioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5: Compliance and Positioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: Compliance and Positioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-what-confidential-computing-genuinely-supports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 What Confidential Computing Genuinely Supports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-where-the-marketing-outruns-the-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Where the Marketing Outruns the Mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-comparative-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6: Comparative Architectures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6: Comparative Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-what-each-gets-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 What Each Gets Right
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-the-development-worth-knowing-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 The Development Worth Knowing About
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-what-a-gke-design-should-aim-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 What a GKE Design Should Aim For
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: Build the Benchmark Harness and Run a Rotation Drill
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run a Rotation Drill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-the-four-configuration-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — The four-configuration matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-decompose-the-cold-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Decompose the cold start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-c-the-key-rotation-drill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C — The key rotation drill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-d-the-tcb-advance-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D — The TCB advance simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-operating-a-confidential-inference-fleet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Operating a Confidential Inference Fleet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Go Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="module-7-performance-operations-and-evaluation">Module 7: Performance, Operations, and Evaluation<a class="headerlink" href="#module-7-performance-operations-and-evaluation" title="Permanent link">&para;</a></h1>
+<p>A design that is correct and unoperable is not a design. This module is about the three things that decide whether the Module 6 architecture survives contact with production: whether you can measure its cost honestly, whether you can run it without the tools you are used to, and whether you can defend its claims to a counterparty who has read the same literature you have.</p>
+<p>This module covers <strong>benchmarking methodology</strong>, <strong>the overhead and cost budget</strong>, <strong>debugging without SSH or core dumps</strong>, <strong>fleet lifecycle under attestation</strong>, <strong>which compliance claims actually hold</strong>, and <strong>how the published alternatives from AWS, Azure, and Apple compare</strong>.</p>
+<hr />
+<h2 id="part-1-benchmarking-methodology">Part 1: Benchmarking Methodology<a class="headerlink" href="#part-1-benchmarking-methodology" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-four-configuration-matrix">1.1 The Four-Configuration Matrix<a class="headerlink" href="#11-the-four-configuration-matrix" title="Permanent link">&para;</a></h3>
+<p>The single most common benchmarking error in this field is reporting one number for "confidential computing overhead." There are at least two independent sources of cost, and they behave completely differently. Separating them is not pedantry — it determines which optimization is worth doing.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Config 1: Baseline&lt;br&gt;normal VM, normal GPU"] --&gt; D["Δ(2−1) = CPU TEE cost&lt;br&gt;memory encryption, page acceptance,&lt;br&gt;bounce buffers on the host side"]
+    B["Config 2: CPU TEE only&lt;br&gt;confidential VM, GPU cc_mode=OFF"] --&gt; D
+    B --&gt; E["Δ(3−2) = GPU CC cost&lt;br&gt;encrypted PCIe transfers"]
+    C["Config 3: Full production&lt;br&gt;confidential VM + GPU cc_mode=ON"] --&gt; E
+    C --&gt; F["Config 4: Cold start&lt;br&gt;measured SEPARATELY at every milestone"]</code></pre>
+<p>Configuration 4 is not a fourth environment — it is the insistence that cold start be reported separately from steady state. Blending them produces a number that describes neither, and it hides the fact that one component is nearly free while the other is expensive.</p>
+<h3 id="12-what-a-defensible-benchmark-controls-for">1.2 What a Defensible Benchmark Controls For<a class="headerlink" href="#12-what-a-defensible-benchmark-controls-for" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Why it matters</th>
+<th style="text-align: left;">How to control it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Model size</td>
+<td style="text-align: left;">Overhead falls as the model grows (Module 4, §5.2)</td>
+<td style="text-align: left;">Report per model; never extrapolate across sizes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Batch size</td>
+<td style="text-align: left;">Overhead falls as batching increases</td>
+<td style="text-align: left;">Sweep it; report the curve, not a point</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sequence length</td>
+<td style="text-align: left;">Longer prompts amortize transfer over more compute</td>
+<td style="text-align: left;">Sweep input and output lengths independently</td>
+</tr>
+<tr>
+<td style="text-align: left;">Quantization</td>
+<td style="text-align: left;">Changes bytes transferred and bytes resident</td>
+<td style="text-align: left;">State it; fp8 and bf16 are different experiments</td>
+</tr>
+<tr>
+<td style="text-align: left;">Warm vs cold</td>
+<td style="text-align: left;">Different by an order of magnitude</td>
+<td style="text-align: left;">Always separate</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation caching</td>
+<td style="text-align: left;">A cold vendor-collateral fetch adds seconds</td>
+<td style="text-align: left;">State whether the cache was warm</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instance variance</td>
+<td style="text-align: left;">Confidential capacity is constrained; you may get different hosts</td>
+<td style="text-align: left;">Repeat across instances, report the distribution</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-the-metrics-that-matter-for-serving">1.3 The Metrics That Matter for Serving<a class="headerlink" href="#13-the-metrics-that-matter-for-serving" title="Permanent link">&para;</a></h3>
+<p>Report all four; any one alone is misleading:</p>
+<div class="arithmatex">\[
+\text{TTFT} = t_{\text{first token}} - t_{\text{request}} \qquad
+\text{TPOT} = \frac{t_{\text{last}} - t_{\text{first}}}{N_{\text{output}} - 1}
+\]</div>
+<ul>
+<li><strong>TTFT</strong> — dominated by prefill. Modestly affected by CC.</li>
+<li><strong>TPOT</strong> — dominated by decode. Least affected by CC.</li>
+<li><strong>Throughput</strong> (requests/s and tokens/s at a fixed latency SLO) — the number that determines cost per token.</li>
+<li><strong>Cold start</strong>, broken down by the Module 6, §4.1 milestones.</li>
+</ul>
+<p>Report throughput <em>at a latency SLO</em>, not in isolation. Throughput measured with unbounded queueing is a number about your queue, not your system.</p>
+<h3 id="14-the-honest-framing-of-published-numbers">1.4 The Honest Framing of Published Numbers<a class="headerlink" href="#14-the-honest-framing-of-published-numbers" title="Permanent link">&para;</a></h3>
+<p>Published benchmark work on H100 confidential computing has reported LLM inference throughput penalties in the mid-single-digit percentage range, shrinking toward negligible as model size, batch size, and sequence length grow, with the cost attributable almost entirely to CPU–GPU transfer over PCIe rather than to on-device compute.</p>
+<p>Two cautions about carrying those numbers into your own planning:</p>
+<ol>
+<li><strong>They are steady-state numbers.</strong> They say nothing about cold start, which is where this architecture actually hurts.</li>
+<li><strong>They are single-GPU numbers.</strong> The Hopper single-GPU constraint (Module 4, §4.1) means the comparison is often not "the same workload with CC on and off" but "a workload you had to restructure to fit in 80 GB versus one you did not." That restructuring cost is real and is not captured in any CC overhead percentage.</li>
+</ol>
+<p>For capacity planning before you have your own measurements, reserving on the order of <strong>15–25% additional throughput capacity</strong> is a reasonable starting heuristic — and it should be replaced by measurements from your own workload as soon as they exist.</p>
+<hr />
+<h2 id="part-2-the-overhead-and-cost-budget">Part 2: The Overhead and Cost Budget<a class="headerlink" href="#part-2-the-overhead-and-cost-budget" title="Permanent link">&para;</a></h2>
+<h3 id="21-where-the-cost-actually-comes-from">2.1 Where the Cost Actually Comes From<a class="headerlink" href="#21-where-the-cost-actually-comes-from" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Magnitude</th>
+<th style="text-align: left;">Falls on</th>
+<th style="text-align: left;">Mitigable?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Encrypted PCIe transfer</td>
+<td style="text-align: left;">Largest steady-state term</td>
+<td style="text-align: left;">Every host↔device byte</td>
+<td style="text-align: left;">Partially — batch more, transfer less; TDISP eventually</td>
+</tr>
+<tr>
+<td style="text-align: left;">Weight load at cold start</td>
+<td style="text-align: left;">Largest term overall</td>
+<td style="text-align: left;">Startup only</td>
+<td style="text-align: left;">Warm pools, quantization, sealed cache</td>
+</tr>
+<tr>
+<td style="text-align: left;">Guest private-memory acceptance</td>
+<td style="text-align: left;">Seconds, scales with VM RAM</td>
+<td style="text-align: left;">Boot only</td>
+<td style="text-align: left;">Right-size the VM</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation round trips</td>
+<td style="text-align: left;">Hundreds of ms to seconds</td>
+<td style="text-align: left;">Startup, and re-attestation</td>
+<td style="text-align: left;">Cache collateral; overlap with weight fetch</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key release round trip</td>
+<td style="text-align: left;">Network RTT to an external KMS</td>
+<td style="text-align: left;">Startup</td>
+<td style="text-align: left;">Co-locate; but not at the cost of independence</td>
+</tr>
+<tr>
+<td style="text-align: left;">Memory encryption</td>
+<td style="text-align: left;">Small, mostly hidden by the memory hierarchy</td>
+<td style="text-align: left;">All memory access</td>
+<td style="text-align: left;">Not meaningfully</td>
+</tr>
+<tr>
+<td style="text-align: left;">Lost GPU sharing (no MIG, no time-slicing)</td>
+<td style="text-align: left;"><strong>Can dominate everything else</strong></td>
+<td style="text-align: left;">Utilization</td>
+<td style="text-align: left;">No — it is a hard constraint</td>
+</tr>
+</tbody>
+</table>
+<p>The last row is the one that budgets miss. A 5% throughput penalty is easy to absorb. Losing the ability to pack several small models onto one GPU can halve your effective utilization, and that shows up in cost per token far more than any encryption overhead.</p>
+<h3 id="22-the-cost-model">2.2 The Cost Model<a class="headerlink" href="#22-the-cost-model" title="Permanent link">&para;</a></h3>
+<div class="arithmatex">\[
+C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{premium}})}{\text{Throughput}_{\text{tokens/hour}} \times U_{\text{effective}}}
+\]</div>
+<p>Three multipliers work against you simultaneously, and only one of them is the overhead everyone talks about:</p>
+<ol>
+<li><strong><span class="arithmatex">\(\alpha_{\text{premium}}\)</span></strong> — confidential machine types carry a price premium, and the confidential SKUs are a narrower, less discountable selection.</li>
+<li><strong>Throughput</strong> — reduced by the CC overhead in §1.4. This is the small one.</li>
+<li><strong><span class="arithmatex">\(U_{\text{effective}}\)</span></strong> — reduced by lost GPU sharing, by warm-pool idle capacity, and by the over-provisioning that multi-minute cold start forces. <strong>This is usually the largest term.</strong></li>
+</ol>
+<p>The honest summary to bring to a pricing discussion: <strong>the compute overhead of confidential computing is modest; the operational overhead is not.</strong> Warm pools and lost packing density cost more than encryption does.</p>
+<h3 id="23-what-this-means-commercially">2.3 What This Means Commercially<a class="headerlink" href="#23-what-this-means-commercially" title="Permanent link">&para;</a></h3>
+<p>A confidential inference tier is a premium product, and it should be priced and positioned as one. Attempting to offer it at parity with standard inference means absorbing the warm-pool and utilization costs somewhere invisible, which eventually becomes a capacity problem rather than a margin problem.</p>
+<hr />
+<h2 id="part-3-debuggability">Part 3: Debuggability<a class="headerlink" href="#part-3-debuggability" title="Permanent link">&para;</a></h2>
+<h3 id="31-what-you-lose">3.1 What You Lose<a class="headerlink" href="#31-what-you-lose" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph GONE ["❌ Gone by design"]
+        A["SSH into the instance"]
+        B["kubectl exec into the workload"]
+        C["Core dumps to any host-visible location"]
+        D["Host-side profiling — perf, nsys from outside"]
+        E["Memory inspection and live kernel debugging"]
+        F["GPU profiling in cc_mode=ON"]
+        G["Logging request or response content"]
+    end
+
+    subgraph LEFT ["✅ What you have left"]
+        H["Structured logs with an allowlisted schema"]
+        I["Metrics: counts, latencies, error classes"]
+        J["DEBUG-image environments with synthetic data"]
+        K["In-TEE profiling, emitting aggregates only"]
+        L["Staged environments that mirror production shape"]
+        M["Deterministic replay from synthetic inputs"]
+    end</code></pre>
+<p>The two that hurt most in practice:</p>
+<ul>
+<li><strong>No core dumps.</strong> A crash produces a stack trace at best, and that stack trace cannot include content. A segfault in a CUDA kernel gives you very little.</li>
+<li><strong>No production profiling.</strong> <code>cc_mode=ON</code> disables profiling tools. You cannot profile the configuration you actually run; you profile <code>DEVTOOLS</code> mode and hope the difference is uninteresting.</li>
+</ul>
+<h3 id="32-how-to-work-within-it">3.2 How to Work Within It<a class="headerlink" href="#32-how-to-work-within-it" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Make the DEBUG path first-class.</strong> A Confidential Space DEBUG image with synthetic data, matched in every other respect to production, is where debugging happens. Invest in making it genuinely identical — a debug environment that diverges from production is where the bugs you cannot reproduce live.</li>
+<li><strong>Log with an allowlist, never a denylist.</strong> Define the emittable fields explicitly. Any log call that can interpolate arbitrary data is a leak waiting for the right exception. This is a lint rule, not a code review convention.</li>
+<li><strong>Sanitize exceptions at the boundary.</strong> Wrap the request handler so that no exception message propagates to a logger. Log an error <em>class</em> and a correlation ID; the message is discarded.</li>
+<li><strong>Correlation IDs everywhere.</strong> With no content in logs, a request ID that threads through every component is the only way to reconstruct a request's path.</li>
+<li><strong>Deterministic synthetic reproduction.</strong> Build the ability to replay a request <em>shape</em> — token counts, batch composition, sampling parameters — without its content. Most performance bugs and many correctness bugs reproduce from shape alone.</li>
+<li><strong>In-TEE profiling that emits aggregates.</strong> Histograms and percentiles can leave the boundary. Traces of individual requests cannot.</li>
+</ol>
+<h3 id="33-incident-response-without-evidence">3.3 Incident Response Without Evidence<a class="headerlink" href="#33-incident-response-without-evidence" title="Permanent link">&para;</a></h3>
+<p>When something goes wrong in production, you will have: metrics, error classes, attestation state, and no content. Plan for it before the incident:</p>
+<ul>
+<li><strong>Decide the escalation path in advance.</strong> If diagnosis genuinely requires content, the only legitimate route is customer-consented, time-boxed, attested telemetry (Module 6, §8.2) — not an SRE deciding under pressure to enable a debug flag.</li>
+<li><strong>Write the runbook while calm.</strong> "We cannot look at the data" is an unwelcome discovery at 3 a.m.</li>
+<li><strong>Accept unresolvable incidents.</strong> Some issues will be closed without root cause. That is a deliberate cost of the architecture and should be acknowledged in the SLA conversation, not treated as an operational failure.</li>
+</ul>
+<hr />
+<h2 id="part-4-fleet-lifecycle-under-attestation">Part 4: Fleet Lifecycle Under Attestation<a class="headerlink" href="#part-4-fleet-lifecycle-under-attestation" title="Permanent link">&para;</a></h2>
+<h3 id="41-what-attestation-adds-to-every-operation">4.1 What Attestation Adds to Every Operation<a class="headerlink" href="#41-what-attestation-adds-to-every-operation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">Normal fleet</th>
+<th style="text-align: left;">Confidential fleet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Node join</td>
+<td style="text-align: left;">Register with the control plane</td>
+<td style="text-align: left;">Attest, obtain a key, reach GPU ready state</td>
+</tr>
+<tr>
+<td style="text-align: left;">Image rollout</td>
+<td style="text-align: left;">Push, roll, done</td>
+<td style="text-align: left;">Push, <strong>update the reference values in the release policy</strong>, then roll</td>
+</tr>
+<tr>
+<td style="text-align: left;">Firmware update</td>
+<td style="text-align: left;">Transparent</td>
+<td style="text-align: left;">Advances the TCB → invalidates cached collateral → fleet-wide re-attestation</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key rotation</td>
+<td style="text-align: left;">Update a secret</td>
+<td style="text-align: left;">Rewrap the DEK, re-release to every running instance</td>
+</tr>
+<tr>
+<td style="text-align: left;">Scale up</td>
+<td style="text-align: left;">Seconds</td>
+<td style="text-align: left;">Minutes (Module 6, §4)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Host maintenance</td>
+<td style="text-align: left;">Live migration</td>
+<td style="text-align: left;"><strong>Termination</strong> — no live migration under SEV-SNP or TDX</td>
+</tr>
+</tbody>
+</table>
+<p>The image rollout row is the operational trap. <strong>A new image has a new digest, and the digest is in the release policy.</strong> Deploy the image before updating the policy and every new instance fails to obtain the weight key — a self-inflicted outage that looks like a key management failure and is actually a deployment ordering bug.</p>
+<p>The correct sequence, which belongs in the deployment pipeline rather than in someone's memory:</p>
+<ol>
+<li>Build and sign the image; record the digest.</li>
+<li><strong>Add</strong> the new digest to the release policy, keeping the old one.</li>
+<li>Roll the fleet.</li>
+<li>Verify no instances remain on the old digest.</li>
+<li><strong>Remove</strong> the old digest.</li>
+</ol>
+<p>Steps 2 and 5 make the policy tolerate both versions during the roll. Skipping step 5 is how allowlists accumulate digests nobody can account for, which is its own security problem.</p>
+<h3 id="42-the-tcb-advance-runbook">4.2 The TCB Advance Runbook<a class="headerlink" href="#42-the-tcb-advance-runbook" title="Permanent link">&para;</a></h3>
+<p>When AMD or Intel publishes a firmware update (Module 3, §4.2):</p>
+<ol>
+<li>Cached endorsement collateral becomes stale; verification starts failing.</li>
+<li>The old TCB level is marked out-of-date; your policy must decide whether to accept it.</li>
+<li>Rejecting it immediately means every un-updated node loses key access.</li>
+<li>Accepting it means serving on hardware with a published vulnerability.</li>
+</ol>
+<p>The workable answer, which must exist as a written policy before the first advisory:</p>
+<ul>
+<li>A <strong>grace window</strong> during which the previous TCB level is accepted.</li>
+<li><strong>Loud alarms</strong> on any node still at the old level.</li>
+<li>A <strong>pre-committed deadline</strong> at which the floor is raised regardless.</li>
+<li>A <strong>dashboard of TCB version distribution</strong> across the fleet — you will need it the day the advisory lands, and building it under pressure is a bad time.</li>
+</ul>
+<h3 id="43-autoscaling-reconsidered">4.3 Autoscaling Reconsidered<a class="headerlink" href="#43-autoscaling-reconsidered" title="Permanent link">&para;</a></h3>
+<p>Module 6, §4.3 established that reactive autoscaling does not work at multi-minute cold start. The operational shape that does:</p>
+<ul>
+<li><strong>Predictive scaling</strong> on forecasts, not instantaneous queue depth.</li>
+<li><strong>Warm pool sized on the p99 of arrivals</strong>, not the mean.</li>
+<li><strong>Explicit backpressure</strong> — queue and shed with a clear error, rather than timing out.</li>
+<li><strong>Attestation health as a first-class signal.</strong> An instance that has passed attestation and released its key is "ready"; one that has booted is not. Your readiness probe must check GPU CC mode and attestation state, not just that the HTTP port is open (Module 4, lab step 2).</li>
+</ul>
+<hr />
+<h2 id="part-5-compliance-and-positioning">Part 5: Compliance and Positioning<a class="headerlink" href="#part-5-compliance-and-positioning" title="Permanent link">&para;</a></h2>
+<h3 id="51-what-confidential-computing-genuinely-supports">5.1 What Confidential Computing Genuinely Supports<a class="headerlink" href="#51-what-confidential-computing-genuinely-supports" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Claim</th>
+<th style="text-align: left;">Holds?</th>
+<th style="text-align: left;">Qualification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">"The cloud operator cannot read data in use"</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">With SEV-SNP/TDX <strong>and</strong> GPU CC mode <strong>and</strong> in-TEE TLS termination</td>
+</tr>
+<tr>
+<td style="text-align: left;">"Data is protected from a compromised hypervisor"</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">This is the core, well-evidenced property</td>
+</tr>
+<tr>
+<td style="text-align: left;">"Only approved code can decrypt the data"</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">If the release policy is complete and the verifier is independent</td>
+</tr>
+<tr>
+<td style="text-align: left;">"The customer can verify this independently"</td>
+<td style="text-align: left;">✅ Yes</td>
+<td style="text-align: left;">Only with an independent verifier; ❌ if the cloud operator is the verifier</td>
+</tr>
+<tr>
+<td style="text-align: left;">"Data never leaves the jurisdiction"</td>
+<td style="text-align: left;">⚠️ Partly</td>
+<td style="text-align: left;">CC does not control placement; that is a separate, region-level control</td>
+</tr>
+<tr>
+<td style="text-align: left;">"This satisfies [regulation]"</td>
+<td style="text-align: left;">⚠️ Depends</td>
+<td style="text-align: left;">CC is evidence toward a control objective, not a certification</td>
+</tr>
+<tr>
+<td style="text-align: left;">"The workload cannot exfiltrate data"</td>
+<td style="text-align: left;">❌ <strong>No</strong></td>
+<td style="text-align: left;">A TEE protects the workload from the platform, never the reverse</td>
+</tr>
+<tr>
+<td style="text-align: left;">"Data is safe from all attacks"</td>
+<td style="text-align: left;">❌ <strong>No</strong></td>
+<td style="text-align: left;">Side channels, traffic analysis, and availability remain (Module 2, §5.4)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-where-the-marketing-outruns-the-mechanism">5.2 Where the Marketing Outruns the Mechanism<a class="headerlink" href="#52-where-the-marketing-outruns-the-mechanism" title="Permanent link">&para;</a></h3>
+<p>Four claims worth being able to correct, politely, in a customer meeting:</p>
+<ol>
+<li><strong>"Confidential computing means we can't see your data."</strong> True only if the GPU is attested, TLS terminates inside the TEE, and no telemetry carries content. Each of those is a design decision that can be, and often is, made the other way.</li>
+<li><strong>"Attestation proves the code is trustworthy."</strong> Attestation proves <em>which</em> code runs. Whether that code is trustworthy is a separate question answered by source availability, reproducible builds, or audit (Module 3, §7).</li>
+<li><strong>"Your data is isolated from other tenants."</strong> In a batched deployment, isolation between tenants is enforced by the inference server's correctness, not by hardware (Module 6, §7.2).</li>
+<li><strong>"This makes us compliant."</strong> Confidential computing is a technical control that supports a compliance argument. It is not a certification, and no regulator has a "confidential computing" checkbox.</li>
+</ol>
+<p>Being the person in the room who states these accurately is more valuable than being the person who claims more. Sophisticated counterparties — and a model provider's security team is a sophisticated counterparty — assign credibility based on which qualifications you volunteer.</p>
+<hr />
+<h2 id="part-6-comparative-architectures">Part 6: Comparative Architectures<a class="headerlink" href="#part-6-comparative-architectures" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-field">6.1 The Field<a class="headerlink" href="#61-the-field" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>AWS Nitro Enclaves</strong></th>
+<th style="text-align: left;"><strong>Azure Confidential Containers</strong></th>
+<th style="text-align: left;"><strong>Apple Private Cloud Compute</strong></th>
+<th style="text-align: left;"><strong>This design (GKE)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Isolation unit</td>
+<td style="text-align: left;">An enclave carved from a parent EC2 instance</td>
+<td style="text-align: left;">A pod sandbox (Kata + SEV-SNP)</td>
+<td style="text-align: left;">A whole purpose-built node</td>
+<td style="text-align: left;">A Confidential Space instance</td>
+</tr>
+<tr>
+<td style="text-align: left;">Hardware basis</td>
+<td style="text-align: left;">Nitro hypervisor and card</td>
+<td style="text-align: left;">AMD SEV-SNP</td>
+<td style="text-align: left;">Apple silicon, plus Intel TDX and NVIDIA CC in expanded deployments</td>
+<td style="text-align: left;">Intel TDX + NVIDIA H100 CC</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation model</td>
+<td style="text-align: left;">Background-check — the enclave hands a document to KMS</td>
+<td style="text-align: left;">JWT from Microsoft Azure Attestation</td>
+<td style="text-align: left;">Client-enforced against a transparency log</td>
+<td style="text-align: left;">Passport via Google Cloud Attestation, or provider-verified raw evidence</td>
+</tr>
+<tr>
+<td style="text-align: left;">Key release</td>
+<td style="text-align: left;">KMS condition keys over attestation</td>
+<td style="text-align: left;">Managed HSM secure key release</td>
+<td style="text-align: left;">Apple-controlled, client-verified</td>
+<td style="text-align: left;">Provider-operated external KMS</td>
+</tr>
+<tr>
+<td style="text-align: left;">No interactive access</td>
+<td style="text-align: left;">Enclave has no persistent storage, no network, no shell</td>
+<td style="text-align: left;">Sandbox boundary</td>
+<td style="text-align: left;"><strong>Explicitly designed out</strong> — no remote shell, no interactive debugging</td>
+<td style="text-align: left;">Confidential Space production image</td>
+</tr>
+<tr>
+<td style="text-align: left;">Reference values</td>
+<td style="text-align: left;">Customer-managed PCRs</td>
+<td style="text-align: left;">Policy over the container image</td>
+<td style="text-align: left;"><strong>Reproducible builds + published binaries + append-only log</strong></td>
+<td style="text-align: left;">Signed golden values; digest allowlist</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU support</td>
+<td style="text-align: left;">Limited</td>
+<td style="text-align: left;">Emerging</td>
+<td style="text-align: left;">Yes, NVIDIA CC</td>
+<td style="text-align: left;">Yes, one H100 per instance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-what-each-gets-right">6.2 What Each Gets Right<a class="headerlink" href="#62-what-each-gets-right" title="Permanent link">&para;</a></h3>
+<p><strong>AWS Nitro Enclaves</strong> has the cleanest key-release story: the KMS policy is expressed as condition keys over attestation measurements, and it is enforced by KMS itself. The mechanism is simple enough to explain to a customer in one diagram, which is a genuine engineering virtue. Its limitation is scope — an enclave has no persistent storage and no direct network, which is elegant for key operations and awkward for GPU-attached inference.</p>
+<p><strong>Azure Confidential Containers</strong> gets the <em>unit of confidentiality</em> right. Running each pod in its own VM TEE (Kata plus SEV-SNP) means the kubelet and node agent stay outside the trust boundary — precisely the property Confidential GKE Nodes lacks (Module 5, §2.3). If GKE offered a pod-sandbox confidential runtime, the Module 6 architecture would be simpler, because you could keep Kubernetes and still exclude the control plane.</p>
+<p><strong>Apple Private Cloud Compute</strong> is the most complete published treatment of the reference-value problem, and it is the design worth studying hardest. Its five stated requirements — stateless computation, enforceable guarantees, no privileged runtime access, non-targetability, and verifiable transparency — read as a direct answer to the gaps this book has catalogued. Two of them are the ones a GKE design most often fails to match:</p>
+<ul>
+<li><strong>No privileged runtime access, designed out rather than configured off.</strong> Apple states it deliberately omitted remote shell and interactive debugging from PCC nodes, because open-ended access is a broad attack surface. Compare this with Module 5, §2.3's <code>kubectl exec</code> demonstration.</li>
+<li><strong>Verifiable transparency, enforced client-side.</strong> Images are reproducibly built, binaries are published for inspection, measurements go into a cryptographically verifiable append-only ledger, and — the load-bearing part — client devices refuse to send data to a node whose image is not in that log. Publishing measurements achieves nothing unless clients enforce against them.</li>
+</ul>
+<h3 id="63-the-development-worth-knowing-about">6.3 The Development Worth Knowing About<a class="headerlink" href="#63-the-development-worth-knowing-about" title="Permanent link">&para;</a></h3>
+<p>Apple has extended Private Cloud Compute beyond its own data centers, running Apple Intelligence workloads on Google Cloud in collaboration with Google and NVIDIA. The published stack is <strong>NVIDIA Confidential Computing on NVIDIA GPUs, Intel CPUs with TDX, and Google's Titan chip</strong> — which is, component for component, the architecture Module 6 describes.</p>
+<p>Two details from Apple's account are worth internalizing, because they are exactly the positions this book has argued for:</p>
+<ol>
+<li><strong>Apple retains complete control over the software.</strong> Apple devices only trust PCC software cryptographically approved by Apple, and all binaries are published for public inspection. Google provides infrastructure; Google does not become the verifier. This is Module 3, §1.3's rule — <em>the verifier and key holder should be the party whose asset is at risk</em> — implemented at scale by a party with the leverage to insist on it.</li>
+<li><strong>Apple explicitly does not rely on confidential computing alone.</strong> Their published position is that they do not rely solely on confidential computing to mitigate attacks leveraging privileged access outside the confidential VM, including side-channel attacks. That is Module 2, §5.4's honest summary, adopted as an engineering posture: layered defenses on the assumption that the TEE's guarantees have edges.</li>
+</ol>
+<p>The practical significance for a Vertex 3P MaaS design is direct: <strong>a sophisticated model provider running on Google Cloud infrastructure, with an independent verifier and its own software control, is not hypothetical.</strong> It is a published, shipping arrangement, and it sets the expectation a comparable offering will be measured against.</p>
+<h3 id="64-what-a-gke-design-should-aim-for">6.4 What a GKE Design Should Aim For<a class="headerlink" href="#64-what-a-gke-design-should-aim-for" title="Permanent link">&para;</a></h3>
+<p>Ordered by ratio of value to effort:</p>
+<ol>
+<li><strong>Independent verification.</strong> The model provider verifies raw hardware evidence itself. Highest value; entirely achievable today.</li>
+<li><strong>External key management.</strong> The weight KEK lives outside Google. Achievable with Cloud EKM.</li>
+<li><strong>No interactive access to production.</strong> Confidential Space production images, and a policy that never accepts <code>dbgstat == enabled</code>. Free — it is a policy line.</li>
+<li><strong>Client-side attestation enforcement.</strong> The client verifies before sending. Requires an SDK; this is the step most designs skip, and it is the one that makes the guarantee the customer's rather than the operator's.</li>
+<li><strong>Published reference values.</strong> A signed, versioned manifest of acceptable measurements. Moderate effort, high credibility.</li>
+<li><strong>Reproducible builds.</strong> Highest effort, highest strength. Aim for it; ship without it if you must, and say so.</li>
+</ol>
+<p>The gap between a defensible design and Apple's bar is items 4, 5, and 6 — and none of them is a hardware limitation. They are all product and engineering investment decisions.</p>
+<hr />
+<h2 id="lab-build-the-benchmark-harness-and-run-a-rotation-drill">Lab: Build the Benchmark Harness and Run a Rotation Drill<a class="headerlink" href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> produce the overhead table your organization will actually cite, and rehearse the operation most likely to cause an outage.</p>
+<p><strong>Cost:</strong> ⚠️ Two A3 instances if you want a true A/B. Budget accordingly, or accept a within-instance comparison by toggling GPU CC mode. <strong>Status:</strong> a methodology exercise; the specific commands depend on your serving stack.</p>
+<h3 id="part-a-the-four-configuration-matrix">Part A — The four-configuration matrix<a class="headerlink" href="#part-a-the-four-configuration-matrix" title="Permanent link">&para;</a></h3>
+<p>Run an identical workload across the configurations from §1.1 and fill in this table. <strong>This artifact is the deliverable.</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Config</th>
+<th style="text-align: left;">TTFT p50</th>
+<th style="text-align: left;">TTFT p99</th>
+<th style="text-align: left;">TPOT p50</th>
+<th style="text-align: left;">Tokens/s</th>
+<th style="text-align: left;">Cold start</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1. Baseline (normal VM + GPU)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">2. CPU TEE only (<code>cc_mode=OFF</code>)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">3. Full CC (<code>cc_mode=ON</code>)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>Then sweep batch size <span class="arithmatex">\(\in \{1, 4, 16, 64\}\)</span> and input length <span class="arithmatex">\(\in \{128, 1024, 8192\}\)</span> for configurations 1 and 3, and plot overhead percentage against each. <strong>You are looking for the downward slope predicted by Module 4, §5.2.</strong> If you do not see it, your benchmark is transfer-bound in a way the model does not predict, and finding out why is more valuable than the numbers.</p>
+<h3 id="part-b-decompose-the-cold-start">Part B — Decompose the cold start<a class="headerlink" href="#part-b-decompose-the-cold-start" title="Permanent link">&para;</a></h3>
+<p>Instrument every milestone from Module 6, §4.1 and produce:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Phase</th>
+<th style="text-align: left;">Duration</th>
+<th style="text-align: left;">% of total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Instance provisioning</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">TEE boot + memory acceptance</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation (warm collateral cache)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation (cold collateral cache)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Key release</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Weight fetch</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Decrypt + load to protected HBM</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Warm-up to first token</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>Run it twice — once with a warm collateral cache and once cold — and note the difference. That delta is your exposure to an AMD KDS or Intel PCS outage on the critical path.</p>
+<h3 id="part-c-the-key-rotation-drill">Part C — The key rotation drill<a class="headerlink" href="#part-c-the-key-rotation-drill" title="Permanent link">&para;</a></h3>
+<p>This rehearses the operation most likely to cause a self-inflicted outage.</p>
+<ol>
+<li>With traffic flowing, rotate the KEK and rewrap the DEK.</li>
+<li>Force a new instance to launch and obtain the new key.</li>
+<li>Verify that in-flight requests on old instances are unaffected.</li>
+<li>Drain the old instances.</li>
+<li><strong>Time the whole thing</strong>, and note whether any request failed.</li>
+</ol>
+<p>Now do the destructive version deliberately, in a non-production environment: <strong>deploy a new image digest without first adding it to the release policy.</strong> Watch every new instance fail to obtain the key. Time how long it takes you to diagnose the cause from the available signals — which is exactly the diagnosis you will have to perform under pressure, with no shell access, one day.</p>
+<h3 id="part-d-the-tcb-advance-simulation">Part D — The TCB advance simulation<a class="headerlink" href="#part-d-the-tcb-advance-simulation" title="Permanent link">&para;</a></h3>
+<p>Raise the minimum TCB version in your release policy above what your fleet currently reports. Observe every instance fail to obtain keys. Then:</p>
+<ol>
+<li>How quickly did your monitoring detect it?</li>
+<li>Did the alerts say "TCB below policy floor," or did they say "key release failing"? Only the first is actionable.</li>
+<li>How would you have rolled back?</li>
+</ol>
+<p>Write the runbook from what you learn. Doing this deliberately on a Tuesday is much cheaper than discovering it the day a firmware advisory lands.</p>
+<hr />
+<h2 id="summary-operating-a-confidential-inference-fleet">Summary: Operating a Confidential Inference Fleet<a class="headerlink" href="#summary-operating-a-confidential-inference-fleet" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Question</th>
+<th style="text-align: left;">Answer</th>
+<th style="text-align: left;">Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">How do you benchmark honestly?</td>
+<td style="text-align: left;">Four configurations; separate CPU TEE from GPU CC from cold start</td>
+<td style="text-align: left;">One blended number describes nothing</td>
+</tr>
+<tr>
+<td style="text-align: left;">Where is the compute overhead?</td>
+<td style="text-align: left;">PCIe transfer; mid-single-digit percentages, shrinking with scale</td>
+<td style="text-align: left;">Modest, and not the main cost</td>
+</tr>
+<tr>
+<td style="text-align: left;">Where is the <em>real</em> cost?</td>
+<td style="text-align: left;">Warm pools, lost GPU sharing, over-provisioning for cold start</td>
+<td style="text-align: left;">Utilization dominates encryption overhead</td>
+</tr>
+<tr>
+<td style="text-align: left;">What do you lose in debugging?</td>
+<td style="text-align: left;">SSH, exec, core dumps, host and GPU profiling, content logs</td>
+<td style="text-align: left;">Invest in DEBUG parity and shape-based replay</td>
+</tr>
+<tr>
+<td style="text-align: left;">How do you log safely?</td>
+<td style="text-align: left;">Allowlisted fields, sanitized exceptions, correlation IDs</td>
+<td style="text-align: left;">A denylist will leak through an exception message</td>
+</tr>
+<tr>
+<td style="text-align: left;">What breaks on image rollout?</td>
+<td style="text-align: left;">The digest changes and the release policy has not</td>
+<td style="text-align: left;">Add the new digest before rolling; remove the old after</td>
+</tr>
+<tr>
+<td style="text-align: left;">What happens on a firmware update?</td>
+<td style="text-align: left;">TCB advances, collateral goes stale, fleet re-attests</td>
+<td style="text-align: left;">Needs a grace window and a pre-committed deadline</td>
+</tr>
+<tr>
+<td style="text-align: left;">Does autoscaling work?</td>
+<td style="text-align: left;">Not reactively</td>
+<td style="text-align: left;">Predictive scaling and warm pools sized on p99</td>
+</tr>
+<tr>
+<td style="text-align: left;">Which compliance claims hold?</td>
+<td style="text-align: left;">Operator cannot read data in use; <strong>not</strong> "workload cannot exfiltrate"</td>
+<td style="text-align: left;">Volunteering the qualifications buys credibility</td>
+</tr>
+<tr>
+<td style="text-align: left;">What is the bar to aim for?</td>
+<td style="text-align: left;">Apple PCC: no privileged access by design, reproducible builds, client-enforced transparency</td>
+<td style="text-align: left;">Items 4–6 of §6.4 are product decisions, not hardware limits</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="where-to-go-next">Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
+<p>You have the full stack: the primitives, the hardware, the attestation system, the accelerator, the platform, a design, and the means to evaluate it. Two things are worth doing next.</p>
+<p><strong>Build the smallest end-to-end thing that works.</strong> A single confidential instance, a toy model with an encrypted weight file, a composite release policy, and a client that refuses to send a prompt when attestation fails. That last behavior — a client that says no — is the one that converts this from theory into a system you trust.</p>
+<p><strong>Keep the primary sources close.</strong> This field moves fast enough that any specific claim here has a shelf life. The architecture will not change much; the availability matrices, the GPU generations, and the attack literature will. Appendix B exists for exactly this.</p>
+<p>The two appendices are <a href="../appendix_glossary_and_terminology/">Appendix A: Master Glossary</a> and <a href="../appendix_reading_list/">Appendix B: Primary Source Reading List</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

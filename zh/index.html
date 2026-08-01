@@ -1,0 +1,1258 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+      
+        <link rel="next" href="01_confidential_computing_foundations/">
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="/zh/" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>威胁模型与课程大纲 - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#llm" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="./" title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              威胁模型与课程大纲
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/zh/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="./" title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: 核心原则
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: 核心原则">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 1: 静态加密与传输加密留下了 in-use 缺口
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 2: 信任必须被度量，而不是被声称
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 3: 加速器必须在信任边界之内
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 4: 一个保证的诚实程度取决于它的威胁模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: 三方信任问题
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 课程结构与路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 模块内容详解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 模块内容详解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 1: 机密计算基础
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 2: 硬件 TEE 架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 3: 远程证明与密钥释放
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 4: 机密 GPU 与加速器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 5: Google Cloud 机密计算产品面
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-gke-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 6: 在 GKE 上设计机密 LLM 服务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 7: 性能、运维与评估
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 每个模块如何组织
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 1 - 机密计算基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 3 - 远程证明与密钥释放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 4 - 机密 GPU 与加速器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05_google_cloud_confidential_surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 6 - 在 GKE 上设计机密 LLM 服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B - 一手资料阅读清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: 核心原则
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: 核心原则">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 1: 静态加密与传输加密留下了 in-use 缺口
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 2: 信任必须被度量，而不是被声称
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 3: 加速器必须在信任边界之内
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        原则 4: 一个保证的诚实程度取决于它的威胁模型
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: 三方信任问题
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: 课程结构与路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: 模块内容详解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: 模块内容详解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 1: 机密计算基础
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 2: 硬件 TEE 架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 3: 远程证明与密钥释放
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 4: 机密 GPU 与加速器
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-google-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 5: Google Cloud 机密计算产品面
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-gke-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 6: 在 GKE 上设计机密 LLM 服务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块 7: 性能、运维与评估
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 每个模块如何组织
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="llm">LLM 服务的机密计算：威胁模型与完整课程大纲<a class="headerlink" href="#llm" title="Permanent link">&para;</a></h1>
+<p>在别人的云上托管第三方基础模型，本质上是一个<strong>互不信任</strong>的问题。模型提供方不希望云运营商——也不希望终端客户——读到自己花了九位数训练出来的权重。终端客户不希望云运营商——也不希望模型提供方——读到自己的 prompt。云运营商则希望能够可信地、并且能对监管机构说清楚：它在技术上<strong>没有能力</strong>读到任何一方的数据。任何策略、合同或 IAM 配置都无法解决这个问题，因为这些控制手段无一例外都由那个被怀疑的一方来执行。</p>
+<p>机密计算就是把这些"承诺"转换成"可验证声明"的一整套硬件机制。本书从内存加密原语一路构建到一个完整的、经过对抗性复盘的 GKE 机密 LLM 推理参考架构，内容涵盖<strong>数据的三种状态与 in-use 缺口</strong>、<strong>AMD SEV-SNP 与 Intel TDX 内部机制</strong>、<strong>远程证明与基于证明的密钥释放</strong>、<strong>机密 GPU</strong>、<strong>Google Cloud 产品面</strong>、<strong>落地服务设计</strong>，以及<strong>性能、运维与诚实的评估</strong>。</p>
+<hr />
+<h2 id="1">第 1 部分: 核心原则<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>以下四条原则贯穿全书，后面每个模块本质上都是对其中某一条的展开。</p>
+<pre class="mermaid"><code>flowchart TD
+    A["🔐 机密 LLM 服务"] --&gt; B["原则 1&lt;br&gt;静态加密与传输加密&lt;br&gt;留下了 in-use 缺口"]
+    A --&gt; C["原则 2&lt;br&gt;信任必须被度量，&lt;br&gt;而不是被声称"]
+    A --&gt; D["原则 3&lt;br&gt;加速器必须在&lt;br&gt;信任边界之内"]
+    A --&gt; E["原则 4&lt;br&gt;一个保证的诚实程度&lt;br&gt;取决于它的威胁模型"]
+
+    B --&gt; B1["内存加密 + 完整性保护&lt;br&gt;SEV-SNP / TDX"]
+    C --&gt; C1["远程证明&lt;br&gt;+ 策略门控的密钥释放"]
+    D --&gt; D1["GPU TEE、加密 PCIe、&lt;br&gt;受保护的 NVLink"]
+    E --&gt; E1["显式的不在保护范围内清单：&lt;br&gt;可用性、侧信道、&lt;br&gt;流量分析"]</code></pre>
+<h3 id="1-in-use">原则 1: 静态加密与传输加密留下了 in-use 缺口<a class="headerlink" href="#1-in-use" title="Permanent link">&para;</a></h3>
+<p>业界早在二十年前就解决了静态数据（磁盘加密、CMEK）和传输中数据（全链路 TLS）的保护。这两个方案共享同一个结构性假设：数据在某个时刻会被解密到内存里，而内存是可信的。当机器归你自己所有时，这个假设站得住脚；当机器属于云厂商——它的 hypervisor、host kernel、固件和运维人员全都横亘在 DIMM 与你的进程之间——这个假设就不成立了。</p>
+<p><strong>这对推理意味着什么</strong>：LLM 服务进程<strong>除了</strong> in-use 数据以外什么都没有。权重在内存和 HBM 里；TLS 一终结，prompt 就在内存里；KV cache——整段对话的一种有损但确实可还原的编码——在请求的整个生命周期里都躺在 GPU 显存中。在请求生命周期里，<strong>不存在</strong>一个"有价值的数据处于静态"的时刻。</p>
+<p><strong>解法</strong>：带完整性保护的硬件内存加密——让 hypervisor 和物理攻击者能看到的密文对他们不可解密，且无法在不被发现的情况下被重放或重映射。</p>
+<h3 id="2">原则 2: 信任必须被度量，而不是被声称<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<p>一个没有远程证明的 TEE，只是一台"声称自己安全"的机器。一个<strong>带</strong>远程证明的 TEE，则会产出一份由硬件签名的、精确描述自己正在运行什么代码的声明；远端方可以在把任何敏感数据交给它之前，拿这份声明去比对自己事先选定的参考值。</p>
+<p>后者有价值，前者一文不值——因为一个恶意运营商完全可以起一台普通 VM，然后告诉你这是机密 VM。</p>
+<p><strong>这决定了你该把时间花在哪</strong>：刚进入这个领域的工程师往往把时间花在 TEE 上，把证明当成管道工作。这是反的。TEE 是从 AMD 或 Intel 买来的，能用就是能用。而<strong>证明</strong>才是所有设计决策、所有运维痛苦、以及所有真正的安全性质所在之处——这也是为什么模块 3 是全书最长的一章。</p>
+<h3 id="3">原则 3: 加速器必须在信任边界之内<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>机密 VM 保护的是 CPU 内存，而 LLM 不住在 CPU 内存里。如果权重经由明文 PCIe 总线拷贝进不受保护的 HBM，那么这台机密 VM 保护的恰恰是这份数据最无关紧要的那个副本，而 host 侧攻击者可以把剩下的全部读走。</p>
+<p><strong>结论</strong>：LLM 机密计算不是"把机密计算应用到 LLM 上"，而是一个严格更难的问题。它要求 GPU 拥有自己的信任根、自己的证明、自己的受保护内存，以及一条到 CPU TEE 的加密且带完整性保护的通道；同时要求验证方<strong>同时</strong>检查两侧证据并把它们绑定在一起。这是本领域最常见的设计错误。</p>
+<h3 id="4">原则 4: 一个保证的诚实程度取决于它的威胁模型<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>机密计算并不能让一个工作负载"变安全"。它只是把一批<strong>具体的、可枚举的</strong>攻击者移出信任边界，同时把另一批留在里面。一份只说"数据在使用中受到保护"、却不说<strong>防谁</strong>、<strong>防什么</strong>的设计文档，是市场材料而不是设计文档。</p>
+<p><strong>本书坚持的纪律</strong>：书中每一个架构后面都跟一份显式清单，列出仍然暴露的东西——可用性、请求时序与流量特征、密文侧信道、客户自己的客户端完全可以记录明文这一事实，以及产出这个被度量镜像的供应链。模块 6 的最后一节存在的唯一目的，就是把成型的参考架构重新拖回模块 1 的攻击者清单里过一遍，然后明明白白地说清楚：一个拿到 host root 的内部人员<strong>仍然</strong>能做什么。</p>
+<hr />
+<h2 id="2_1">第 2 部分: 三方信任问题<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h2>
+<p>本书中每一个设计决策都可以追溯回下面这张图。建议在进入模块 1 之前先把它内化。</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph MP ["🏭 模型提供方（如前沿实验室）"]
+        MP1["拥有：模型权重&lt;br&gt;担心：权重被云运营商&lt;br&gt;或客户窃取"]
+    end
+
+    subgraph CO ["☁️ 云运营商（Google）"]
+        CO1["拥有：hypervisor、host kernel、&lt;br&gt;固件、物理数据中心、SRE&lt;br&gt;诉求：可证明地无能力&lt;br&gt;读取任何一方的数据"]
+    end
+
+    subgraph CU ["👤 终端客户（企业租户）"]
+        CU1["拥有：prompt、文档、生成结果&lt;br&gt;担心：prompt 泄露给&lt;br&gt;云运营商或模型提供方"]
+    end
+
+    MP --&gt;|"加密权重 +&lt;br&gt;仅在证明通过后释放密钥"| TEE
+    CU --&gt;|"prompt 经由在 TEE 内部&lt;br&gt;终结的通道传入"| TEE
+    CO --&gt;|"运营硬件，但&lt;br&gt;不持有任何解密密钥"| TEE
+
+    TEE["🔒 已证明的 TEE&lt;br&gt;CPU TEE + GPU TEE&lt;br&gt;运行被度量、被签名的镜像&lt;br&gt;三方均可&lt;br&gt;独立验证"]</code></pre>
+<p>这里承重的词是<strong>独立</strong>。这套架构之所以有意思，前提是：模型提供方能够验证权重解密密钥确实只释放给了它认可的环境——<strong>而不必相信 Google 的一面之词</strong>；同时客户能够验证处理 prompt 的端点就是那个被认可的环境——<strong>而不必相信 Google 或模型提供方任何一方</strong>。达不到这个标准，方案就退化成了"多绕几步的普通云租户"。</p>
+<hr />
+<h2 id="3_1">第 3 部分: 课程结构与路线图<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">模块</th>
+<th style="text-align: left;">文件名</th>
+<th style="text-align: left;">核心主题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><a href="01_confidential_computing_foundations/">模块 1: 基础</a></strong></td>
+<td style="text-align: left;"><a href="01_confidential_computing_foundations/"><code>01_confidential_computing_foundations.md</code></a></td>
+<td style="text-align: left;">数据的三种状态；攻击者分类；TCB 最小化；信任根、度量、封存；内存加密与完整性；进程级 TEE vs 虚拟机级 TEE；3P MaaS 问题陈述</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="02_hardware_tee_architectures/">模块 2: 硬件 TEE</a></strong></td>
+<td style="text-align: left;"><a href="02_hardware_tee_architectures/"><code>02_hardware_tee_architectures.md</code></a></td>
+<td style="text-align: left;">AMD SEV → SEV-ES → SEV-SNP（RMP、VMPL、PSP）；Intel TDX（SEAM、TDX Module、secure EPT、MRTD/RTMR）；ARM CCA 与 RISC-V CoVE；运维上会坏掉的东西；密文侧信道与单步攻击</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="03_remote_attestation_and_key_release/">模块 3: 远程证明</a></strong></td>
+<td style="text-align: left;"><a href="03_remote_attestation_and_key_release/"><code>03_remote_attestation_and_key_release.md</code></a></td>
+<td style="text-align: left;">RATS 架构（RFC 9334）；从信任根到容器摘要的度量链；证据格式与证书链；新鲜性、吊销、TCB 版本；基于证明的密钥释放；RA-TLS；可复现的参考值</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="04_confidential_gpus_and_accelerators/">模块 4: 机密 GPU</a></strong></td>
+<td style="text-align: left;"><a href="04_confidential_gpus_and_accelerators/"><code>04_confidential_gpus_and_accelerators.md</code></a></td>
+<td style="text-align: left;">为什么纯 CPU TEE 对推理无效；NVIDIA Hopper/Blackwell CC 模式；bounce buffer、SPDM、PCIe IDE；GPU 证明、RIM、NRAS、复合证明；Hopper 单卡 vs Blackwell 多卡 NVLink 加密；开销模型</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="05_google_cloud_confidential_surface/">模块 5: GCP 产品面</a></strong></td>
+<td style="text-align: left;"><a href="05_google_cloud_confidential_surface/"><code>05_google_cloud_confidential_surface.md</code></a></td>
+<td style="text-align: left;">Confidential VM 机型族；Confidential GKE Nodes 及其 GPU 约束；Confidential Space 及其三角色分离；GCP 证明令牌与 Workload Identity Federation；Cloud KMS/EKM 密钥层级；推理场景下 Confidential Space vs Confidential GKE</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="06_designing_confidential_llm_serving_on_gke/">模块 6: 落地设计</a></strong></td>
+<td style="text-align: left;"><a href="06_designing_confidential_llm_serving_on_gke/"><code>06_designing_confidential_llm_serving_on_gke.md</code></a></td>
+<td style="text-align: left;">需求拆解；参考架构；加密权重分发；冷启动预算；TLS 在哪里终结；KV cache 与 prefix cache 泄露；多租户；可观测性与安全监控的张力；对抗性复盘</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="07_performance_operations_and_evaluation/">模块 7: 性能与运维</a></strong></td>
+<td style="text-align: left;"><a href="07_performance_operations_and_evaluation/"><code>07_performance_operations_and_evaluation.md</code></a></td>
+<td style="text-align: left;">基准测试方法学；开销预算与成本模型；没有 SSH、core dump、host profiler 时怎么调试；证明约束下的机群生命周期；哪些合规声明成立、哪些是营销；AWS Nitro、Azure CACI 与 Apple PCC 对比</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="appendix_glossary_and_terminology/">附录 A: 术语总表</a></strong></td>
+<td style="text-align: left;"><a href="appendix_glossary_and_terminology/"><code>appendix_glossary_and_terminology.md</code></a></td>
+<td style="text-align: left;">书中全部缩写，按领域分组，含全称与一句话定义</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><a href="appendix_reading_list/">附录 B: 阅读清单</a></strong></td>
+<td style="text-align: left;"><a href="appendix_reading_list/"><code>appendix_reading_list.md</code></a></td>
+<td style="text-align: left;">带注解的一手资料——厂商规范、RFC 与攻击论文，便于回溯核验书中任何一条论断</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4_1">第 4 部分: 模块内容详解<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h2>
+<h3 id="1_1"><a href="01_confidential_computing_foundations/">模块 1: 机密计算基础</a><a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>数据的三种状态</strong> —— 为什么 "in use" 一直没被解决，以及为什么推理正是那个让它绕不过去的负载。</li>
+<li><strong>威胁模型与攻击者分类</strong> —— 恶意同租户、被攻陷的 hypervisor、拿到 host root 的云内部人员、物理/DMA 攻击者、恶意 guest。每一类的能力边界，以及对应哪种机制。</li>
+<li><strong>TEE 的构件</strong> —— 硬件信任根、度量启动、封存、证明报告、临时内存加密密钥、AES-XTS vs AES-GCM，以及为什么只有机密性而无完整性会被重放与重映射攻破。</li>
+<li><strong>进程级 TEE vs 虚拟机级 TEE</strong> —— SGX enclave 模型及其移植代价，VM-TEE 的平迁模型及其 TCB 代价，以及为什么 VM TEE 在 AI 场景胜出。机密容器作为 Kubernetes 形态的折中方案。</li>
+<li><strong>第三方 MaaS 问题的形式化</strong> —— 四条安全性质、每条各自对抗哪一方，以及模块 6 会反复使用的评估清单。</li>
+</ol>
+<h3 id="2-tee"><a href="02_hardware_tee_architectures/">模块 2: 硬件 TEE 架构</a><a class="headerlink" href="#2-tee" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>AMD SEV 谱系</strong> —— C-bit 与内存加密引擎；SEV-ES 与 VMSA 寄存器保护；SEV-SNP 的反向映射表（RMP）、<code>PVALIDATE</code>、VMPL、guest policy，以及作为信任根的 PSP。</li>
+<li><strong>Intel TDX</strong> —— SEAM 模式与作为附加 TCB 层的 TDX Module；shared vs private GPA 与 secure EPT；<code>TDCALL</code>/<code>SEAMCALL</code>；<code>MRTD</code> vs 运行时可扩展的 <code>RTMR0-3</code>；TDREPORT → Quoting Enclave → DCAP 的取证路径。</li>
+<li><strong>其余版图</strong> —— SGX 为何在本类负载中退场、ARM CCA Realms、RISC-V CoVE。</li>
+<li><strong>对比与运维后果</strong> —— TCB 体量、完整性模型、I/O 模型、证明格式、GCP 可用性；然后是那些会停止工作的东西：热迁移、内存气球、嵌套虚拟化、大页、host 侧 profiling、kdump。</li>
+<li><strong>已知攻击与残余风险</strong> —— 密文侧信道家族、单步攻击、TDX 勘误与补丁节奏——统一以这个视角来看：<strong>这些会削弱你即将向模型提供方作出的那个承诺吗？</strong></li>
+</ol>
+<h3 id="3_2"><a href="03_remote_attestation_and_key_release/">模块 3: 远程证明与密钥释放</a><a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>RATS 架构</strong> —— Attester、Verifier、Relying Party、Endorser、Reference Value Provider；passport 与 background-check 两种模型；为什么"谁来当验证方"是一个披着技术外衣的商业问题。</li>
+<li><strong>度量链</strong> —— 硬件信任根 → 固件 → 度量寄存器 → kernel/initrd/<code>dm-verity</code> → 容器镜像摘要，以及这条链通常在哪三个地方断掉。</li>
+<li><strong>证据格式与证书链</strong> —— SEV-SNP 报告结构、TDX quote 结构、TPM quote 与 event log；VCEK/VLEK 与 AMD KDS；Intel PCS 与 DCAP collateral；EAT/CoRIM 的归一化趋势。</li>
+<li><strong>新鲜性、吊销与 TCB 版本</strong> —— nonce、重放、令牌有效期，以及固件更新引发的全机群重新证明风暴。</li>
+<li><strong>基于证明的密钥释放</strong> —— 权重的信封加密；以证明声明为条件的策略；KMS 侧执行 vs 验证方侧执行；GCP、AWS、Azure 三种模式对比。</li>
+<li><strong>RA-TLS</strong> —— 把 TLS 公钥绑进证明报告，以及为什么这是给<strong>客户端</strong>端到端保证的唯一干净做法。</li>
+<li><strong>参考值与可复现构建</strong> —— 真正尚未解决的部分：你怎么知道该期望哪个度量值。</li>
+</ol>
+<h3 id="4-gpu"><a href="04_confidential_gpus_and_accelerators/">模块 4: 机密 GPU 与加速器</a><a class="headerlink" href="#4-gpu" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>为什么 GPU 必须进 TCB</strong> —— 当 CPU 机密而 GPU 不机密时，精确核算到底泄露了什么。</li>
+<li><strong>NVIDIA CC 模式内部机制</strong> —— CC-Off/CC-On/CC-DevTools；片上信任根与 GSP 固件；受保护内存区；AES-GCM 加密的 bounce buffer；SPDM 会话与 PCIe IDE。</li>
+<li><strong>GPU 证明</strong> —— 设备证据、VBIOS/驱动度量、参考完整性清单（RIM）、NRAS vs 本地验证、<code>nvtrust</code>，以及 CPU+GPU+镜像的复合策略。</li>
+<li><strong>多卡与张量并行</strong> —— Hopper 的单卡约束对大模型意味着什么；Blackwell 的硬件加密 NVLink 与 1/2/4/8 卡机密分配。</li>
+<li><strong>开销模型</strong> —— 为什么代价落在 host↔device 传输而非算力上、为什么它随模型与 batch 增大而缩小，以及到底该测什么。</li>
+<li><strong>周边生态</strong> —— AMD SEV-TIO、作为标准化终点的 PCIe TDISP，以及机密加速器的走向。</li>
+</ol>
+<h3 id="5-google-cloud"><a href="05_google_cloud_confidential_surface/">模块 5: Google Cloud 机密计算产品面</a><a class="headerlink" href="#5-google-cloud" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Confidential VM</strong> —— 按机型族区分的 SEV、SEV-SNP 与 TDX；功能差异；地域与容量的现实；Confidential Hyperdisk 与 CMEK。</li>
+<li><strong>Confidential GKE Nodes</strong> —— 如何启用、节点池约束，以及那个关键事实：控制面在你的 TEE <strong>之外</strong>。</li>
+<li><strong>Confidential Space</strong> —— 加固镜像与 launcher；workload author / operator / data collaborator 的三方分离；DEBUG vs PROD 镜像；日志逃生口，以及它们究竟让你付出多少代价。</li>
+<li><strong>GCP 上的证明</strong> —— 证明令牌及其声明；vTPM 路径；作为策略语言的 Workload Identity Federation 属性条件；Cloud KMS、Cloud HSM 与 EKM 密钥层级。</li>
+<li><strong>配角阵容</strong> —— Binary Authorization 与 Sigstore 签名；Workload Identity vs Secret Manager；gVisor 是<strong>正交</strong>的威胁模型，而不是"弱一点的 TEE"。</li>
+<li><strong>推理场景下 Confidential Space vs Confidential GKE</strong> —— 正面对比决策表，以及为什么正确答案不是那个显而易见的答案。</li>
+</ol>
+<h3 id="6-gke-llm"><a href="06_designing_confidential_llm_serving_on_gke/">模块 6: 在 GKE 上设计机密 LLM 服务</a><a class="headerlink" href="#6-gke-llm" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>需求拆解</strong> —— 四条性质的形式化陈述，每条都指名对抗哪一方。</li>
+<li><strong>参考架构</strong> —— Confidential GKE 节点 + 机密 GPU + vLLM + 证明代理 + 基于证明的密钥释放 + TEE 内 TLS 终结，逐组件拆解。</li>
+<li><strong>加密权重管线</strong> —— 从提供方侧加密到在受保护 GPU 显存中完成证明后解密；密钥轮转与吊销。</li>
+<li><strong>冷启动问题</strong> —— TEE 启动 + 证明 + 数 GB 解密 + GPU 加载的延迟预算，以及那些不会破坏证明的缓解手段。</li>
+<li><strong>TLS 在哪里终结</strong> —— 已证明入口问题，以及托管 L7 负载均衡器为什么会悄无声息地作废整个保证。</li>
+<li><strong>KV cache、prefix cache 与分离式推理</strong> —— 为什么跨租户复用 prefix cache 等价于明文泄露，以及分离式服务会把你的信任边界切成什么样。</li>
+<li><strong>多租户</strong> —— 每租户独立 TEE vs 共享 TEE 内跨租户连续批处理。</li>
+<li><strong>可观测性与安全监控盲区</strong> —— 机密性与滥用监控之间真实存在的冲突，以及三种架构应对方案。</li>
+<li><strong>对抗性复盘</strong> —— 把成型设计重新拖回模块 1 的攻击者清单过一遍。</li>
+</ol>
+<h3 id="7"><a href="07_performance_operations_and_evaluation/">模块 7: 性能、运维与评估</a><a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>基准测试方法学</strong> —— 把 CPU-TEE 开销、GPU-CC 开销与证明开销分离出来；一次公平的 A/B 需要什么条件。</li>
+<li><strong>开销与成本预算</strong> —— 按来源归因的开销，加上机型溢价与选型受限带来的成本。</li>
+<li><strong>可调试性</strong> —— 在没有 SSH、core dump、host profiler 和 <code>kubectl exec</code> 的情况下作业；在没有证据的情况下做事件响应。</li>
+<li><strong>机群生命周期</strong> —— 节点升级、TCB 升级引发的重新证明、在线密钥轮转、把证明放在关键路径上的自动扩缩容。</li>
+<li><strong>合规与定位</strong> —— 机密计算真正支撑得住什么，以及营销话术在哪里跑到了机制前面。</li>
+<li><strong>对比架构</strong> —— AWS Nitro Enclaves、Azure Confidential Containers 与 Apple Private Cloud Compute 作为已公开的设计参照。</li>
+</ol>
+<hr />
+<h2 id="5">第 5 部分: 每个模块如何组织<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>每个模块都遵循同样的四拍结构，并以一个动手实验收尾。</p>
+<ol>
+<li><strong>概念基础</strong> —— 从第一性原理讲清机制，并且先讲它要解决的问题、再讲解法。</li>
+<li><strong>架构与数据流</strong> —— 每个关键机制配 Mermaid 图，凡是两种设计相互竞争的地方都配对比表。</li>
+<li><strong>配置与 API 解剖</strong> —— 直接给出真实的 flag、claim 名、报告字段和 <code>gcloud</code> 接口，而不是它们的转述。</li>
+<li><strong>生产陷阱</strong> —— 什么会坏、厂商文档避重就轻的地方在哪、残余风险是什么。</li>
+<li><strong><code>## Lab:</code></strong> —— 一个可运行的练习。机密计算不会因为读字段表而变直观；它变直观的时刻，是你第一次真的拉出一份证明报告、把它解出来、翻转镜像里的一个字节、然后眼看着密钥释放失败。</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">关于实验与费用</p>
+<p>这些实验会真实创建 Confidential VM、Confidential GKE 与 A3 GPU 资源，均按量计费，且其中数项受地域容量限制。每个实验都会标注大致成本，并说明其命令是在真实项目上执行过的，还是从厂商文档转录、标记为<strong>未验证</strong>的。</p>
+</div>
+<p>从 <a href="01_confidential_computing_foundations/">模块 1: 机密计算基础</a> 开始。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

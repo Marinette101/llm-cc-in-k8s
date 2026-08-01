@@ -1,0 +1,2177 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving">
+      
+      
+        <meta name="author" content="linghuanym">
+      
+      
+      
+        <link rel="prev" href="../04_confidential_gpus_and_accelerators/">
+      
+      
+        <link rel="next" href="../06_designing_confidential_llm_serving_on_gke/">
+      
+      
+        
+          <link rel="alternate" href="../../05_google_cloud_confidential_surface/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="zh">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>模块 5 - Google Cloud 机密计算产品面 - Confidential Computing for LLM Serving on GKE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#5-google-cloud" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-header__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing for LLM Serving on GKE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              模块 5 - Google Cloud 机密计算产品面
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../05_google_cloud_confidential_surface/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="Confidential Computing for LLM Serving on GKE" class="md-nav__button md-logo" aria-label="Confidential Computing for LLM Serving on GKE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Confidential Computing for LLM Serving on GKE
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    威胁模型与课程大纲
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_confidential_computing_foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 1 - 机密计算基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_hardware_tee_architectures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 2 - 硬件 TEE 架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_remote_attestation_and_key_release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 3 - 远程证明与密钥释放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_confidential_gpus_and_accelerators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 4 - 机密 GPU 与加速器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 5 - Google Cloud 机密计算产品面
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: Confidential VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: Confidential VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 产品矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 实际约束
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 VM 周边的存储与密钥
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: Confidential GKE Nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 它是什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 GPU 配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Confidential GKE Nodes 没有覆盖什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 其他值得知道的限制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: Confidential Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 3 部分: Confidential Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 一个回答不同问题的不同产品
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 三个角色
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 DEBUG 与生产镜像
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 可观测性张力
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 对推理而言的局限
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: GCP 上的证明与密钥释放
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: GCP 上的证明与密钥释放">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 令牌路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 把策略写成 Workload Identity Federation 属性条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 密钥存储的抉择
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 配套阵容
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 配套阵容">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 镜像签名与 Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-gvisor-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 gVisor 不是"弱一点的 TEE"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-shielded-vmworkload-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Shielded VM、Workload Identity 与其余
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-confidential-space-vs-confidential-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 部分: 推理场景下 Confidential Space vs Confidential GKE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 6 部分: 推理场景下 Confidential Space vs Confidential GKE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 正面对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 建议，并把代价说清楚
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 通常胜出的那个混合方案
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 部署到 Confidential Space 并打破策略
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 部署到 Confidential Space 并打破策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 步 —— 构建一个会展示自身令牌的工作负载
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 步 —— 建立密钥与策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-confidential-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 步 —— 在 Confidential Space 镜像上运行它
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 步 —— 用三种方式打破它
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 步 —— 与 Confidential GKE Nodes 对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 步 —— 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: GCP 机密计算产品面
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_designing_confidential_llm_serving_on_gke/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 6 - 在 GKE 上设计机密 LLM 服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_performance_operations_and_evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模块 7 - 性能、运维与评估
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_glossary_and_terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 A - 术语总表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendix_reading_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B - 一手资料阅读清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-confidential-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 部分: Confidential VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 1 部分: Confidential VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 产品矩阵
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 实际约束
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 VM 周边的存储与密钥
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 部分: Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 2 部分: Confidential GKE Nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 它是什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 GPU 配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Confidential GKE Nodes 没有覆盖什么
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 其他值得知道的限制
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 部分: Confidential Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 3 部分: Confidential Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 一个回答不同问题的不同产品
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 三个角色
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 DEBUG 与生产镜像
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 可观测性张力
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 对推理而言的局限
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 部分: GCP 上的证明与密钥释放
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 4 部分: GCP 上的证明与密钥释放">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 令牌路径
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 把策略写成 Workload Identity Federation 属性条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 密钥存储的抉择
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 部分: 配套阵容
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 5 部分: 配套阵容">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-binary-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 镜像签名与 Binary Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-gvisor-tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 gVisor 不是"弱一点的 TEE"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-shielded-vmworkload-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Shielded VM、Workload Identity 与其余
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-confidential-space-vs-confidential-gke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 部分: 推理场景下 Confidential Space vs Confidential GKE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第 6 部分: 推理场景下 Confidential Space vs Confidential GKE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 正面对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 建议，并把代价说清楚
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 通常胜出的那个混合方案
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-confidential-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab: 部署到 Confidential Space 并打破策略
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab: 部署到 Confidential Space 并打破策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 步 —— 构建一个会展示自身令牌的工作负载
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 步 —— 建立密钥与策略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-confidential-space_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 步 —— 在 Confidential Space 镜像上运行它
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 步 —— 用三种方式打破它
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-confidential-gke-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 步 —— 与 Confidential GKE Nodes 对照
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 步 —— 清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        总结: GCP 机密计算产品面
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="5-google-cloud">模块 5: Google Cloud 机密计算产品面<a class="headerlink" href="#5-google-cloud" title="Permanent link">&para;</a></h1>
+<p>模块 1 到 4 构建了机制。本模块讲的是 Google Cloud 实际卖的是什么、每个产品暴露了其中哪些机制，以及那个决定你架构走向的问题——<strong>一个第三方模型服务负载，该基于 Google 那两个相当不同的机密产品中的哪一个来构建。</strong> 它们不是彼此的变体。它们体现的是对"谁在信任边界之内"这个问题的<strong>不同回答</strong>，而选那个方便的会让你丢掉一个之后很难补回来的安全性质。</p>
+<p>本模块涵盖 <strong>Confidential VM 机型族</strong>、<strong>Confidential GKE Nodes 及其未覆盖之处</strong>、<strong>Confidential Space 及其三角色分离</strong>、<strong>GCP 的证明与密钥释放产品面</strong>、<strong>周边配套产品</strong>，以及<strong>面向推理的正面决策对比</strong>。</p>
+<div class="admonition warning">
+<p class="admonition-title">产品面变化很快</p>
+<p>本领域的机型可用性、地域覆盖与 GPU 支持以<strong>月</strong>为尺度变化。本模块中每一条产品论断在进入设计文档之前，都应当对照当前的 Google Cloud 文档重新核验。<strong>架构</strong>是稳定的；<strong>可用性矩阵</strong>不是。</p>
+</div>
+<hr />
+<h2 id="1-confidential-vm">第 1 部分: Confidential VM<a class="headerlink" href="#1-confidential-vm" title="Permanent link">&para;</a></h2>
+<h3 id="11">1.1 产品矩阵<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<p>Confidential VM 是基础层——本模块其余一切都建立在它之上。</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Confidential VM&lt;br&gt;--confidential-compute-type"] --&gt; B["SEV&lt;br&gt;仅内存加密&lt;br&gt;无完整性"]
+    A --&gt; C["SEV_SNP&lt;br&gt;+ RMP 完整性&lt;br&gt;+ 内容丰富的证明报告"]
+    A --&gt; D["TDX&lt;br&gt;+ secure EPT 完整性&lt;br&gt;+ 原生 RTMR 运行时度量"]
+
+    B --&gt; B1["N2D、C2D、C3D、C4D 族&lt;br&gt;✅ 支持热迁移"]
+    C --&gt; C1["N2D 配 AMD Milan&lt;br&gt;❌ maintenance-policy=TERMINATE"]
+    D --&gt; D1["C3 族，以及 A3&lt;br&gt;机密 GPU 路径&lt;br&gt;❌ maintenance-policy=TERMINATE"]</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>SEV</strong></th>
+<th style="text-align: left;"><strong>SEV-SNP</strong></th>
+<th style="text-align: left;"><strong>TDX</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">内存机密性</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">有</td>
+</tr>
+<tr>
+<td style="text-align: left;">内存完整性</td>
+<td style="text-align: left;"><strong>无</strong></td>
+<td style="text-align: left;">有</td>
+<td style="text-align: left;">有</td>
+</tr>
+<tr>
+<td style="text-align: left;">原生运行时度量</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">无——需要 vTPM</td>
+<td style="text-align: left;"><strong>有</strong>（<code>RTMR0-3</code>）</td>
+</tr>
+<tr>
+<td style="text-align: left;">热迁移</td>
+<td style="text-align: left;">支持</td>
+<td style="text-align: left;">不支持</td>
+<td style="text-align: left;">不支持</td>
+</tr>
+<tr>
+<td style="text-align: left;">机型族（请核验时效）</td>
+<td style="text-align: left;">N2D、C2D、C3D、C4D</td>
+<td style="text-align: left;">N2D（AMD Milan）</td>
+<td style="text-align: left;">C3，以及机密 GPU 的 A3 路径</td>
+</tr>
+<tr>
+<td style="text-align: left;">机密 GPU 支持</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">见 §2.2</td>
+<td style="text-align: left;"><strong>有</strong>——文档化的 GPU 路径</td>
+</tr>
+</tbody>
+</table>
+<p><strong>应当驱动你选择的那一行是内存完整性。</strong> 纯 SEV 给的是没有完整性的机密性，而模块 1 §3.3 已确立：这对一个主动作恶的 hypervisor 是不够的——重放与重映射攻击可行。SEV 是可用性最广、最便宜的选项，而对一个威胁模型包含攻击者 A2 或 A3 的负载来说，它是<strong>错的</strong>那个。<strong>如果一份设计文档只写"Confidential VM"而不说是哪种技术，它就还没做那个要紧的决定。</strong></p>
+<h3 id="12">1.2 实际约束<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<p>三条会塑造你容量规划的：</p>
+<ol>
+<li><strong>SEV-SNP 与 TDX 需要 <code>--maintenance-policy=TERMINATE</code>。</strong> 没有热迁移（模块 2 §4.2.1）。主机维护会停掉实例。对一个冷启动要好几分钟的推理节点，这是一个真实的可用性输入，不是脚注。</li>
+<li><strong>地域可用性很窄。</strong> 机密产品——尤其是 TDX 与机密 GPU——只在少数地域提供。这与数据驻留要求相互作用得很糟：一个需要数据留在特定地域的客户，可能会发现那里根本不提供机密选项，而由此产生的对话很尴尬，因为这<strong>两个</strong>要求都是安全要求。</li>
+<li><strong>不只是可用性，还有容量。</strong> A3 机密容量受限。<strong>预留很重要。</strong></li>
+</ol>
+<h3 id="13-vm">1.3 VM 周边的存储与密钥<a class="headerlink" href="#13-vm" title="Permanent link">&para;</a></h3>
+<p>Confidential VM 保护内存，它对磁盘只字未提，周边的存储故事必须刻意去搭：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">关注点</th>
+<th style="text-align: left;">机制</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">启动盘与数据盘</td>
+<td style="text-align: left;">Google 托管加密、CMEK，或 Confidential Hyperdisk</td>
+<td style="text-align: left;">CMEK 意味着<strong>你</strong>在 Cloud KMS 里控制 KEK——更好，但仍由 Google 运营</td>
+</tr>
+<tr>
+<td style="text-align: left;">静态模型权重</td>
+<td style="text-align: left;">应用层信封加密（模块 3 §5）</td>
+<td style="text-align: left;"><strong>不要靠磁盘加密来做这件事。</strong> 解密必须由证明门控，而磁盘加密不是</td>
+</tr>
+<tr>
+<td style="text-align: left;">秘密</td>
+<td style="text-align: left;">基于证明的密钥释放，而非 Secret Manager IAM</td>
+<td style="text-align: left;">Secret Manager 按<strong>身份</strong>释放；你需要按<strong>度量值</strong>释放</td>
+</tr>
+</tbody>
+</table>
+<p>中间那一行最要紧，也最常做错。用 CMEK 把磁盘上的权重加密，保护的是"有人偷走磁盘"的场景。它<strong>不</strong>保护你不受云运营商侵害，因为运营商的平台能读那块盘、也握着通往密钥的路径。只有<strong>基于证明门控的释放</strong>才做得到。</p>
+<hr />
+<h2 id="2-confidential-gke-nodes">第 2 部分: Confidential GKE Nodes<a class="headerlink" href="#2-confidential-gke-nodes" title="Permanent link">&para;</a></h2>
+<h3 id="21">2.1 它是什么<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<p>Confidential GKE Nodes 本质上就是"把我这个节点池的 VM 跑成 Confidential VM"。kubelet、容器运行时和你的 Pod 全都跑在 TEE 内部。</p>
+<p>集群级启用（Autopilot 或 Standard）：</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>clusters<span class="w"> </span>create-auto<span class="w"> </span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>CONFIDENTIAL_COMPUTE_TECHNOLOGY<span class="w">   </span><span class="c1"># sev | sev_snp | tdx</span>
+</code></pre></div>
+<p>或节点池级启用（仅 Standard）：</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>NODE_POOL_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>MACHINE_TYPE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>ZONE1,ZONE2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>CONFIDENTIAL_COMPUTE_TECHNOLOGY
+</code></pre></div>
+<p><strong>集群级启用不可逆。</strong> 你无法在已有集群上把它关掉。节点池级启用是灵活的那条路，也是你在迭代期间想要的。</p>
+<h3 id="22-gpu">2.2 GPU 配置<a class="headerlink" href="#22-gpu" title="Permanent link">&para;</a></h3>
+<p>模块 4 §4.1 里的机密 GPU 路径，表达成一个节点池：</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-gpu-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>CLUSTER_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>ZONE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>tdx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>a3-highgpu-1g<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--accelerator<span class="o">=</span><span class="nv">type</span><span class="o">=</span>nvidia-h100-80gb,count<span class="o">=</span><span class="m">1</span>,gpu-driver-version<span class="o">=</span>latest
+</code></pre></div>
+<p>这些约束值得重述，因为它们是"你能服务什么"的硬边界：</p>
+<ul>
+<li>每节点一块 H100 80 GB，<code>a3-highgpu-1g</code>。</li>
+<li>Intel TDX。</li>
+<li><strong>无 GPU 共享</strong>——没有 time-sharing，没有 multi-instance GPU。</li>
+<li>有最低 GKE 版本要求，且随"手动还是自动安装驱动"、"是否使用 ComputeClasses 或 flex-start"而不同。</li>
+</ul>
+<h3 id="23-confidential-gke-nodes">2.3 Confidential GKE Nodes <strong>没有</strong>覆盖什么<a class="headerlink" href="#23-confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p>本节是这个模块存在的理由，也是从中最该带走的东西。</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph OUT ["❌ 在你的 TEE **之外**"]
+        CP["Kubernetes 控制面&lt;br&gt;API server、scheduler、etcd&lt;br&gt;由 Google 运营"]
+        CP2["Google 的文档说得很明确：&lt;br&gt;Confidential GKE Nodes 不改变&lt;br&gt;应用于集群控制面的安全措施。"]
+    end
+
+    subgraph IN ["🔒 在你的 TEE **之内** —— 全部"]
+        K["kubelet"]
+        CR["容器运行时"]
+        P1["你的推理 Pod"]
+        P2["⚠️ 控制面调度到这里的**任何其他** Pod"]
+        DS["⚠️ 任何 DaemonSet，包括调试与日志 agent"]
+    end
+
+    CP --&gt;|"想调度什么就调度什么"| K
+    K --&gt; P1
+    K --&gt; P2
+    K --&gt; DS</code></pre>
+<p>仔细跟着推论走：</p>
+<ol>
+<li>控制面在你的 TEE 之外，由 Google 运营。</li>
+<li>kubelet 在你的 TEE <strong>之内</strong>，并服从控制面。</li>
+<li>因此，任何拥有足够控制面权限的人，都可以让任意代码运行在<strong>你的信任边界之内</strong>。</li>
+</ol>
+<p>这包括 <code>kubectl exec</code> 进你的推理 Pod、在节点上调度一个特权调试 Pod，或者加一个读取进程内存的 DaemonSet。而内存加密在整个过程中都在<strong>完美地</strong>履行职责——它正在保护那个攻击者的代码不被 hypervisor 看见。</p>
+<p><strong>诚实的表述</strong>：Confidential GKE Nodes 把 hypervisor 和物理层移出了你的 TCB（攻击者 A2 与 A4，以及 A3 的很大一部分）。它<strong>没有</strong>移出 Kubernetes 控制面，而在 GKE 上控制面由 Google 运营。<strong>如果你威胁模型里的头号攻击者是"Google"，那么单靠 Confidential GKE Nodes 并不能完整地应对它。</strong></p>
+<p>这不是对产品的批评——这是对它用途的正确解读。但任何声称"防护云内部人员"的设计文档都必须把这一点写明，因为模型提供方的安全团队会找到它。</p>
+<h3 id="24">2.4 其他值得知道的限制<a class="headerlink" href="#24" title="Permanent link">&para;</a></h3>
+<ul>
+<li>与 sole-tenant 节点不兼容。</li>
+<li>不支持 Windows 节点池。</li>
+<li>Local SSD 仅支持临时存储用途。</li>
+<li>Node auto-provisioning 支持 SEV 与 SEV-SNP，但<strong>不支持 TDX</strong>——这很要紧，因为 TDX 正是机密 GPU 路径。</li>
+<li>在无法热迁移的场景下，维护事件会造成中断。</li>
+</ul>
+<hr />
+<h2 id="3-confidential-space">第 3 部分: Confidential Space<a class="headerlink" href="#3-confidential-space" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1 一个回答不同问题的不同产品<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<p>Confidential Space 不是"带增强的 Confidential VM"。它是为<strong>多方信任问题</strong>量身打造的答案——也就是说，它正是为模块 1 §5.1 的场景而建的产品。</p>
+<p>核心思想：一个加固的、由 Google 发布的、被度量的镜像，它的全部工作就是启动<strong>一个</strong>容器，并产出一份描述该容器的证明令牌。<strong>没有 SSH。没有交互式访问。不能随意调度工作负载。</strong> 该镜像基于 Container-Optimized OS，并为这一单一用途做了加固。</p>
+<h3 id="32">3.2 三个角色<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<p>这个分离才是这个产品真正的贡献，而且它直接映射到课程索引里的三方图。</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph WA ["✍️ 工作负载作者"]
+        WA1["编写并发布&lt;br&gt;容器镜像"]
+        WA2["❌ 无法访问数据&lt;br&gt;❌ 无法访问结果&lt;br&gt;❌ 无法控制谁能访问它们"]
+    end
+
+    subgraph WO ["🔧 工作负载运营方"]
+        WO1["运行工作负载；&lt;br&gt;拥有完整的项目级&lt;br&gt;管理员权限"]
+        WO2["❌ 无法访问数据&lt;br&gt;❌ 无法修改工作负载代码&lt;br&gt;或执行环境"]
+    end
+
+    subgraph DC ["🔐 数据协作方"]
+        DC1["拥有受保护资源&lt;br&gt;并制定释放策略"]
+        DC2["❌ 无法访问彼此的数据&lt;br&gt;❌ 无法修改工作负载代码"]
+    end
+
+    WA1 --&gt;|"签名镜像 + 摘要"| CS["🔒 Confidential Space&lt;br&gt;加固镜像 + launcher&lt;br&gt;只跑**一个**容器&lt;br&gt;产出证明令牌"]
+    WO1 --&gt;|"预置与运营"| CS
+    DC1 --&gt;|"针对证明声明的&lt;br&gt;KMS 策略"| CS
+    CS --&gt;|"证明令牌"| KMS["Cloud KMS / EKM&lt;br&gt;仅在策略通过时&lt;br&gt;释放密钥"]</code></pre>
+<p>需要内化的那句话是：<strong>工作负载运营方拥有完整的项目级管理员权限，却仍然读不到数据。</strong> 这正是 Confidential GKE Nodes 给不了你的性质，也恰恰是一份 3P MaaS 设计所需要的性质。把它映射到真实各方：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Confidential Space 角色</th>
+<th style="text-align: left;">3P MaaS 中的一方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">工作负载作者</td>
+<td style="text-align: left;">构建推理镜像的一方（模型提供方，或一次联合审计的构建）</td>
+</tr>
+<tr>
+<td style="text-align: left;">工作负载运营方</td>
+<td style="text-align: left;">Google / 运行该服务的平台团队</td>
+</tr>
+<tr>
+<td style="text-align: left;">数据协作方（权重）</td>
+<td style="text-align: left;">模型提供方，持有权重 KEK</td>
+</tr>
+<tr>
+<td style="text-align: left;">数据协作方（prompt）</td>
+<td style="text-align: left;">终端客户，如果 prompt 密钥也由证明门控</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-debug">3.3 DEBUG 与生产镜像<a class="headerlink" href="#33-debug" title="Permanent link">&para;</a></h3>
+<p>Google 同时发布 Confidential Space 镜像的 debug 与生产两个变体。差别体现在证明令牌里：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">生产镜像</th>
+<th style="text-align: left;">Debug 镜像</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>dbgstat</code> 声明</td>
+<td style="text-align: left;"><code>disabled-since-boot</code></td>
+<td style="text-align: left;"><code>enabled</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">交互式访问</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;">可用于排障</td>
+</tr>
+<tr>
+<td style="text-align: left;">适合真实数据</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;"><strong>否</strong></td>
+</tr>
+</tbody>
+</table>
+<p>这就是模块 3 里那条 <code>dbgstat</code> 检查的具体落地。一个不断言 <code>dbgstat == "disabled-since-boot"</code> 的依赖方，会<strong>欣然</strong>把生产密钥释放给一个运营商可以检视工作负载的 debug 镜像。这是一行策略遗漏，后果却是全局性的——也是整份释放策略里价值最高的单项检查。</p>
+<p>镜像版本还携带 <code>support_attributes</code>（<code>STABLE</code>、<code>LATEST</code>、<code>USABLE</code>、<code>EXPERIMENTAL</code>）。生产释放策略应当钉死可接受取值，而不是照单全收——理由和你钉死 TCB 下限是同一个。</p>
+<h3 id="34">3.4 可观测性张力<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<p>Confidential Space 的强项——什么都进不去，除了工作负载<strong>刻意</strong>输出的东西什么都出不来——同时也是它的运维代价。你不能 SSH 进去。你不能挂调试器。如果容器在启动时崩了，你手上的线索非常少。</p>
+<p>Google 提供了可选开启的机制来输出日志与内存监控，而证明令牌会反映它们是否被启用（Confidential Space 子模块下有一个 <code>monitoring_enabled</code> 结构）。<strong>"这件事被反映在令牌里"才是那个重要的设计细节</strong>：数据协作方可以写一条策略，拒绝向一个开启了内存监控的实例释放密钥。这才是正确的形状——<strong>可观测性决策变成了一个可协商、可证明的性质，而不是运营商单方面拨动的开关。</strong></p>
+<p>这个张力是真实的，而且没有干净的化解办法：你每增加一项诊断能力，就多开了一条通往信任边界之外的通道。模块 7 §3 讲的就是如何在这个约束下工作。</p>
+<h3 id="35">3.5 对推理而言的局限<a class="headerlink" href="#35" title="Permanent link">&para;</a></h3>
+<p>Confidential Space 每个 VM 实例跑一个容器。它不是 Kubernetes。没有 HPA，没有服务网格，没有滚动发布原语，没有 Pod 级调度。</p>
+<p>对一个推理<strong>服务</strong>——它需要自动扩缩容、负载均衡、滚动升级和基于健康度的替换——你实际上在重建 Kubernetes 给你的相当一部分东西。这是 §6 的核心权衡，也是一项<strong>真实的工程成本</strong>，而不是一句形式化的告诫。</p>
+<hr />
+<h2 id="4-gcp">第 4 部分: GCP 上的证明与密钥释放<a class="headerlink" href="#4-gcp" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 令牌路径<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    A["🔒 Confidential Space 中的工作负载"] --&gt;|"1 请求令牌"| L["容器 launcher&lt;br&gt;unix socket：&lt;br&gt;/run/container_launcher/teeserver.sock"]
+    L --&gt;|"2 硬件证据&lt;br&gt;SNP report / TD quote + GPU 证据"| GCA["Google Cloud Attestation&lt;br&gt;（验证方）"]
+    GCA --&gt;|"3 签名的 OIDC JWT&lt;br&gt;带 EAT 风格声明"| A
+    A --&gt;|"4 出示令牌"| STS["Security Token Service&lt;br&gt;Workload Identity Federation"]
+    STS --&gt;|"5 针对声明&lt;br&gt;求值属性条件"| STS
+    STS --&gt;|"6 联合凭据"| A
+    A --&gt;|"7 用该凭据解密"| KMS["Cloud KMS / Cloud HSM / Cloud EKM"]</code></pre>
+<p>这就是模块 3 §1.2 的 passport 模型。注意第 2 步：<strong>Google Cloud Attestation 就是那个验证方。</strong> 模块 3 §1.3 解释过为什么这是一个设计决策而非细节——对一个威胁模型包含 Google 的模型提供方来说，<strong>由 Google 签名的证明结果，是那个被怀疑方作出的声明</strong>。缓解手段见下面 §4.3。</p>
+<h3 id="42-workload-identity-federation">4.2 把策略写成 Workload Identity Federation 属性条件<a class="headerlink" href="#42-workload-identity-federation" title="Permanent link">&para;</a></h3>
+<p>策略是一条针对令牌声明求值的 CEL 表达式：</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>PROVIDER_ID<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>POOL_ID<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">    assertion.swname == &#39;CONFIDENTIAL_SPACE&#39;</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39;</span>
+<span class="s2">    &amp;&amp; assertion.hwmodel == &#39;GCP_INTEL_TDX&#39;</span>
+<span class="s2">    &amp;&amp; &#39;sha256:APPROVED_DIGEST&#39; in assertion.submods.container.image_digest</span>
+<span class="s2">    &amp;&amp; assertion.submods.nvidia_gpu.cc_mode == &#39;ON&#39;</span>
+<span class="s2">  &quot;</span>
+</code></pre></div>
+<p>这里每一个子句都是在前面某个模块里挣来的：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">子句</th>
+<th style="text-align: left;">在哪确立</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>swname == 'CONFIDENTIAL_SPACE'</code></td>
+<td style="text-align: left;">§3.1——这是 Confidential Space 镜像，不是裸 GCE VM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dbgstat == 'disabled-since-boot'</code></td>
+<td style="text-align: left;">§3.3 与模块 3 §5.2——最重要的单项检查</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hwmodel == 'GCP_INTEL_TDX'</code></td>
+<td style="text-align: left;">模块 2 §4.1——你要的是完整性，而不只是 SEV 的机密性</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>image_digest</code> 白名单</td>
+<td style="text-align: left;">模块 3 §2——链条抵达真正的工作负载</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>nvidia_gpu.cc_mode == 'ON'</code></td>
+<td style="text-align: left;">模块 4 §2.1 与 §3.2——没有它权重就落进明文 HBM</td>
+</tr>
+</tbody>
+</table>
+<p>在可能的情况下，优先用 <code>submods.container.image_signatures[].key_id</code> 而不是摘要白名单。摘要白名单每次发版都得改；签名检查能跨版本存活，并且表达的是<strong>意图</strong>（"由这把密钥签名的镜像"），而不是一份实例枚举。</p>
+<h3 id="43">4.3 密钥存储的抉择<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
+<p>P3（互相可验证）这条性质就是在这里赢下或输掉的。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">选项</th>
+<th style="text-align: left;">密钥材料在哪</th>
+<th style="text-align: left;">谁能改释放策略</th>
+<th style="text-align: left;">保证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Cloud KMS</strong></td>
+<td style="text-align: left;">Google 基础设施，Google 托管 HSM 支撑</td>
+<td style="text-align: left;">项目内的 Google Cloud IAM 主体</td>
+<td style="text-align: left;">策略级</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud HSM</strong></td>
+<td style="text-align: left;">FIPS 认证 HSM，Google 运营</td>
+<td style="text-align: left;">同上</td>
+<td style="text-align: left;">策略级，密钥托管更好</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud EKM</strong></td>
+<td style="text-align: left;"><strong>你自己的</strong>外部密钥管理器，在 Google 之外</td>
+<td style="text-align: left;">你，在你自己的系统里</td>
+<td style="text-align: left;"><strong>扎根于硬件与组织</strong></td>
+</tr>
+</tbody>
+</table>
+<p>对模型提供方的权重 KEK 来说，EKM 是那个<strong>质上不同</strong>的选项。用 Cloud KMS 时，"Google 要拿到明文密钥得做什么？"的答案里包含"改一条 IAM 策略"——一次内部操作。用 EKM 时，密钥从不存在于 Google 的基础设施中，释放决定由模型提供方自己运营的系统作出。</p>
+<p>有两条需要诚实说明的注意事项：</p>
+<ul>
+<li>EKM 在冷启动路径上增加了对外部密钥管理器的延迟与可用性依赖。</li>
+<li><strong>即便用了 EKM，模型提供方也必须自己验证证明证据</strong>才能拿到完整性质。如果外部密钥管理器只是单纯信任一个 Google 签名的令牌，那么验证方<strong>仍然是</strong> Google。要做对，意味着提供方的密钥管理器要拿底层硬件证据去对 AMD/Intel/NVIDIA 的根做校验。</li>
+</ul>
+<hr />
+<h2 id="5">第 5 部分: 配套阵容<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="51-binary-authorization">5.1 镜像签名与 Binary Authorization<a class="headerlink" href="#51-binary-authorization" title="Permanent link">&para;</a></h3>
+<p>机密计算把安全问题从隔离转移到了供应链（模块 1 §4.3）。真正要紧的工具链：</p>
+<ul>
+<li><strong>Sigstore / cosign</strong> 对容器镜像的签名，会以 <code>submods.container.image_signatures[]</code> 的形式出现在证明令牌里，带 <code>key_id</code> 与 <code>signature_algorithm</code>。这就是让释放策略能说"由模型提供方签名"而不是"摘要等于 X"的东西。</li>
+<li><strong>Binary Authorization</strong> —— 一个 GKE 准入控制器，阻止未签名或未证明的镜像被部署。注意这个区别：Binary Authorization 阻止的是<strong>部署</strong>；证明策略阻止的是<strong>密钥释放</strong>。两者互补，而<strong>只有后者由 Google 控制面之外的东西来执行</strong>。</li>
+</ul>
+<h3 id="52-gvisor-tee">5.2 gVisor 不是"弱一点的 TEE"<a class="headerlink" href="#52-gvisor-tee" title="Permanent link">&para;</a></h3>
+<p>这个混淆几乎出现在每一次设计评审里，所以值得说直白点。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>gVisor / 沙箱</strong></th>
+<th style="text-align: left;"><strong>机密计算</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">保护</td>
+<td style="text-align: left;"><strong>宿主</strong>不受<strong>工作负载</strong>侵害</td>
+<td style="text-align: left;"><strong>工作负载</strong>不受<strong>宿主</strong>侵害</td>
+</tr>
+<tr>
+<td style="text-align: left;">攻击者</td>
+<td style="text-align: left;">恶意或被攻陷的容器</td>
+<td style="text-align: left;">恶意 hypervisor、云内部人员、物理攻击者</td>
+</tr>
+<tr>
+<td style="text-align: left;">执行方</td>
+<td style="text-align: left;">软件（用户态内核）</td>
+<td style="text-align: left;">硬件</td>
+</tr>
+<tr>
+<td style="text-align: left;">对 3P MaaS 设计有用吗？</td>
+<td style="text-align: left;">有——但理由不同</td>
+<td style="text-align: left;">有——理由就是本书讲的这个</td>
+</tr>
+</tbody>
+</table>
+<p>它们是<strong>正交的</strong>，不是替代关系。事实上两者对 3P MaaS 都相关：机密计算保护模型提供方的权重不受平台侵害，而沙箱保护平台不受模型提供方的容器侵害。一份完整的设计很可能两者都用——而<strong>把这一点说出来</strong>，恰恰表明威胁模型在<strong>两个方向</strong>上都被想过。</p>
+<h3 id="53-shielded-vmworkload-identity">5.3 Shielded VM、Workload Identity 与其余<a class="headerlink" href="#53-shielded-vmworkload-identity" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Shielded VM</strong> 提供安全启动、vTPM 与完整性监控。它<strong>不是</strong>机密计算——内存没有被加密，hypervisor 读得到。注意 <code>GCP_SHIELDED_VM</code> 是 <code>hwmodel</code> 声明的一个可能取值，这正是为什么释放策略必须<strong>断言它期望的 <code>hwmodel</code></strong>，而不能只检查令牌能否验签。</li>
+<li><strong>Workload Identity</strong> 把一个 Kubernetes 服务账号绑到一个 Google 服务账号。它认证的是工作负载<strong>是谁</strong>，而不是它<strong>在跑什么代码</strong>。它不是证明的替代品，而一份用 Workload Identity 去门控权重访问的设计，是在需要<strong>度量控制</strong>的地方放了一个<strong>身份控制</strong>。</li>
+<li><strong>VPC Service Controls</strong> 在网络边界约束数据外泄。它与模块 6 §8 相关——那里的问题是如何阻止一个 TEE 内的工作负载外泄 prompt，而这恰是少数几个 TEE <strong>之外</strong>的控制确实有用的场合，因为<strong>威胁就是工作负载本身</strong>。</li>
+</ul>
+<hr />
+<h2 id="6-confidential-space-vs-confidential-gke">第 6 部分: 推理场景下 Confidential Space vs Confidential GKE<a class="headerlink" href="#6-confidential-space-vs-confidential-gke" title="Permanent link">&para;</a></h2>
+<h3 id="61">6.1 正面对比<a class="headerlink" href="#61" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">维度</th>
+<th style="text-align: left;"><strong>Confidential GKE Nodes</strong></th>
+<th style="text-align: left;"><strong>Confidential Space</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">机密性单位</td>
+<td style="text-align: left;">节点</td>
+<td style="text-align: left;">运行一个容器的 VM 实例</td>
+</tr>
+<tr>
+<td style="text-align: left;">kubelet 在 TCB 内</td>
+<td style="text-align: left;"><strong>是</strong></td>
+<td style="text-align: left;">不适用——没有 Kubernetes</td>
+</tr>
+<tr>
+<td style="text-align: left;">控制面能否向边界内注入代码</td>
+<td style="text-align: left;"><strong>能</strong></td>
+<td style="text-align: left;"><strong>不能</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">运营方能否访问数据</td>
+<td style="text-align: left;">能，只要集群权限足够</td>
+<td style="text-align: left;"><strong>不能，按设计</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">证明身份</td>
+<td style="text-align: left;">节点镜像；工作负载身份需额外工作</td>
+<td style="text-align: left;">容器镜像摘要，原生在令牌里</td>
+</tr>
+<tr>
+<td style="text-align: left;">开箱即得的证明令牌</td>
+<td style="text-align: left;">无</td>
+<td style="text-align: left;"><strong>有</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU 支持</td>
+<td style="text-align: left;">有——<code>a3-highgpu-1g</code>，一块 H100，TDX</td>
+<td style="text-align: left;">有——以 <code>submods.nvidia_gpu</code> 声明呈现</td>
+</tr>
+<tr>
+<td style="text-align: left;">自动扩缩容、滚动更新、服务网格</td>
+<td style="text-align: left;"><strong>有——原生</strong></td>
+<td style="text-align: left;">无；你自己建</td>
+</tr>
+<tr>
+<td style="text-align: left;">多容器 Pod、sidecar</td>
+<td style="text-align: left;">支持</td>
+<td style="text-align: left;">一个容器</td>
+</tr>
+<tr>
+<td style="text-align: left;">运维熟悉度</td>
+<td style="text-align: left;">高</td>
+<td style="text-align: left;">低</td>
+</tr>
+<tr>
+<td style="text-align: left;">契合 3P MaaS 信任模型</td>
+<td style="text-align: left;">部分</td>
+<td style="text-align: left;"><strong>契合——它就是为此设计的</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="62">6.2 建议，并把代价说清楚<a class="headerlink" href="#62" title="Permanent link">&para;</a></h3>
+<p><strong>对一个安全论断是"云运营商读不到模型权重或客户 prompt"的负载，Confidential Space 是架构上正确的原语，而单靠 Confidential GKE Nodes 不充分。</strong></p>
+<p>理由就是 §2.3：在 Confidential GKE Nodes 上，由 Google 运营的控制面可以把代码调度进你的信任边界。仅这一条事实就削弱了那个头号论断，而且<strong>任何 RBAC 配置都修不好它</strong>——因为 RBAC 正是由那个你试图排除的控制面执行的。</p>
+<p>这条建议的代价是真实的，不应被淡化。选择 Confidential Space 意味着对系统的机密部分放弃 HPA、滚动发布、服务网格、sidecar，以及整套 GKE 运维工具链。对一个需要随流量伸缩的推理服务来说，那是一笔可观的工程投入。</p>
+<h3 id="63">6.3 通常胜出的那个混合方案<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<p>实践中可行的架构是"两者皆非/两者皆是"——一个<strong>分离平面</strong>设计：</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph NORM ["普通 GKE —— 机密数据永不触及这里"]
+        A["入口、路由、限流"]
+        B["认证、配额、计费、计量"]
+        C["机群控制面：&lt;br&gt;扩缩容决策、健康、发布"]
+        D["指标与非内容日志"]
+    end
+
+    subgraph CONF ["🔒 Confidential Space 实例 —— 明文唯一存在的地方"]
+        E["推理工作负载&lt;br&gt;已证明，单容器"]
+        F["权重仅在基于证明的&lt;br&gt;密钥释放之后解密"]
+        G["TLS 或载荷解密&lt;br&gt;在**内部**终结"]
+    end
+
+    A --&gt;|"仅加密载荷——&lt;br&gt;绝不传明文 prompt"| E
+    C --&gt;|"生命周期指令，&lt;br&gt;**不是**数据访问"| E
+    E --&gt;|"加密响应、&lt;br&gt;不含内容的指标"| D</code></pre>
+<p>让它成立的规则是：<strong>普通 GKE 平面可以编排机密平面，但绝不能看到明文。</strong> 入口转发加密载荷；控制面启停实例；指标携带计数与延迟但不含内容。机密平面很小、可审计、只做一件事。</p>
+<p>这就是模块 6 会完整展开的架构，包括最难的那部分——<strong>prompt 如何从客户手里到达机密平面，而不在边界处被解密。</strong></p>
+<hr />
+<h2 id="lab-confidential-space">Lab: 部署到 Confidential Space 并打破策略<a class="headerlink" href="#lab-confidential-space" title="Permanent link">&para;</a></h2>
+<p><strong>目标</strong>：把一个工作负载部署到 Confidential Space，向它释放一个由证明令牌门控的 Cloud KMS 秘密，然后改镜像里的一个字节，眼看着释放失败。这是模块 3 的实验在真实产品面上的具体化。</p>
+<p><strong>成本</strong>：一台小机密 VM 加几次 KMS 操作——远低于一美元。<strong>状态</strong>：命令遵循 Google Cloud 文档；<code>gcloud</code> 语法随 CLI 版本而变，请用 <code>--help</code> 与当前 Confidential Space 文档核对。</p>
+<h3 id="1">第 1 步 —— 构建一个会展示自身令牌的工作负载<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span>
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>requests-unixsocket<span class="w"> </span>google-auth
+<span class="k">COPY</span><span class="w"> </span>main.py<span class="w"> </span>/main.py
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/main.py&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><code>main.py</code> 应当从 launcher socket 取回令牌、打印解码后的声明、经 STS 换取凭据，并尝试一次 Cloud KMS 解密。推送到 Artifact Registry 并记下摘要。</p>
+<h3 id="2">第 2 步 —— 建立密钥与策略<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 一把持有测试秘密的 KMS 密钥</span>
+gcloud<span class="w"> </span>kms<span class="w"> </span>keyrings<span class="w"> </span>create<span class="w"> </span>cc-lab<span class="w"> </span>--location<span class="o">=</span>global
+gcloud<span class="w"> </span>kms<span class="w"> </span>keys<span class="w"> </span>create<span class="w"> </span>weights-kek<span class="w"> </span>--location<span class="o">=</span>global<span class="w"> </span>--keyring<span class="o">=</span>cc-lab<span class="w"> </span>--purpose<span class="o">=</span>encryption
+
+<span class="c1"># 一个由证明声明门控的工作负载身份池</span>
+gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span>--location<span class="o">=</span>global
+
+gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>cc-lab-provider<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;assertion.swname == &#39;CONFIDENTIAL_SPACE&#39; \</span>
+<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39; \</span>
+<span class="s2">    &amp;&amp; &#39;sha256:YOUR_DIGEST&#39; in assertion.submods.container.image_digest&quot;</span>
+</code></pre></div>
+<p>把由此产生的主体授予该密钥上的 <code>roles/cloudkms.cryptoKeyDecrypter</code>。</p>
+<h3 id="3-confidential-space_1">第 3 步 —— 在 Confidential Space 镜像上运行它<a class="headerlink" href="#3-confidential-space_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-space-lab<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>confidential-space-images<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>confidential-space<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--metadata<span class="o">=</span><span class="s2">&quot;^~^tee-image-reference=REGION-docker.pkg.dev/PROJECT/REPO/IMAGE@sha256:DIGEST&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scopes<span class="o">=</span>cloud-platform<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--service-account<span class="o">=</span>YOUR_SA@PROJECT.iam.gserviceaccount.com
+</code></pre></div>
+<p>在 Cloud Logging 里查看工作负载输出。解密应当成功。</p>
+<h3 id="4">第 4 步 —— 用三种方式打破它<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>每一种都先<strong>预测</strong>失败，再去跑。</p>
+<ol>
+<li><strong>改镜像。</strong> 在 <code>main.py</code> 里加一行注释、重建、推送，用新摘要重新部署但<strong>不</strong>更新属性条件。令牌换取会在摘要子句上失败。</li>
+<li><strong>切换到 debug 镜像族。</strong> 用 debug 版 Confidential Space 镜像重新部署。观察令牌里 <code>dbgstat</code> 变成 <code>enabled</code>，条件失败。<strong>然后把 <code>dbgstat</code> 子句删掉再部署一次。</strong> 解密现在<strong>成功</strong>了——在一个运营商拥有交互式访问权的镜像上。请在这个结果上多待一会儿；这是本模块最有教育意义的一次失败。</li>
+<li><strong>在一台普通机密 VM 上试。</strong> 把同一个容器跑在一台普通机密 VM 而非 Confidential Space 镜像上。注意 <code>swname</code> 现在是 <code>GCE</code> 而不是 <code>CONFIDENTIAL_SPACE</code>，条件失败。这就是那个子句并非冗余的原因。</li>
+</ol>
+<h3 id="5-confidential-gke-nodes">第 5 步 —— 与 Confidential GKE Nodes 对照<a class="headerlink" href="#5-confidential-gke-nodes" title="Permanent link">&para;</a></h3>
+<p>把同一个容器部署到一个 Confidential GKE 节点池：</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span>--location<span class="o">=</span>LOCATION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>sev_snp<span class="w"> </span>--machine-type<span class="o">=</span>n2d-standard-4
+</code></pre></div>
+<p>现在试着从 Pod 内部取得一个等价的工作负载身份证明令牌。你会发现<strong>没有</strong> launcher socket 的开箱等价物——然后，用你<strong>普通的</strong>集群凭据，运行：</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>POD_NAME<span class="w"> </span>--<span class="w"> </span>/bin/sh
+</code></pre></div>
+<p>你现在就在信任边界之内，站在一台内存被硬件加密的节点上，读取工作负载内存里的任何东西。<strong>这就是 §2.3，用一条命令演示出来。</strong> 没有任何东西坏掉；产品完全按设计工作。它只是不防你以为它防的那个攻击者。</p>
+<h3 id="6">第 6 步 —— 清理<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-space-lab<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>delete<span class="w"> </span>cc-lab-pool<span class="w"> </span>--cluster<span class="o">=</span>YOUR_CLUSTER<span class="w"> </span>--location<span class="o">=</span>LOCATION<span class="w"> </span>--quiet
+</code></pre></div>
+<hr />
+<h2 id="gcp">总结: GCP 机密计算产品面<a class="headerlink" href="#gcp" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">问题</th>
+<th style="text-align: left;">答案</th>
+<th style="text-align: left;">后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">选哪种 Confidential VM 技术？</td>
+<td style="text-align: left;">SEV-SNP 或 TDX，绝不用纯 SEV</td>
+<td style="text-align: left;">纯 SEV 没有内存完整性</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPU 用哪种技术？</td>
+<td style="text-align: left;">TDX，<code>a3-highgpu-1g</code>，一块 H100</td>
+<td style="text-align: left;">把可服务模型规模封在 80 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Confidential GKE 覆盖控制面吗？</td>
+<td style="text-align: left;"><strong>不覆盖</strong>——Google 文档明确这么说</td>
+<td style="text-align: left;">Google 运营的控制面能向你的 TEE 注入代码</td>
+</tr>
+<tr>
+<td style="text-align: left;">Confidential Space 运营方能读数据吗？</td>
+<td style="text-align: left;"><strong>不能</strong>——即便拥有完整项目管理员权限</td>
+<td style="text-align: left;">这正是 3P MaaS 需要的性质</td>
+</tr>
+<tr>
+<td style="text-align: left;">什么门控密钥释放？</td>
+<td style="text-align: left;">针对令牌声明的 CEL 属性条件，随后是 IAM</td>
+<td style="text-align: left;">每个子句都对应模块 2–4 中的一个机制</td>
+</tr>
+<tr>
+<td style="text-align: left;">哪些声明不可妥协？</td>
+<td style="text-align: left;"><code>dbgstat</code>、<code>hwmodel</code>、<code>image_digest</code>、<code>nvidia_gpu.cc_mode</code></td>
+<td style="text-align: left;">仅遗漏 <code>dbgstat</code> 就足以作废整个保证</td>
+</tr>
+<tr>
+<td style="text-align: left;">权重 KEK 该放哪？</td>
+<td style="text-align: left;">Cloud EKM，由提供方自己的验证方校验</td>
+<td style="text-align: left;">Cloud KMS 会把保证降级为一条 IAM 策略</td>
+</tr>
+<tr>
+<td style="text-align: left;">gVisor 是 TEE 的替代品吗？</td>
+<td style="text-align: left;"><strong>不是</strong>——方向相反，两者都可能有用</td>
+<td style="text-align: left;">它保护宿主不受负载侵害，而非反过来</td>
+</tr>
+<tr>
+<td style="text-align: left;">Confidential Space 还是 Confidential GKE？</td>
+<td style="text-align: left;">数据平面用 Confidential Space，外围用普通 GKE</td>
+<td style="text-align: left;">机密部分要放弃 HPA、滚动更新与 sidecar</td>
+</tr>
+</tbody>
+</table>
+<p>你现在拥有了全部组件：硬件 TEE、证明、机密 GPU，以及暴露它们的平台原语。剩下的是设计本身——权重怎么进来、TLS 在哪里终结、KV cache 对你的威胁模型做了什么，以及一个拿到 host root 的内部人员对成型系统<strong>仍然</strong>能做什么。那就是<strong>模块 6: 在 GKE 上设计机密 LLM 服务 (<code>06_designing_confidential_llm_serving_on_gke.md</code>)</strong>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.top", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
