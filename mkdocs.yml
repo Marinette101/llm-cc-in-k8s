@@ -1,7 +1,7 @@
 site_name: "Confidential Computing for LLM Serving on GKE"
 site_description: "Hardware-Enforced Isolation, Remote Attestation, and Confidential GPUs for Third-Party Model Serving"
 site_author: "linghuanym"
-site_url: "https://marinette101.github.io/blog-llm-cc-in-k8s/"
+site_url: "https://marinette101.github.io/llm-cc-in-k8s/"
 
 nav:
   - Threat Model & Curriculum: index.md
