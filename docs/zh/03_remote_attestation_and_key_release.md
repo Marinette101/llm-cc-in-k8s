@@ -406,18 +406,18 @@ Apple 的 Private Cloud Compute 是最完整的公开尝试，值得研究，恰
 
 ---
 
-## Lab: 从证据到一把被释放的密钥
+## Lab: 从证据到一把被释放的密钥 —— 两条路都走一遍
 
-**目标**：完成一次完整的基于证明的密钥释放——取得 Confidential Space 证明令牌、检视其声明、把一把 Cloud KMS 密钥绑定到针对这些声明的策略上，然后**打破**这条策略并眼看着释放失败。最后一步才是真正教会你东西的那步；**一条你从没见它拒绝过任何东西的策略，是一条你不知道它是否生效的策略。**
+**目标**：把完整的证明密钥释放做两遍。第一遍走方便的那条路：Google 的验证方、Google 的 KMS。第二遍走 §1.3 真正推荐的那条：你自己的验证方去评估原始硬件证据，密钥托管在工作负载所在项目根本碰不到的地方。然后以一个恶意项目管理员的身份攻击这两套设计，观察只有其中一套活了下来。
 
-**成本**：一台小机密 VM 加若干 KMS 操作——远低于一美元。**状态**：结构与声明名称已对照 Google Cloud 文档核验；确切的 `gcloud` 语法随 CLI 版本而变——请用 `--help` 核对，并随时查阅 Confidential Space 文档。
+**规模**：两个 Google Cloud 项目——一个跑工作负载的 *operator* 项目，一个跑验证方并持有密钥的 *provider* 项目。要用 IAM 彼此独立的两个项目。这正是整个练习的要害：如果同一个管理员同时掌控两边，本实验的后半部分就什么都证明不了，而用两个项目来模拟这种分离，是最便宜的诚实做法。**状态**：结构与 claim 名称已对照 Google Cloud 文档核实；`gcloud` 的确切语法随 CLI 版本而变——请用 `--help` 核对，并随时查阅 Confidential Space 文档。
 
-### A 部分 —— 取一个令牌并读它
+### A 部分 —— 取一份 token 并读它
 
-写一个只读取证明令牌并打印的极简负载。在 Confidential Space 工作负载内部，令牌可从 launcher 的 socket 获取：
+写一个最简单的工作负载，读出证明 token 并打印。在 Confidential Space 工作负载内部，token 可以从 launcher 的 socket 取得：
 
 ```bash
-# 在工作负载容器内
+# 在工作负载容器内部
 curl -s --unix-socket /run/container_launcher/teeserver.sock \
   http://localhost/v1/token > token.jwt
 
@@ -425,26 +425,26 @@ curl -s --unix-socket /run/container_launcher/teeserver.sock \
 cut -d. -f2 token.jwt | tr '_-' '/+' | base64 -d 2>/dev/null | python3 -m json.tool
 ```
 
-### B 部分 —— 找齐 §5.2 里的每一个声明
+### B 部分 —— 把 §5.2 的每一个 claim 都找出来
 
-在解码后的 payload 里，找到并写下：
+在解码后的 payload 里定位并记下：
 
 - `iss` —— 应为 `https://confidentialcomputing.googleapis.com`
-- `hwmodel` —— `GCP_AMD_SEV`、`GCP_INTEL_TDX`，或者——很说明问题地——`GCP_SHIELDED_VM`
-- `dbgstat` —— 生产上是 `disabled-since-boot`，DEBUG 镜像上是 `enabled`
-- `swname` / `swversion` —— `CONFIDENTIAL_SPACE` 与镜像版本
-- `submods.container.image_digest` —— 真正要紧的那个工作负载身份
-- `submods.container.image_signatures[]` —— 只有你给镜像签过名才会有
-- `submods.gce.*` —— project、zone、instance
+- `hwmodel` —— `GCP_AMD_SEV`、`GCP_INTEL_TDX`，或者很说明问题的 `GCP_SHIELDED_VM`
+- `dbgstat` —— 生产环境应为 `disabled-since-boot`，DEBUG 镜像上则是 `enabled`
+- `swname` / `swversion` —— `CONFIDENTIAL_SPACE` 以及镜像版本
+- `submods.container.image_digest` —— 真正重要的那个工作负载身份
+- `submods.container.image_signatures[]` —— 只有你签过镜像才会出现
+- `submods.gce.*` —— 项目、zone、实例
 - `submods.confidential_space.support_attributes` —— `STABLE`、`LATEST`、`EXPERIMENTAL`
-- `eat_nonce` —— 除非你请求过，否则不存在
-- `exp` − `iat` —— 算出令牌有效期，并注意：如果你不用 nonce，这就是你的重放窗口
+- `eat_nonce` —— 除非你主动请求，否则不存在
+- `exp` − `iat` —— 算出 token 生命期，并注意：如果你不用 nonce，这就是你的重放窗口
 
-**练习**：把同一个负载跑在一个 DEBUG 版 Confidential Space 镜像上，diff 两份令牌。看着 `dbgstat` 翻成 `enabled`、`support_attributes` 变化。然后回答：**哪一个声明，如果依赖方不检查它，会让整个部署不再机密？**
+**练习**：把同一个工作负载跑在 DEBUG 版 Confidential Space 镜像上，diff 两份 token。看着 `dbgstat` 翻成 `enabled`、`support_attributes` 发生变化。然后回答：哪一个 claim 一旦被依赖方漏检，就会让整个部署不再机密？
 
-### C 部分 —— 把一把 KMS 密钥绑定到证明上
+### C 部分 —— 把 KMS 密钥绑到证明上（方便的那条路）
 
-创建一个工作负载身份池，其 provider 的属性条件要求你在乎的那些声明：
+在 **operator** 项目里，创建一个工作负载身份池，其 provider 的属性条件要求你在意的那些 claim：
 
 ```bash
 gcloud iam workload-identity-pools create cc-lab-pool \
@@ -462,19 +462,67 @@ gcloud iam workload-identity-pools providers create-oidc cc-lab-provider \
     && 'sha256:YOUR_IMAGE_DIGEST' in assertion.submods.container.image_digest"
 ```
 
-然后把该联合身份授予某把持有测试秘密的密钥上的 `roles/cloudkms.cryptoKeyDecrypter`，并让负载用它的令牌经由 STS 换取 Google 凭据来解密。
+然后给这个联合身份在持有测试密文的密钥上授予 `roles/cloudkms.cryptoKeyDecrypter`，让工作负载通过 STS 用 token 换取 Google 凭据并解密。
 
 ### D 部分 —— 用三种方式打破它
 
-这一部分才产生理解。每一种都请先**预测**失败会是什么样，再去跑：
+这一部分才真正产生理解。每一种，都先预测失败的样子再动手：
 
-1. **改镜像。** 改一个字节重新构建、部署，看着摘要变化、换取因条件不匹配而失败。
-2. **用 DEBUG 镜像。** `dbgstat` 变成 `enabled`，条件失败。**现在把 `dbgstat` 那一子句从属性条件里删掉**，观察到释放**成功**了——在一个运营商可以检视内存的镜像上。这是本实验中最有教育意义的一次失败。
-3. **重放一个令牌。** 抓一个令牌，等过 `exp`，再试一次。然后推理一下：在那个窗口内攻击者本可以做什么。
+1. **改镜像**。改一个字节重新构建、部署，看着 digest 变化、交换因条件不匹配而失败。
+2. **用 DEBUG 镜像**。`dbgstat` 变成 `enabled`，条件失败。现在把 `dbgstat` 那一条从属性条件里删掉，观察密钥释放*成功了*——在一个运维方可以检视内存的镜像上。这是整个实验里最有教育意义的一次失败。
+3. **重放一个 token**。抓一份 token，等它过了 `exp` 再试。然后推演一下：在那个窗口内攻击者本可以做些什么。
 
-### E 部分 —— 值得多待一会儿的那个问题
+### E 部分 —— 现在，自己当验证方
 
-你现在已经向一个已证明环境释放了一把密钥。请问：**是谁决定这个镜像摘要是可接受的？谁能改变这个决定？** 如果答案是"与工作负载运行在同一个 Google Cloud 项目里的一条 IAM 策略"，那么一个 Google Cloud 项目管理员可以把自己的镜像摘要加进白名单——保证于是退化成了 IAM。这个观察就是 §1.3 以具体形式到来，也正是模块 6 里外部密钥管理的动机。
+上面的一切，都把 Google 摆在了"Google 的基础设施是否可信"这一断言的中间。§1.3 把那称为承诺而不是证据。现在把替代方案搭出来。
+
+在 **provider** 项目里，立一个从不信任 Google 签发 token 的验证服务。它应当接收原始证据、自己完成评估，并且只依据自己的判定释放密钥：
+
+```python
+# 验证服务，provider 项目 —— 只是草图，不是一个库
+def release_key(evidence: bytes, nonce: bytes, tls_pubkey_hash: bytes) -> bytes:
+    report = parse_snp_report(evidence)                       # 或 TDX quote
+    verify_signature_chain(report, ark=PINNED_AMD_ROOT)       # 信 AMD，不信 GCP
+    assert report.report_data == sha512(nonce + tls_pubkey_hash)
+    assert report.measurement in APPROVED_MEASUREMENTS        # 你自己的，来自模块 2 §9
+    assert report.tcb_version >= TCB_FLOOR                    # 下界，绝不是等值
+    assert report.policy.debug is False
+    return unwrap_kek()                                       # 密钥在这里，不在 operator 项目
+```
+
+有两个性质是要害，而且它们都是结构性的，而非密码学上的：
+
+- **AMD 根证书是你自己钉死的**。整条链是 证据 → VCEK → ASK → ARK，终点是一份你自己随代码分发的证书。Google 在这条链里根本不出现。
+- **密钥从不进入 operator 项目**。工作负载通过一条被证明绑定的信道收到释放的密钥；在 operator 项目里持有 IAM 的任何人都无从索取。
+
+让工作负载发送原始证据——来自 `/dev/sev-guest` 或模块 2 §7 里的 configfs 接口——而不是 launcher 的那个 JWT，并把 `REPORT_DATA` 绑定到它自己的 TLS 公钥上，使这次释放同时绑定到信道（§6）。
+
+### F 部分 —— 以恶意管理员的身份攻击两套设计
+
+现在做那个把差别落到实处的实验。给你自己在 **operator** 项目上授予完整的 `roles/owner`——这恰恰是一个内部人员、一个被攻陷的 CI 账号、或一个被胁迫的员工所拥有的权限——然后用两条路各偷一次这份机密。
+
+**打 C 部分**：把你自己的镜像 digest 加进属性条件，部署一个只负责打印解密结果的容器，然后跑起来。
+
+```bash
+gcloud iam workload-identity-pools providers update-oidc cc-lab-provider \
+  --location=global --workload-identity-pool=cc-lab-pool \
+  --attribute-condition="assertion.swname == 'CONFIDENTIAL_SPACE' \
+    && 'sha256:MY_EXFILTRATION_IMAGE' in assertion.submods.container.image_digest"
+```
+
+成功了。明文现在在你手上。**没有任何东西被攻破，也没有任何硬件保证失效**——那条策略只是一个可变的 IAM 对象，而它正好落在这套设计本应排除掉的那个管理员的爆炸半径之内。
+
+**打 E 部分**：同样的事再来一次。你可以改工作负载、改实例、改项目、改整套 IAM 策略——但你改不了 `APPROVED_MEASUREMENTS`，因为它住在一个你并不持有 IAM 的项目里。释放会在度量值不匹配处失败，密钥待在原地。
+
+用一句话写下这个差值。那句话就是你日后要讲给模型提供方安全团队听的论证，也是模块 6 把密钥管理器彻底放到 Google 之外的原因。
+
+### G 部分 —— 值得多待一会儿的问题
+
+F 部分仍有一处软肋。请问：**是谁认定 `APPROVED_MEASUREMENTS` 里那些度量值是可接受的，客户又如何能知道？** 如果答案是"提供方认定的，而客户无从知道"，那你只是把信任搬了个家，而不是消除了它——从云厂商搬到了你自己身上。当你就是那个资产处于风险中的一方时，这是一个实打实的改进；但它不构成对第三方的保证。补上最后这个缺口需要可复现构建与透明日志（§7.3），这也正是模块 7 §6.4 里 Apple PCC 最终落脚的地方。
+
+### H 部分 —— 清理
+
+删掉工作负载实例与普查用的资源。把验证服务和那两个项目留着——模块 5 就是在这同一套分离结构上做部署的，而模块 6 会把它的生产版本建起来。
 
 ---
 

@@ -379,9 +379,9 @@ That last dependency is unavoidable and worth stating plainly: **attestation red
 
 ## Lab: Making the TEE Announce Itself
 
-**Goal:** boot an ordinary VM and a Confidential VM side by side and find the difference from inside the guest. The point is to establish that the TEE is observable and not a billing-only abstraction.
+**Goal:** boot a baseline VM, an AMD SEV-SNP VM, and an Intel TDX VM side by side, find the difference from inside each guest, and then measure what confidential memory actually costs at boot. The point is to establish that the TEE is observable rather than a billing-only abstraction, and that its costs are measurable rather than folklore.
 
-**Cost:** two small VMs for a few minutes — cents. **Status:** commands transcribed from Google Cloud documentation; verify flag names against `gcloud compute instances create --help` for your CLI version.
+**Scope:** provision all four instances concurrently, including the large-memory one. Running both vendors side by side is the point — a lab that boots only SEV-SNP teaches you AMD, not confidential computing. **Status:** commands transcribed from Google Cloud documentation; verify flag names against `gcloud compute instances create --help` for your CLI version.
 
 ### Step 1 — Find what your project can actually run
 
@@ -419,9 +419,23 @@ gcloud compute instances create cc-lab-snp \
 
 Note `--maintenance-policy=TERMINATE`. SEV-SNP instances cannot be live-migrated, so host maintenance stops the instance rather than moving it. This is not a CLI quirk — it is the first concrete operational consequence of the architecture, and Module 2, Part 4 explains why integrity protection and live migration are fundamentally in tension.
 
-### Step 4 — Ask each guest what it is
+### Step 4 — Boot an Intel TDX Confidential VM
 
-On both machines:
+```bash
+gcloud compute instances create cc-lab-tdx \
+  --confidential-compute-type=TDX \
+  --machine-type=c3-standard-4 \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud \
+  --image-family=ubuntu-2404-lts-amd64
+```
+
+Both vendors, running at once, on your own project. Nearly every comparison in Module 2 is one you can now check directly instead of taking on faith — and the differences are not cosmetic. Keep both alive until you finish Module 2's lab, which pulls an attestation report from each.
+
+### Step 5 — Ask each guest what it is
+
+On all three machines:
 
 ```bash
 # The kernel logs the memory-encryption state at boot
@@ -434,19 +448,53 @@ lscpu | grep -i -E 'sev|tdx|flags' | tr ' ' '\n' | grep -i -E 'sev|tdx'
 ls -l /dev/sev-guest /dev/tdx_guest 2>/dev/null
 ```
 
-**Expected difference.** On the baseline VM the `dmesg` grep is empty and `/dev/sev-guest` does not exist. On the SEV-SNP VM you should see a line reporting active memory encryption (typically of the form `Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP`) and the character device `/dev/sev-guest` should be present.
+**Expected difference.** On the baseline VM the `dmesg` grep is empty and neither device node exists. On the SEV-SNP VM you should see a line reporting active memory encryption (typically of the form `Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP`) and the character device `/dev/sev-guest`. On the TDX VM you should see a line naming Intel TDX and the device `/dev/tdx_guest` instead.
 
-That device is the entire subject of Module 3 in one node: it is the guest's only channel for asking the PSP to produce a signed attestation report.
+Two different vendors, two different device names, two different kernel messages — and one identical architectural idea. Write down the one sentence that is true of both guests and false of the baseline. That sentence is the definition this whole course is built on.
 
-### Step 5 — Confirm the negative result
+Those device nodes are the entire subject of Module 3 in one file: they are the guest's only channel for asking the hardware to produce a signed attestation report.
 
-The interesting part of this lab is what you *cannot* see. From inside the confidential guest, there is no API that reveals the memory encryption key, and from the host there is no supported path to read guest plaintext. Try to articulate, in one sentence, which adversary from §2.1 you have just excluded — and which four you have not.
+### Step 6 — Measure what confidential memory costs at boot
 
-### Step 6 — Clean up
+§3.3 said private memory must be accepted by the guest before use, and Module 2, §4 will claim this cost is proportional to memory size. That claim is usually repeated rather than measured. Measure it.
 
 ```bash
-gcloud compute instances delete cc-lab-baseline cc-lab-snp --zone=us-central1-a --quiet
+# A large SEV-SNP VM — hundreds of gigabytes of memory to accept
+gcloud compute instances create cc-lab-snp-large \
+  --confidential-compute-type=SEV_SNP \
+  --machine-type=n2d-standard-224 \
+  --min-cpu-platform="AMD Milan" \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud \
+  --image-family=ubuntu-2404-lts-amd64
 ```
+
+On the small and the large confidential VM, compare where the boot time went:
+
+```bash
+systemd-analyze                    # firmware / loader / kernel / userspace split
+systemd-analyze blame | head -20   # which units dominate, if any
+
+# Early-boot memory work shows up here, before userspace exists
+sudo dmesg | grep -i -E 'memory|accept|pvalidate|e820' | head -30
+```
+
+**What to record.** The delta in the firmware and kernel phases between a 8 GB and a 896 GB confidential guest, and the same delta on non-confidential machines of the same two sizes as a control. The control is what makes the number mean anything: large VMs boot more slowly regardless, and you want the confidential-specific component, not the sum.
+
+Carry that number forward. It reappears as a line item in Module 6's cold-start budget, where it competes directly with multi-gigabyte weight decryption for the same latency envelope — and where being wrong about it by a factor of two changes the autoscaling design.
+
+### Step 7 — Confirm the negative result
+
+The interesting part of this lab is what you *cannot* see. From inside either confidential guest, there is no API that reveals the memory encryption key, and from the host there is no supported path to read guest plaintext. Try to articulate, in one sentence, which adversary from §2.1 you have just excluded — and which four you have not.
+
+### Step 8 — Clean up
+
+```bash
+gcloud compute instances delete cc-lab-baseline cc-lab-snp-large --zone=us-central1-a --quiet
+```
+
+Keep `cc-lab-snp` and `cc-lab-tdx` — Module 2's lab pulls a real attestation report from each of them, and you have already paid the setup cost.
 
 ---
 

@@ -406,11 +406,11 @@ For the design you will actually build:
 
 ---
 
-## Lab: From Evidence to a Released Key
+## Lab: From Evidence to a Released Key — Both Ways
 
-**Goal:** perform a complete attested key release — obtain a Confidential Space attestation token, inspect its claims, bind a Cloud KMS key to a policy over those claims, and then break the policy and watch the release fail. The final step is the one that teaches; a policy you have never seen deny anything is a policy you do not know is enforced.
+**Goal:** perform a complete attested key release twice. First the convenient way, with Google's verifier and Google's KMS. Then the way §1.3 actually recommends: your own verifier appraising raw hardware evidence, and a key manager the workload's own project cannot touch. Then attack both, as a malicious project administrator, and observe that only one of them survives.
 
-**Cost:** one small confidential VM plus KMS operations — well under a dollar. **Status:** structure and claim names verified against Google Cloud documentation; exact `gcloud` syntax varies by CLI version — verify with `--help` and consult the Confidential Space documentation as you go.
+**Scope:** two Google Cloud projects — an *operator* project that runs the workload and a *provider* project that runs the verifier and holds the key. Use separate projects with separate IAM. This is the whole point of the exercise: the second half of this lab cannot demonstrate anything if the same administrator controls both halves, and simulating that separation with two projects is the cheapest honest version of it. **Status:** structure and claim names verified against Google Cloud documentation; exact `gcloud` syntax varies by CLI version — verify with `--help` and consult the Confidential Space documentation as you go.
 
 ### Part A — Get a token and read it
 
@@ -442,9 +442,9 @@ In the decoded payload, locate and write down:
 
 **Exercise:** run the same workload on a DEBUG Confidential Space image and diff the two tokens. Watch `dbgstat` flip to `enabled` and `support_attributes` change. Then answer: which single claim, if unchecked by a relying party, makes the entire deployment non-confidential?
 
-### Part C — Bind a KMS key to the attestation
+### Part C — Bind a KMS key to the attestation, the convenient way
 
-Create a workload identity pool with a provider whose attribute condition requires the claims you care about:
+In the **operator** project, create a workload identity pool with a provider whose attribute condition requires the claims you care about:
 
 ```bash
 gcloud iam workload-identity-pools create cc-lab-pool \
@@ -472,9 +472,57 @@ This is the part that produces understanding. For each, predict the failure befo
 2. **Use a DEBUG image.** `dbgstat` becomes `enabled`, the condition fails. Now remove the `dbgstat` clause from the attribute condition and observe that the release *succeeds* — on an image where the operator can inspect memory. This is the single most instructive failure in the lab.
 3. **Replay a token.** Capture a token, wait past `exp`, and try again. Then reason about what an attacker could have done inside that window.
 
-### Part E — The question to sit with
+### Part E — Now be your own verifier
 
-You have now released a key to an attested environment. Ask: **who decided that this image digest was acceptable, and who could change that decision?** If the answer is "an IAM policy in the same Google Cloud project the workload runs in," then a Google Cloud project administrator can add their own image digest to the allowlist — and the guarantee reduces to IAM. That observation is §1.3 arriving in concrete form, and it is what motivates external key management in Module 6.
+Everything above put Google in the middle of a claim about whether Google's infrastructure was trustworthy. §1.3 called that a promise rather than evidence. Build the alternative.
+
+In the **provider** project, stand up a verifier service that never trusts a Google-issued token. It should accept raw evidence, appraise it itself, and release a key only on its own verdict:
+
+```python
+# verifier service, provider project — sketch, not a library
+def release_key(evidence: bytes, nonce: bytes, tls_pubkey_hash: bytes) -> bytes:
+    report = parse_snp_report(evidence)                       # or TDX quote
+    verify_signature_chain(report, ark=PINNED_AMD_ROOT)       # trust AMD, not GCP
+    assert report.report_data == sha512(nonce + tls_pubkey_hash)
+    assert report.measurement in APPROVED_MEASUREMENTS        # yours, from Module 2 §9
+    assert report.tcb_version >= TCB_FLOOR                    # a floor, never equality
+    assert report.policy.debug is False
+    return unwrap_kek()                                       # key lives here, not in the operator project
+```
+
+Two properties matter, and both are structural rather than cryptographic:
+
+- **The AMD root is pinned by you.** The chain runs evidence → VCEK → ASK → ARK, and terminates at a certificate you shipped. Google appears nowhere in it.
+- **The key never enters the operator project.** The workload receives a released key over an attested channel; nobody with IAM in the operator project can ask for it.
+
+Have the workload send raw evidence — from `/dev/sev-guest` or the configfs interface in Module 2, §7 — rather than the launcher's JWT, with `REPORT_DATA` bound to its own TLS public key so the release is bound to the channel (§6).
+
+### Part F — Attack both designs as a malicious administrator
+
+Now the experiment that makes the difference concrete. Grant yourself full `roles/owner` on the **operator** project — which is exactly what an insider, a compromised CI account, or a coerced employee would have — and try to steal the secret both ways.
+
+**Against Part C:** add your own image digest to the attribute condition, deploy a container that simply prints the decrypted secret, and run it.
+
+```bash
+gcloud iam workload-identity-pools providers update-oidc cc-lab-provider \
+  --location=global --workload-identity-pool=cc-lab-pool \
+  --attribute-condition="assertion.swname == 'CONFIDENTIAL_SPACE' \
+    && 'sha256:MY_EXFILTRATION_IMAGE' in assertion.submods.container.image_digest"
+```
+
+It works. You now hold the plaintext. **Nothing was broken and no hardware guarantee failed** — the policy was a mutable IAM object inside the blast radius of the very administrator the design was supposed to exclude.
+
+**Against Part E:** try the same thing. You can change the workload, the instance, the project, and the entire IAM policy — and you cannot change `APPROVED_MEASUREMENTS`, because it lives in a project whose IAM you do not hold. The release fails on a measurement mismatch and the key stays where it is.
+
+Write down the delta in one sentence. That sentence is the argument you will make to a model provider's security team, and it is the reason Module 6 puts the key manager outside Google entirely.
+
+### Part G — The question to sit with
+
+Part F still has a soft spot. Ask: **who decided that the measurements in `APPROVED_MEASUREMENTS` were acceptable, and how would a customer know?** If the answer is "the provider, and they would not," you have moved the trust rather than eliminated it — from the cloud to yourself. That is a real improvement when you are the party with the asset at risk, and it is not a guarantee to a third party. Closing that last gap requires reproducible builds and a transparency log (§7.3), which is where Apple PCC ends up in Module 7, §6.4.
+
+### Part H — Clean up
+
+Delete the workload instances and the survey resources. Keep the verifier service and the two projects — Module 5 deploys against this same split, and Module 6 builds the production version of it.
 
 ---
 

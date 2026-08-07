@@ -319,37 +319,25 @@ Intel 的应对是通过 TDX Module 更新，这正是 §2.1 里那个灵活性�
 
 ---
 
-## Lab: 拉一份真实的证明报告并解码
+## Lab: 从两家厂商各拉一份真实的证明报告并解码
 
-**目标**：取得一份真正由硬件签名的 SEV-SNP 证明报告，并逐一手工辨认 §1.4 讨论过的每个字段。这个练习会把模块 3 从抽象变成机械。
+**目标**：分别从一个 AMD SEV-SNP guest *和*一个 Intel TDX guest 取得真实的、由硬件签名的证明证据，逐字段手工辨认 §1.4 与 §2.3 讨论过的每一项，然后扫一遍机群，看看 TCB 值在真实机器之间到底能差出多少。这个练习会把模块 3 从抽象变成机械操作。
 
-**成本**：一台 `n2d-standard-2` 跑约 20 分钟。**状态**：`gcloud` 调用已对照 Google Cloud 文档核验；`snpguest` 步骤遵循上游 VirTEE 工具的文档化接口——请用你所安装版本的 `snpguest --help` 核对子命令名。
+**规模**：复用模块 1 留下的 `cc-lab-snp` 与 `cc-lab-tdx`，再为机群普查铺开一批跨 zone、跨 CPU 世代的实例。解码一家厂商的报告，学到的是一种格式；两家都解码，学到的才是：证明机制里哪些部分是架构性的，哪些只是 AMD 或 Intel 的本地约定。**状态**：`gcloud` 调用已对照 Google Cloud 文档核实；`snpguest` 步骤遵循上游 VirTEE 工具的既有接口——请用你安装版本的 `snpguest --help` 核对子命令名。TDX 的 quote 路径变动很快，请对照 Intel 与 Google 的当前文档核实。
 
-### 第 1 步 —— 启动一台 SEV-SNP VM
+### 第 1 步 —— 确认两个 guest 确实是它们声称的东西
 
-```bash
-gcloud compute instances create snp-attest-lab \
-  --confidential-compute-type=SEV_SNP \
-  --machine-type=n2d-standard-2 \
-  --min-cpu-platform="AMD Milan" \
-  --maintenance-policy=TERMINATE \
-  --zone=us-central1-a \
-  --image-project=ubuntu-os-cloud \
-  --image-family=ubuntu-2404-lts-amd64
-
-gcloud compute ssh snp-attest-lab --zone=us-central1-a
-```
-
-### 第 2 步 —— 确认 guest 设备存在
+分别在 `cc-lab-snp` 与 `cc-lab-tdx` 上：
 
 ```bash
-ls -l /dev/sev-guest
-sudo dmesg | grep -i sev
+ls -l /dev/sev-guest      # 在 SNP guest 上
+ls -l /dev/tdx_guest      # 在 TDX guest 上
+sudo dmesg | grep -i -E 'sev|tdx'
 ```
 
-如果 `/dev/sev-guest` 不存在，说明这台实例并没有真的跑在 SNP 下，下面的一切都不会工作。先修这个——顺带一提，这也正是你的生产就绪探针该做的检查。
+如果设备节点不存在，说明该实例并没有真的跑在 TEE 下，下面的一切都不会成立。先把这个修好——这条检查同样应该出现在你生产环境的就绪探针里。
 
-### 第 3 步 —— 安装 `snpguest`
+### 第 2 步 —— 在 AMD guest 上安装 `snpguest`
 
 ```bash
 sudo apt-get update && sudo apt-get install -y build-essential pkg-config libssl-dev git
@@ -360,63 +348,120 @@ cd snpguest && cargo build --release
 sudo cp target/release/snpguest /usr/local/bin/
 ```
 
-### 第 4 步 —— 用你自己的 `REPORT_DATA` 请求一份报告
+### 第 3 步 —— 用你自己的 `REPORT_DATA` 请求一份报告
 
 ```bash
-# 64 字节由调用方提供的数据——生产中这里是 nonce
-# 和/或你的 TLS 公钥哈希（模块 1 §3.4、模块 3 §6）
+# 64 字节调用方提供的数据 —— 生产环境里这是 nonce
+# 和/或你 TLS 公钥的哈希（模块 1 §3.4、模块 3 §6）
 openssl rand -hex 32 > request-data.txt
 
 sudo snpguest report attestation-report.bin request-data.txt
 sudo snpguest display report attestation-report.bin
 ```
 
-### 第 5 步 —— 读字段
+### 第 4 步 —— 逐字段读
 
-把解码输出逐条过一遍，找到下面每一项。这才是本实验真正的学习目标：
+在解码输出里逐个找到下面这些。这才是本实验真正的学习目标：
 
-- `MEASUREMENT` —— SHA-384 启动摘要。注意：你**没有**任何独立途径知道这里**应该**是什么值。请在这份不适里多待一会儿——这就是模块 3 §7 的参考值问题，也是本领域最难的未解问题。
-- `REPORT_DATA` —— 确认它回显了你提供的字节。
-- `POLICY` —— 把位解出来。允许 debug 吗？
-- `TCB_VERSION` 与各 `*_SVN` 字段 —— 平台的固件安全版本。
+- `MEASUREMENT` —— SHA-384 启动摘要。注意：你没有任何独立途径知道这里*应该*是什么值。请在这份不适感里多待一会儿；这就是模块 3 §7 的参考值问题，也是这个领域里最难的未解问题。
+- `REPORT_DATA` —— 确认它回显了你提供的那些字节。
+- `POLICY` —— 逐位解码。debug 是否被允许？
+- `TCB_VERSION` 与那些 `*_SVN` 字段 —— 平台的固件安全版本号。
 - `VMPL` —— 是哪个特权级请求的。除非用了 paravisor，否则应为 0。
-- `SIGNATURE` —— 一个 ECDSA P-384 签名；在你拿证书链验证它之前，它毫无意义。
+- `SIGNATURE` —— 一个 ECDSA P-384 签名，在你拿证书链验证它之前毫无意义。
 
-### 第 6 步 —— 取回证书链
+### 第 5 步 —— 取回证书链
 
 ```bash
-# 从 AMD 密钥分发服务取回 VCEK 与 ARK/ASK 链
+# 从 AMD 的密钥分发服务取回 VCEK 以及 ARK/ASK 链
 sudo snpguest fetch ca pem milan ./certs
 sudo snpguest fetch vcek pem milan ./certs attestation-report.bin
 ls -l ./certs
 ```
 
-注意刚刚发生了什么：验证需要联系一个 AMD 的服务。这个依赖现在就在你生产密钥释放流程的关键路径上（§4.2.7）。
+注意刚刚发生了什么：验证过程需要联系一个 AMD 的服务。这个依赖现在落在了你生产环境密钥释放流程的关键路径上（§4.2.7）。
 
-### 第 7 步 —— 验证
+### 第 6 步 —— 验证
 
 ```bash
 sudo snpguest verify certs ./certs
 sudo snpguest verify attestation ./certs attestation-report.bin
 ```
 
-验证成功确立了这样一件事：**一颗真品 AMD EPYC 处理器，处于 SNP 模式，位于某个特定固件 TCB 层级，启动了一个具有这个 launch measurement 与这份 policy 的 guest，并回显了我的 `REPORT_DATA`。**
+一次成功的验证确立了：*一颗真实的 AMD EPYC 处理器，处于 SNP 模式，固件 TCB 处于某个特定级别，启动了一个具有该启动度量值与该策略的 guest，并回显了我的 `REPORT_DATA`。*
 
-### 第 8 步 —— 注意你**仍然**没有得到什么
+### 第 7 步 —— 现在从 Intel TDX guest 里取一份 quote
 
-在往下走之前，写下这份报告**没有**告诉你的东西：
+较新的内核通过 configfs 暴露了一个厂商中立的请求接口，这是看清两种架构共性最省事的方式。在 `cc-lab-tdx` 上：
 
-1. 那个 launch measurement 是否对应你信任的代码——你手上有个哈希，没有参考值。
-2. guest 在启动**之后**加载了什么。内核、容器镜像和你的 Python 依赖，在这份报告里一个字都没有。
-3. 给你看这份报告的实体，是否就是你实际在与之通话的实体——在你把公钥哈希放进 `REPORT_DATA` 之前，没有任何东西把它绑定到一条通道上。
+```bash
+# 一套内核 ABI，两家厂商 —— report provider 按平台注册
+ls /sys/kernel/config/tsm/report/ 2>/dev/null || sudo modprobe tsm
+
+sudo mkdir -p /sys/kernel/config/tsm/report/lab
+echo -n "$(openssl rand -hex 32)" | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
+sudo cat /sys/kernel/config/tsm/report/lab/provider     # 期望是一个 TDX provider
+sudo cat /sys/kernel/config/tsm/report/lab/outblob > tdx-quote.bin
+```
+
+在 `cc-lab-snp` 上跑一遍完全相同的序列，注意它同样能工作，只是吐出来的是一份 SNP 报告。**请求接口是共通的；回来的字节不是。** 用 Intel DCAP 的 quote 解析示例或 Trust Authority CLI 解析这份 quote，把你刚在 AMD 那边读到的每一项，在 TDX 侧找到对应物。
+
+### 第 8 步 —— 用你自己的证据把两种架构对照一遍
+
+下面这张表请用你刚生成的两份产物填，而不是抄 §2 里那张：
+
+| 问题 | SEV-SNP（`attestation-report.bin`） | TDX（`tdx-quote.bin`） |
+| :--- | :--- | :--- |
+| 启动度量值放在哪 | `MEASUREMENT` | `MRTD` |
+| 启动之后的度量值放在哪 | *（哪儿都没有——请自己确认这一点）* | `RTMR0`–`RTMR3` |
+| 谁回显你的 64 字节 | `REPORT_DATA` | `REPORTDATA` |
+| 什么标识固件级别 | `TCB_VERSION`、`*_SVN` | `TEE_TCB_SVN`、`SEAMSVN` |
+| 谁签它，又是谁签的签它的那个 | VCEK ← ASK ← ARK | ECDSA AK ← PCK ← Intel 根 |
+| 证据里有没有 debug 状态 | `POLICY` 位 | `TD_ATTRIBUTES` |
+
+那个空格才是重点。AMD 的报告里没有 RTMR 的对应物，这正是 §3.4 说 SEV-SNP 需要外挂 vTPM 才能做运行时度量的原因——也是 Google 的机密 GPU 路径基于 TDX 的原因。你现在是从证据里证明了这一点，而不是从行文里接受了它。
+
+### 第 9 步 —— 普查一下你的机群到底有多不一致
+
+参考值只有在你知道它要覆盖多大范围时才有用。铺开一批 SNP 实例，从每一台收一份报告：
+
+```bash
+for z in us-central1-a us-central1-b us-east1-b europe-west4-a; do
+  for cpu in "AMD Milan" "AMD Genoa"; do
+    gcloud compute instances create "snp-survey-${z##*-}-${cpu##* }" \
+      --confidential-compute-type=SEV_SNP --machine-type=n2d-standard-2 \
+      --min-cpu-platform="$cpu" --maintenance-policy=TERMINATE --zone="$z" \
+      --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64 \
+      --async
+  done
+done
+```
+
+从每一台都拉一份报告，然后在整个集合上 diff `TCB_VERSION` 与 `MEASUREMENT` 字段。有两个结果值得留意，它们都会影响你之后要写的策略：
+
+1. **`TCB_VERSION` 在机群内是有差异的**，因为主机是滚动打补丁的。一条把 TCB 值钉死为某个精确取值的释放策略，刚刚已经在你自己的一部分实例上失效了——这正是模块 3 §5.3 坚持策略必须表达一个*下界*、而绝不能是等值判断的原因。
+2. **`MEASUREMENT` 会随着你没想到是输入的东西而变**。同一个镜像，换一个 CPU 世代或换一个 vCPU 数量，就可能产生不同的启动摘要，因为核数与固件同样被度量在内。任何维护"预期度量值白名单"的人，维护的其实是一个矩阵，而不是一个值。
+
+写下来：对于你原以为是"一种配置"的东西，你一共观察到了多少个不同的度量值。这个数字就是参考值问题的诚实规模，也是下一模块 §7 为什么那么长的原因。
+
+### 第 10 步 —— 注意你仍然没有得到什么
+
+在往下走之前，写下这些证据**没有**告诉你的事：
+
+1. 那个启动度量值是否对应着你信任的代码——你只有一个哈希，没有参考值。
+2. guest 在启动*之后*加载了什么。在 AMD 上，启动之后的一切完全不在覆盖范围内；在 Intel 上，也只有被某个东西刻意扩展进 RTMR 的部分才算数。
+3. 给你看这份报告的实体，是否就是你实际在通信的那个实体——在你把公钥哈希放进 `REPORT_DATA` 之前，没有任何东西把它绑定到某条信道上。
 
 这三个缺口就是模块 3 的第 2、6、7 部分。
 
-### 第 9 步 —— 清理
+### 第 11 步 —— 清理
 
 ```bash
-gcloud compute instances delete snp-attest-lab --zone=us-central1-a --quiet
+gcloud compute instances list --filter="name~'^snp-survey-'" --format="value(name,zone)" \
+  | while read n z; do gcloud compute instances delete "$n" --zone="$z" --quiet; done
 ```
+
+再一次把 `cc-lab-snp` 与 `cc-lab-tdx` 留着——模块 3 用的是 Confidential Space 镜像而不是这两台，但留一套能用的 `snpguest` 安装，用来把原始证据和 Google 签发的 token 作对照，值这两台实例。
 
 ---
 

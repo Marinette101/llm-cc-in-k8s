@@ -177,7 +177,7 @@ Every module follows the same four-beat structure, and closes with a hands-on la
 4. **Production pitfalls** — what breaks, what the vendor documentation understates, and what the residual risk is.
 5. **`## Lab:`** — a runnable exercise. Confidential computing does not become intuitive by reading field tables; it becomes intuitive the first time you pull a real attestation report, decode it, flip one byte of the image, and watch key release fail.
 
-!!! warning "On labs and cost"
-    The labs provision real Confidential VM, Confidential GKE, and A3 GPU resources, which are billable and in several cases capacity-constrained by region. Each lab states its rough cost and whether its commands have been executed against a live project or are transcribed from vendor documentation and marked unverified.
+!!! warning "On labs and scale"
+    The labs provision real Confidential VM, Confidential GKE, A3, and A4 GPU resources, and several of them deliberately run more than one configuration at once. That is not extravagance: nearly every claim in this course is a *difference* between two environments — confidential versus not, Hopper versus Blackwell, one verifier versus another — and a difference cannot be measured with one instance. Where a lab asks for a control, provision the control; a lab run at toy scale produces numbers that are wrong in the flattering direction rather than merely imprecise. Each lab states its scope and whether its commands have been executed against a live project or are transcribed from vendor documentation and marked unverified. Capacity, not cost, is the real constraint — confidential GPU types are region-limited, so check availability before planning a session.
 
 Start with [Module 1: Confidential Computing Foundations](01_confidential_computing_foundations.md).

@@ -323,15 +323,16 @@ Google's TPUs are the obvious question for a Vertex-hosted workload, and the hon
 
 ---
 
-## Lab: Verify a Confidential GPU End to End
+## Lab: Verify a Confidential GPU, and Measure Both Generations
 
-**Goal:** bring up a confidential VM with an H100 in CC mode, confirm the mode from inside the guest, obtain and verify a GPU attestation report, and measure the transfer overhead that §5.1 predicts.
+**Goal:** bring up confidential GPU nodes on both accelerator generations, confirm CC mode from inside the guest, obtain and verify a GPU attestation report, and then measure — with a real non-confidential control running alongside — the transfer overhead §5.1 predicts, the encrypted-NVLink behaviour §4.2 claims, and the serving envelope §4.1 says each generation has.
 
-**Cost:** ⚠️ **This is the expensive lab.** An A3 instance with an H100 costs several dollars per hour and is capacity-constrained by zone. Budget an hour and delete the instance immediately afterward. **Status:** `nvidia-smi` and `nvtrust` invocations follow NVIDIA's documented interfaces; the `gcloud` node-pool flags follow Google Cloud documentation. Verify against current documentation before running — confidential GPU support changes faster than any other area in this book.
+**Scope:** run three node pools concurrently — a confidential H100, a **non-confidential H100 as the control**, and a confidential 8×B200 node. The A/B is not optional here. Every performance claim in this module is a *difference* between two configurations, and a within-instance toggle cannot measure cold start, cannot measure NVLink, and cannot show you the Hopper serving cap at all. Provision the control. **Status:** `nvidia-smi` and `nvtrust` invocations follow NVIDIA's documented interfaces; the `gcloud` node-pool flags follow Google Cloud documentation. Confidential multi-GPU availability by machine type and region changes faster than anything else in this book — verify against current documentation before running, and expect at least one flag name to have moved.
 
-### Step 1 — Create a confidential GPU node pool
+### Step 1 — Create the confidential Hopper pool and its control
 
 ```bash
+# Confidential: TDX + one H100, per §4.1
 gcloud container node-pools create cc-gpu-pool \
   --cluster=YOUR_CLUSTER \
   --location=us-central1 \
@@ -340,11 +341,34 @@ gcloud container node-pools create cc-gpu-pool \
   --machine-type=a3-highgpu-1g \
   --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest \
   --num-nodes=1
+
+# The control: identical hardware, no confidential mode. This is what makes
+# every number below a measurement rather than an anecdote.
+gcloud container node-pools create plain-gpu-pool \
+  --cluster=YOUR_CLUSTER \
+  --location=us-central1 \
+  --node-locations=us-central1-a \
+  --machine-type=a3-highgpu-1g \
+  --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest \
+  --num-nodes=1
 ```
 
-Note the constraints encoded in that command: TDX, `a3-highgpu-1g`, and `count=1`. Try `count=2` and observe the rejection — that is §4.1 enforced by the API rather than described in prose.
+### Step 2 — Prove the Hopper constraint instead of reading about it
 
-### Step 2 — Confirm CC mode from inside the guest
+§4.1 claims one GPU per confidential VM on Hopper. Try to violate it:
+
+```bash
+gcloud container node-pools create cc-gpu-multi \
+  --cluster=YOUR_CLUSTER --location=us-central1 \
+  --confidential-node-type=TDX \
+  --machine-type=a3-highgpu-8g \
+  --accelerator=type=nvidia-h100-80gb,count=8,gpu-driver-version=latest \
+  --num-nodes=1
+```
+
+Record the exact error. That message is §4.1 enforced by the API rather than described in prose, and it is worth pasting into your design document verbatim — it ends the "can't we just use tensor parallelism?" conversation faster than any explanation.
+
+### Step 3 — Confirm CC mode from inside the guest
 
 ```bash
 # Is the GPU in confidential computing mode?
@@ -357,9 +381,9 @@ nvidia-smi conf-compute -grs
 systemctl status nvidia-persistenced
 ```
 
-Expect `CC status: ON`. If it reports `OFF`, everything downstream in this lab is measuring a non-confidential GPU, and — more importantly — a production deployment in this state would be silently unprotected. **This check belongs in your readiness probe**, not just in a lab.
+Expect `CC status: ON`. Run the same command on the control node and expect `OFF`. If the confidential node reports `OFF`, everything downstream in this lab is measuring a non-confidential GPU, and — more importantly — a production deployment in this state would be silently unprotected. **This check belongs in your readiness probe**, not just in a lab.
 
-### Step 3 — Observe the enforcement
+### Step 4 — Observe the enforcement
 
 Before the ready state is set, try to run any CUDA workload:
 
@@ -376,7 +400,7 @@ python3 -c "import torch; print(torch.zeros(1).cuda())"
 
 This is the most instructive moment in the lab: **the hardware refuses to compute until something asserts that attestation succeeded.** Attestation is not advisory, and it is not off the critical path.
 
-### Step 4 — Pull and verify a GPU attestation report
+### Step 5 — Pull and verify a GPU attestation report
 
 ```bash
 git clone https://github.com/NVIDIA/nvtrust.git
@@ -390,24 +414,84 @@ python3 -m verifier.cc_admin
 
 Inspect the output for the VBIOS version, driver version, and the individual measurement comparisons against the RIM. When a measurement mismatches, the tool names the index — which is the GPU equivalent of the reference-value problem from Module 3, §7, and a good moment to ask where that RIM came from and who signed it.
 
-### Step 5 — Measure the transfer penalty
+### Step 6 — Measure the transfer penalty against the control
+
+Run this on the confidential node **and** the plain node, and diff the results:
 
 ```bash
-# CUDA sample bandwidth test, if available
 /usr/local/cuda/extras/demo_suite/bandwidthTest --memory=pinned --mode=range \
   --start=1048576 --end=1073741824 --increment=104857600
 ```
 
-Or a minimal PyTorch equivalent timing `.cuda()` and `.cpu()` on a large tensor. Record host-to-device and device-to-host bandwidth.
-
-If you can obtain a non-CC A3 instance for comparison, run the identical test there. The predicted result from §5.1 is a substantial drop in PCIe bandwidth and essentially unchanged on-device compute throughput. **Verify the second half too** — run a large matmul benchmark on both and confirm the FLOPs are comparable. Demonstrating that compute is *not* affected is what makes the model in §5.2 credible.
-
-### Step 6 — Connect it to serving
-
-Load a model that fits in 80 GB and time the two phases separately:
+Then confirm the other half of the model — that compute is *not* affected — by running an identical large matmul benchmark on both:
 
 ```bash
-# Time weight loading (the expensive phase) distinctly from serving
+python3 -c "
+import torch, time
+a = torch.randn(16384, 16384, device='cuda', dtype=torch.bfloat16)
+b = torch.randn(16384, 16384, device='cuda', dtype=torch.bfloat16)
+torch.cuda.synchronize(); t = time.time()
+for _ in range(50): c = a @ b
+torch.cuda.synchronize()
+print('TFLOP/s:', 50 * 2 * 16384**3 / (time.time() - t) / 1e12)
+"
+```
+
+**The predicted result:** a substantial drop in PCIe bandwidth on the confidential node, and TFLOP/s within noise of the control. Demonstrating that compute is *not* affected is what makes the model in §5.2 credible — and it is the number that stops a capacity planner from applying a flat overhead multiplier to everything.
+
+### Step 7 — Measure encrypted NVLink on Blackwell
+
+§4.2 claims Blackwell adds hardware-encrypted NVLink and 1/2/4/8-GPU confidential assignment. Test it:
+
+```bash
+gcloud container node-pools create cc-gpu-blackwell \
+  --cluster=YOUR_CLUSTER --location=us-central1 \
+  --confidential-node-type=TDX \
+  --machine-type=a4-highgpu-8g \
+  --accelerator=type=nvidia-b200,count=8,gpu-driver-version=latest \
+  --num-nodes=1
+```
+
+The node-pool creation succeeding where Step 2's failed is itself the headline result. Now measure the interconnect with CC mode on, and again with it off:
+
+```bash
+nvidia-smi conf-compute -f            # confirm ON across all eight devices
+nvidia-smi nvlink --status            # link state and per-link bandwidth
+
+git clone https://github.com/NVIDIA/nccl-tests && cd nccl-tests && make
+./build/all_reduce_perf -b 8M -e 4G -f 2 -g 8
+```
+
+Record bus bandwidth at each message size, CC on versus off. **What to look for:** the GPU↔GPU path is protected by link-level encryption in hardware rather than by bounce buffers through host memory, so the collective penalty should look nothing like the PCIe penalty from Step 6. If your numbers say otherwise, find out why before you design around them — this single measurement decides whether tensor-parallel confidential serving is viable.
+
+### Step 8 — Find each generation's serving envelope empirically
+
+Take a 70B model in bf16 — roughly 140 GB of weights, per §4.1's table — and try to serve it on the confidential H100:
+
+```bash
+python3 -c "
+from vllm import LLM
+llm = LLM(model='YOUR_70B_MODEL', gpu_memory_utilization=0.9)
+"
+```
+
+It fails, out of memory, and it was never going to do anything else. Now run the same model on the confidential Blackwell node with tensor parallelism across all eight GPUs:
+
+```bash
+python3 -c "
+from vllm import LLM
+llm = LLM(model='YOUR_70B_MODEL', tensor_parallel_size=8, gpu_memory_utilization=0.9)
+print('loaded')
+"
+```
+
+**That contrast is the entire argument of Part 4, reduced to two commands.** One generation cannot serve the model at any price; the next serves it inside the TEE with encrypted interconnect. This is why §4.2 insists the accelerator generation belongs near the top of a design document rather than in an appendix.
+
+### Step 9 — Time the phases that Module 6 will budget
+
+On both confidential nodes, load a model that does fit and time the two phases separately:
+
+```bash
 time python3 -c "
 from vllm import LLM
 llm = LLM(model='YOUR_MODEL', gpu_memory_utilization=0.9)
@@ -415,15 +499,18 @@ print('loaded')
 "
 ```
 
-Then run a short generation benchmark. You should see the pattern §5.2 predicts: loading is disproportionately slow, steady-state generation is close to baseline. That single observation is the empirical basis for the entire cold-start discussion in Module 6.
+Then run a short generation benchmark. You should see the pattern §5.2 predicts: loading is disproportionately slow, steady-state generation is close to baseline. Run it on the control node too, so the confidential-specific component is separated from the plain cost of moving tens of gigabytes. That single decomposition is the empirical basis for the entire cold-start discussion in Module 6.
 
-### Step 7 — Delete it
+### Step 10 — Tear down
 
 ```bash
-gcloud container node-pools delete cc-gpu-pool --cluster=YOUR_CLUSTER --location=us-central1 --quiet
+for p in cc-gpu-pool plain-gpu-pool cc-gpu-blackwell; do
+  gcloud container node-pools delete "$p" --cluster=YOUR_CLUSTER --location=us-central1 --quiet
+done
+gcloud container node-pools list --cluster=YOUR_CLUSTER --location=us-central1
 ```
 
-Confirm the deletion. A forgotten A3 node is an expensive lesson.
+Confirm the deletion with that last command rather than assuming it. Accelerator nodes are the one resource in this course worth verifying gone, not because of the bill but because a half-deleted pool will silently reschedule your next lab onto the wrong hardware and quietly invalidate its numbers.
 
 ---
 

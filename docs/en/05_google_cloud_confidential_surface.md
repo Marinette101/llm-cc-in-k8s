@@ -382,13 +382,13 @@ This is the architecture Module 6 develops in full, including the hardest part �
 
 ---
 
-## Lab: Deploy to Confidential Space and Break the Policy
+## Lab: Run the Same Container on All Three Surfaces and Watch Them Diverge
 
-**Goal:** deploy a workload to Confidential Space, release a Cloud KMS secret to it gated on the attestation token, then change one byte of the image and watch the release fail. This is Module 3's lab made concrete on the real product surface.
+**Goal:** deploy one identical workload to a Confidential Space instance, a Confidential GKE node, and a plain Confidential VM — simultaneously — release a secret to it gated on the attestation token, and then try to steal that secret from each with full administrative access. Two of the three give it up. This is Module 3's lab made concrete on the real product surface, and it is the module's central claim made falsifiable.
 
-**Cost:** one small confidential VM and a few KMS operations — well under a dollar. **Status:** commands follow Google Cloud documentation; `gcloud` syntax varies by CLI version, so verify with `--help` and the current Confidential Space docs.
+**Scope:** all three surfaces up at once, using the operator/provider project split from Module 3's lab. Deploying them sequentially and comparing notes is not the same exercise: the point is to hold everything constant except the confidential product, then run the *same attack* against each and watch the results differ. Keep the Module 3 verifier running — it is what turns Step 6 from a demo into a control. **Status:** commands follow Google Cloud documentation; `gcloud` syntax varies by CLI version, so verify with `--help` and the current Confidential Space docs.
 
-### Step 1 — Build a workload that shows its own token
+### Step 1 — Build a workload that shows its own token and holds a secret
 
 ```dockerfile
 FROM python:3.12-slim
@@ -397,7 +397,7 @@ COPY main.py /main.py
 CMD ["python", "/main.py"]
 ```
 
-`main.py` should fetch the token from the launcher socket, print the decoded claims, exchange it via STS, and attempt a Cloud KMS decrypt. Push it to Artifact Registry and record the digest.
+`main.py` should fetch the token from the launcher socket, print the decoded claims, exchange it via STS, attempt a Cloud KMS decrypt, and then **hold the decrypted secret in memory in a long-lived process**. That last detail is what makes Step 6 measurable rather than rhetorical. Push it to Artifact Registry and record the digest.
 
 ### Step 2 — Set up the key and the policy
 
@@ -422,9 +422,10 @@ gcloud iam workload-identity-pools providers create-oidc cc-lab-provider \
 
 Grant the resulting principal `roles/cloudkms.cryptoKeyDecrypter` on the key.
 
-### Step 3 — Run it on a Confidential Space image
+### Step 3 — Bring up all three surfaces
 
 ```bash
+# (a) Confidential Space — the hardened, operator-excluded image
 gcloud compute instances create cc-space-lab \
   --confidential-compute-type=SEV_SNP \
   --machine-type=n2d-standard-2 \
@@ -436,40 +437,86 @@ gcloud compute instances create cc-space-lab \
   --metadata="^~^tee-image-reference=REGION-docker.pkg.dev/PROJECT/REPO/IMAGE@sha256:DIGEST" \
   --scopes=cloud-platform \
   --service-account=YOUR_SA@PROJECT.iam.gserviceaccount.com
+
+# (b) Confidential GKE Nodes — hardware-encrypted memory, ordinary Kubernetes
+gcloud container node-pools create cc-lab-pool \
+  --cluster=YOUR_CLUSTER --location=LOCATION \
+  --confidential-node-type=sev_snp --machine-type=n2d-standard-4
+
+# (c) A plain Confidential VM running the same container by hand
+gcloud compute instances create cc-plain-cvm \
+  --confidential-compute-type=SEV_SNP \
+  --machine-type=n2d-standard-2 \
+  --min-cpu-platform="AMD Milan" \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64
 ```
 
-Check Cloud Logging for the workload's output. The decrypt should succeed.
+Check Cloud Logging for the Confidential Space workload's output. The decrypt should succeed there. Deploy the same container image to (b) and run it manually on (c).
 
-### Step 4 — Break it, three ways
+### Step 4 — Diff the three tokens side by side
+
+Collect a token from each surface and diff them. Do not summarize — put them next to each other:
+
+| Claim | Confidential Space | Confidential GKE node | Plain Confidential VM |
+| :--- | :--- | :--- | :--- |
+| `swname` | `CONFIDENTIAL_SPACE` | *(no launcher socket — find out what you can get)* | `GCE` |
+| `dbgstat` | `disabled-since-boot` | | |
+| `submods.container.image_digest` | present | | |
+| Does the KMS decrypt succeed? | yes | | |
+
+The middle column is the instructive one, and the blanks are deliberate. There is no turnkey equivalent of the launcher's token socket on a Confidential GKE node, which means there is no built-in binding from *this container image* to *this hardware*. You have hardware-encrypted memory and no attested workload identity — a distinction that never appears on the product comparison page.
+
+### Step 5 — Break the policy, three ways
 
 Predict each failure before running it.
 
 1. **Change the image.** Add a comment to `main.py`, rebuild, push, redeploy with the new digest without updating the attribute condition. The token exchange fails on the digest clause.
 2. **Switch to the debug image family.** Redeploy using the debug Confidential Space image. Observe `dbgstat` become `enabled` in the token and the condition fail. **Then remove the `dbgstat` clause and redeploy.** The decrypt now succeeds — on an image where the operator has interactive access. Sit with that result; it is the most instructive failure in the module.
-3. **Try it on a plain Confidential VM.** Run the same container on an ordinary confidential VM rather than a Confidential Space image. Note that `swname` is now `GCE` rather than `CONFIDENTIAL_SPACE`, and the condition fails. This is why that clause is not redundant.
+3. **Try it on the plain Confidential VM.** `swname` is now `GCE` rather than `CONFIDENTIAL_SPACE`, and the condition fails. This is why that clause is not redundant.
 
-### Step 5 — Compare against Confidential GKE Nodes
+### Step 6 — Now attack all three with full admin rights
 
-Deploy the same container to a Confidential GKE node pool:
+Grant yourself `roles/owner` and cluster-admin, then try to read the secret out of each running workload. Same container, same secret, three surfaces.
 
-```bash
-gcloud container node-pools create cc-lab-pool \
-  --cluster=YOUR_CLUSTER --location=LOCATION \
-  --confidential-node-type=sev_snp --machine-type=n2d-standard-4
-```
-
-Now try to obtain an equivalent workload-identity attestation token from inside the pod. You will find there is no turnkey equivalent of the launcher socket — and then, with your normal cluster credentials, run:
+**Against the Confidential GKE node**, with ordinary cluster credentials:
 
 ```bash
 kubectl exec -it POD_NAME -- /bin/sh
+cat /proc/1/environ; grep -a -A2 SECRET /proc/1/maps   # or just attach a debugger
 ```
 
-You are now inside the trust boundary, on a node whose memory is hardware-encrypted, reading whatever the workload has in memory. **That is §2.3, demonstrated in one command.** Nothing is broken; the product is working exactly as designed. It simply does not defend against the adversary you thought it did.
+You are now inside the trust boundary, on a node whose memory is hardware-encrypted, reading the plaintext secret out of the workload's address space. **That is §2.3, demonstrated in one command.** Nothing is broken; the product is working exactly as designed. It simply does not defend against the adversary you thought it did — and note that you did not even need node access, because the Google-operated control plane was your way in.
 
-### Step 6 — Clean up
+**Against the plain Confidential VM:**
 
 ```bash
-gcloud compute instances delete cc-space-lab --zone=us-central1-a --quiet
+gcloud compute ssh cc-plain-cvm --zone=us-central1-a
+sudo cat /proc/$(pgrep -f main.py)/environ
+```
+
+Same result, fewer steps.
+
+**Against Confidential Space:** try everything. SSH is not available. There is no `exec`. Serial console output is restricted. Attaching a debugger is not possible. Redeploy with a modified image and the digest clause denies the key. The only way in is to change the release policy — and if you built Module 3's Part E verifier, that policy is not in a project you control.
+
+Write down which of the three surfaces survived, and against which adversary. That table is the deliverable of this module, and it is a more persuasive artifact in a design review than any vendor comparison chart.
+
+### Step 7 — Confirm the control plane is outside the boundary
+
+§2.3 says Google's control plane sits outside your TEE. You just used it as an attack path in Step 6. Make it explicit:
+
+```bash
+kubectl get pod POD_NAME -o yaml | grep -A5 'image:'   # scheduling and image choice
+kubectl auth can-i --list                              # what the control plane can do to you
+```
+
+Whoever controls the API server chooses which image runs on your confidential node. Hardware-encrypted memory does not constrain that choice in any way. This is precisely why Module 6 puts the data plane in Confidential Space and orchestrates it from *regular* GKE rather than trying to make Confidential GKE Nodes carry the security argument.
+
+### Step 8 — Clean up
+
+```bash
+gcloud compute instances delete cc-space-lab cc-plain-cvm --zone=us-central1-a --quiet
 gcloud container node-pools delete cc-lab-pool --cluster=YOUR_CLUSTER --location=LOCATION --quiet
 ```
 

@@ -382,13 +382,13 @@ flowchart TD
 
 ---
 
-## Lab: 部署到 Confidential Space 并打破策略
+## Lab: 把同一个容器跑在三种产品面上，看着它们分道扬镳
 
-**目标**：把一个工作负载部署到 Confidential Space，向它释放一个由证明令牌门控的 Cloud KMS 秘密，然后改镜像里的一个字节，眼看着释放失败。这是模块 3 的实验在真实产品面上的具体化。
+**目标**：把同一个工作负载**同时**部署到 Confidential Space 实例、Confidential GKE 节点和一台普通机密 VM 上，用证明 token 闸控向它释放一份机密，然后以完整管理员权限从每一种里去偷这份机密。三者中有两个会交出来。这就是模块 3 的实验落到真实产品面上的版本，也是本模块的核心论断被变成可证伪的那一刻。
 
-**成本**：一台小机密 VM 加几次 KMS 操作——远低于一美元。**状态**：命令遵循 Google Cloud 文档；`gcloud` 语法随 CLI 版本而变，请用 `--help` 与当前 Confidential Space 文档核对。
+**规模**：三种产品面同时开着，并沿用模块 3 实验里的 operator/provider 双项目划分。依次部署再回头比对笔记不是同一个练习：要害在于把除"机密产品"以外的一切都固定住，然后对每一个跑*同一次攻击*，看着结果分叉。把模块 3 的验证服务继续跑着——正是它把第 6 步从演示变成了对照实验。**状态**：命令遵循 Google Cloud 文档；`gcloud` 语法随 CLI 版本而变，请用 `--help` 与当前的 Confidential Space 文档核对。
 
-### 第 1 步 —— 构建一个会展示自身令牌的工作负载
+### 第 1 步 —— 构建一个会亮出自己 token、并持有机密的工作负载
 
 ```dockerfile
 FROM python:3.12-slim
@@ -397,16 +397,16 @@ COPY main.py /main.py
 CMD ["python", "/main.py"]
 ```
 
-`main.py` 应当从 launcher socket 取回令牌、打印解码后的声明、经 STS 换取凭据，并尝试一次 Cloud KMS 解密。推送到 Artifact Registry 并记下摘要。
+`main.py` 应当：从 launcher socket 取 token、打印解码后的 claim、通过 STS 交换、尝试一次 Cloud KMS 解密，然后**在一个长期存活的进程里把解密后的机密留在内存中**。正是最后这个细节，让第 6 步变得可测量而不只是修辞。把它推到 Artifact Registry 并记下 digest。
 
-### 第 2 步 —— 建立密钥与策略
+### 第 2 步 —— 建好密钥与策略
 
 ```bash
-# 一把持有测试秘密的 KMS 密钥
+# 一把持有测试机密的 KMS 密钥
 gcloud kms keyrings create cc-lab --location=global
 gcloud kms keys create weights-kek --location=global --keyring=cc-lab --purpose=encryption
 
-# 一个由证明声明门控的工作负载身份池
+# 一个由证明 claim 闸控的工作负载身份池
 gcloud iam workload-identity-pools create cc-lab-pool --location=global
 
 gcloud iam workload-identity-pools providers create-oidc cc-lab-provider \
@@ -420,11 +420,12 @@ gcloud iam workload-identity-pools providers create-oidc cc-lab-provider \
     && 'sha256:YOUR_DIGEST' in assertion.submods.container.image_digest"
 ```
 
-把由此产生的主体授予该密钥上的 `roles/cloudkms.cryptoKeyDecrypter`。
+给由此产生的主体在该密钥上授予 `roles/cloudkms.cryptoKeyDecrypter`。
 
-### 第 3 步 —— 在 Confidential Space 镜像上运行它
+### 第 3 步 —— 把三种产品面都拉起来
 
 ```bash
+# (a) Confidential Space —— 加固过的、把运维方排除在外的镜像
 gcloud compute instances create cc-space-lab \
   --confidential-compute-type=SEV_SNP \
   --machine-type=n2d-standard-2 \
@@ -436,40 +437,86 @@ gcloud compute instances create cc-space-lab \
   --metadata="^~^tee-image-reference=REGION-docker.pkg.dev/PROJECT/REPO/IMAGE@sha256:DIGEST" \
   --scopes=cloud-platform \
   --service-account=YOUR_SA@PROJECT.iam.gserviceaccount.com
-```
 
-在 Cloud Logging 里查看工作负载输出。解密应当成功。
-
-### 第 4 步 —— 用三种方式打破它
-
-每一种都先**预测**失败，再去跑。
-
-1. **改镜像。** 在 `main.py` 里加一行注释、重建、推送，用新摘要重新部署但**不**更新属性条件。令牌换取会在摘要子句上失败。
-2. **切换到 debug 镜像族。** 用 debug 版 Confidential Space 镜像重新部署。观察令牌里 `dbgstat` 变成 `enabled`，条件失败。**然后把 `dbgstat` 子句删掉再部署一次。** 解密现在**成功**了——在一个运营商拥有交互式访问权的镜像上。请在这个结果上多待一会儿；这是本模块最有教育意义的一次失败。
-3. **在一台普通机密 VM 上试。** 把同一个容器跑在一台普通机密 VM 而非 Confidential Space 镜像上。注意 `swname` 现在是 `GCE` 而不是 `CONFIDENTIAL_SPACE`，条件失败。这就是那个子句并非冗余的原因。
-
-### 第 5 步 —— 与 Confidential GKE Nodes 对照
-
-把同一个容器部署到一个 Confidential GKE 节点池：
-
-```bash
+# (b) Confidential GKE Nodes —— 硬件加密内存，普通的 Kubernetes
 gcloud container node-pools create cc-lab-pool \
   --cluster=YOUR_CLUSTER --location=LOCATION \
   --confidential-node-type=sev_snp --machine-type=n2d-standard-4
+
+# (c) 一台普通机密 VM，手动跑同一个容器
+gcloud compute instances create cc-plain-cvm \
+  --confidential-compute-type=SEV_SNP \
+  --machine-type=n2d-standard-2 \
+  --min-cpu-platform="AMD Milan" \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64
 ```
 
-现在试着从 Pod 内部取得一个等价的工作负载身份证明令牌。你会发现**没有** launcher socket 的开箱等价物——然后，用你**普通的**集群凭据，运行：
+在 Cloud Logging 里查看 Confidential Space 工作负载的输出，那边的解密应当成功。把同一个容器镜像部署到 (b)，并在 (c) 上手动跑起来。
+
+### 第 4 步 —— 把三份 token 并排 diff
+
+从每种产品面各收一份 token 并 diff。不要总结——把它们摆在一起：
+
+| Claim | Confidential Space | Confidential GKE 节点 | 普通机密 VM |
+| :--- | :--- | :--- | :--- |
+| `swname` | `CONFIDENTIAL_SPACE` | *（没有 launcher socket —— 请自己查清能拿到什么）* | `GCE` |
+| `dbgstat` | `disabled-since-boot` | | |
+| `submods.container.image_digest` | 存在 | | |
+| KMS 解密成功吗？ | 成功 | | |
+
+中间那一列才是有教育意义的，那些空格是故意留的。Confidential GKE 节点上并没有 launcher token socket 的开箱即用等价物，这意味着不存在任何内建机制，把*这个容器镜像*绑定到*这台硬件*上。你拿到了硬件加密的内存，却没有被证明过的工作负载身份——而这个区别从不出现在产品对比页上。
+
+### 第 5 步 —— 用三种方式打破策略
+
+每一种，都先预测失败的样子再动手。
+
+1. **改镜像**。在 `main.py` 里加一行注释、重建、推送，用新 digest 重新部署但不更新属性条件。token 交换会在 digest 那一条上失败。
+2. **换成 debug 镜像族**。用 debug 版 Confidential Space 镜像重新部署。观察 token 里的 `dbgstat` 变为 `enabled`、条件失败。**然后把 `dbgstat` 那一条删掉再部署一次。** 解密这次成功了——在一个运维方拥有交互式访问权的镜像上。请在这个结果上多待一会儿；这是本模块最有教育意义的一次失败。
+3. **在普通机密 VM 上试**。`swname` 现在是 `GCE` 而不是 `CONFIDENTIAL_SPACE`，条件失败。这就是那一条并不冗余的原因。
+
+### 第 6 步 —— 现在用完整管理员权限攻击这三个
+
+给自己授予 `roles/owner` 与 cluster-admin，然后试着从每个正在运行的工作负载里把机密读出来。同一个容器，同一份机密，三种产品面。
+
+**打 Confidential GKE 节点**，用普通集群凭据：
 
 ```bash
 kubectl exec -it POD_NAME -- /bin/sh
+cat /proc/1/environ; grep -a -A2 SECRET /proc/1/maps   # 或者干脆挂个调试器
 ```
 
-你现在就在信任边界之内，站在一台内存被硬件加密的节点上，读取工作负载内存里的任何东西。**这就是 §2.3，用一条命令演示出来。** 没有任何东西坏掉；产品完全按设计工作。它只是不防你以为它防的那个攻击者。
+你现在身处信任边界之内，站在一台内存被硬件加密的节点上，从工作负载的地址空间里读出机密明文。**这就是 §2.3，用一条命令演示完毕。** 没有任何东西坏掉；产品完全按设计工作。它只是没有防住你以为它防住的那个攻击者——并且注意，你甚至不需要节点访问权限，因为由 Google 运营的控制平面就是你的入口。
 
-### 第 6 步 —— 清理
+**打普通机密 VM：**
 
 ```bash
-gcloud compute instances delete cc-space-lab --zone=us-central1-a --quiet
+gcloud compute ssh cc-plain-cvm --zone=us-central1-a
+sudo cat /proc/$(pgrep -f main.py)/environ
+```
+
+同样的结果，步骤还更少。
+
+**打 Confidential Space**：把能试的都试一遍。SSH 用不了。没有 `exec`。串口控制台输出受限。挂调试器不可能。改镜像重新部署，则 digest 那一条会拒绝密钥。唯一的入口是改释放策略——而如果你搭了模块 3 E 部分那个验证方，这条策略压根不在你能控制的项目里。
+
+写下来：三种产品面里哪一个活了下来，以及是对哪一类攻击者活下来的。那张表就是本模块的交付物，在设计评审里，它比任何厂商对比图都更有说服力。
+
+### 第 7 步 —— 确认控制平面在边界之外
+
+§2.3 说 Google 的控制平面位于你的 TEE 之外。你在第 6 步刚刚把它当成攻击路径用过。现在把这件事挑明：
+
+```bash
+kubectl get pod POD_NAME -o yaml | grep -A5 'image:'   # 调度与镜像选择
+kubectl auth can-i --list                              # 控制平面能对你做什么
+```
+
+谁控制 API server，谁就决定哪个镜像跑在你的机密节点上。硬件加密的内存对这个选择没有任何约束力。这正是模块 6 把数据平面放进 Confidential Space、并从*普通* GKE 去编排它的原因，而不是试图让 Confidential GKE Nodes 扛起整个安全论证。
+
+### 第 8 步 —— 清理
+
+```bash
+gcloud compute instances delete cc-space-lab cc-plain-cvm --zone=us-central1-a --quiet
 gcloud container node-pools delete cc-lab-pool --cluster=YOUR_CLUSTER --location=LOCATION --quiet
 ```
 

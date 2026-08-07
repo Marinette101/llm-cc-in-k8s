@@ -323,15 +323,16 @@ AMD 的 Instinct 产品线通过 **SEV-TIO**（Trusted I/O，AMD 的可信设备
 
 ---
 
-## Lab: 端到端验证一块机密 GPU
+## Lab: 验证一块机密 GPU，并把两代硬件都实测一遍
 
-**目标**：起一台带 CC 模式 H100 的机密 VM，从 guest 内部确认模式，取得并验证一份 GPU 证明报告，并测量 §5.1 所预测的传输开销。
+**目标**：在两代加速器上都把机密 GPU 节点拉起来，从 guest 内部确认 CC 模式，取得并验证一份 GPU 证明报告，然后——在旁边跑着一个真实的非机密对照组的前提下——实测 §5.1 预测的传输开销、§4.2 声称的加密 NVLink 行为，以及 §4.1 所说的每一代各自的服务能力边界。
 
-**成本**：⚠️ **这是那个贵的实验。** 带 H100 的 A3 实例每小时数美元，且受地域容量限制。预留一小时，做完**立刻**删除实例。**状态**：`nvidia-smi` 与 `nvtrust` 调用遵循 NVIDIA 的文档化接口；`gcloud` 节点池 flag 遵循 Google Cloud 文档。运行前请对照当前文档核验——**机密 GPU 支持的变化速度快于本书任何其他领域。**
+**规模**：同时跑三个节点池——一个机密 H100、一个**作为对照组的非机密 H100**、以及一个机密的 8×B200 节点。这里的 A/B 不是可选项。本模块里每一个性能断言都是两种配置之间的*差值*，而在同一实例上开关 CC 模式既测不了冷启动、也测不了 NVLink，更完全展示不出 Hopper 的服务上限。把对照组开出来。**状态**：`nvidia-smi` 与 `nvtrust` 的调用遵循 NVIDIA 既有接口；`gcloud` 节点池 flag 遵循 Google Cloud 文档。机密多 GPU 在机型与区域上的可用性，是全书变化最快的部分——动手前请对照当前文档核实，并预期至少有一个 flag 名字已经挪过位置。
 
-### 第 1 步 —— 创建机密 GPU 节点池
+### 第 1 步 —— 创建机密 Hopper 池及其对照组
 
 ```bash
+# 机密：TDX + 一块 H100，依 §4.1
 gcloud container node-pools create cc-gpu-pool \
   --cluster=YOUR_CLUSTER \
   --location=us-central1 \
@@ -340,74 +341,157 @@ gcloud container node-pools create cc-gpu-pool \
   --machine-type=a3-highgpu-1g \
   --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest \
   --num-nodes=1
+
+# 对照组：完全相同的硬件，不开机密模式。正是它让下面每一个数字
+# 成为一次测量，而不是一则轶事。
+gcloud container node-pools create plain-gpu-pool \
+  --cluster=YOUR_CLUSTER \
+  --location=us-central1 \
+  --node-locations=us-central1-a \
+  --machine-type=a3-highgpu-1g \
+  --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest \
+  --num-nodes=1
 ```
 
-注意这条命令里编码的约束：TDX、`a3-highgpu-1g`、`count=1`。试试 `count=2` 并观察它被拒绝——那就是 §4.1，由 API 强制执行，而不是用散文描述。
+### 第 2 步 —— 把 Hopper 的约束证明出来，而不是读到它
 
-### 第 2 步 —— 从 guest 内部确认 CC 模式
+§4.1 声称 Hopper 上每个机密 VM 只能有一块 GPU。去违反它试试：
 
 ```bash
-# GPU 处于机密计算模式吗？
+gcloud container node-pools create cc-gpu-multi \
+  --cluster=YOUR_CLUSTER --location=us-central1 \
+  --confidential-node-type=TDX \
+  --machine-type=a3-highgpu-8g \
+  --accelerator=type=nvidia-h100-80gb,count=8,gpu-driver-version=latest \
+  --num-nodes=1
+```
+
+把确切的报错记下来。那条消息就是 §4.1 由 API 强制执行的版本，而不是由行文描述的版本；值得原样贴进你的设计文档——它结束"我们就不能上张量并行吗"这场对话的速度，比任何解释都快。
+
+### 第 3 步 —— 从 guest 内部确认 CC 模式
+
+```bash
+# GPU 是否处于机密计算模式？
 nvidia-smi conf-compute -f
 
-# GPU 的 ready state 是什么？计算被它门控。
+# GPU 的 ready state 是什么？计算能力受它闸控。
 nvidia-smi conf-compute -grs
 
-# 确认驱动被钉住——CC 模式下必需
+# 确认驱动已被 pin 住 —— CC 模式下必需
 systemctl status nvidia-persistenced
 ```
 
-预期是 `CC status: ON`。如果它报 `OFF`，那么本实验下游的一切测的都是一块非机密 GPU——更要紧的是，**处于这个状态的生产部署会在无声中毫无保护**。**这项检查该进你的 readiness probe**，而不只是出现在实验里。
+期望看到 `CC status: ON`。在对照节点上跑同样的命令，期望是 `OFF`。如果机密节点报告 `OFF`，那么本实验后续的一切测的都是一块非机密 GPU——更要紧的是，处于这种状态的生产部署会在毫无声息中失去保护。**这条检查属于你的就绪探针**，而不只属于实验。
 
-### 第 3 步 —— 观察那个强制点
+### 第 4 步 —— 观察那道强制闸门
 
-在 ready state 被设置之前，试着跑任何 CUDA 负载：
+在 ready state 被设置之前，试着跑任何一个 CUDA 负载：
 
 ```bash
 python3 -c "import torch; print(torch.zeros(1).cuda())"
 ```
 
-它应当失败。现在设置 ready state 再试：
+它应该失败。现在设置 ready state 再试：
 
 ```bash
 sudo nvidia-smi conf-compute -srs 1
 python3 -c "import torch; print(torch.zeros(1).cuda())"
 ```
 
-这是本实验中最有教育意义的一刻：**在有东西断言"证明成功"之前，硬件拒绝计算。** 证明不是建议性的，也不在关键路径之外。
+这是整个实验最有启发的一刻：**在某个东西断言证明已通过之前，硬件拒绝计算。** 证明不是建议性的，它也不在关键路径之外。
 
-### 第 4 步 —— 拉取并验证一份 GPU 证明报告
+### 第 5 步 —— 拉取并验证一份 GPU 证明报告
 
 ```bash
 git clone https://github.com/NVIDIA/nvtrust.git
 cd nvtrust/guest_tools/attestation_sdk
 pip install -r requirements.txt
 
-# 用缓存的 RIM 与 NVIDIA 根做本地验证，或经 NRAS 远程验证——
+# 可在本地对照缓存的 RIM 与 NVIDIA 根证书验证，也可经 NRAS 远程验证 ——
 # 具体调用方式请查阅该工具的当前文档。
 python3 -m verifier.cc_admin
 ```
 
-在输出里检视 VBIOS 版本、驱动版本，以及逐条与 RIM 的度量值比对。当某个度量值不匹配时，工具会报出索引——这就是模块 3 §7 参考值问题的 GPU 版本，也是一个很好的时机去问：**那份 RIM 从哪来的？谁签的？**
+检查输出里的 VBIOS 版本、驱动版本，以及逐项度量值与 RIM 的比对结果。当某个度量值不匹配时，工具会指出它的索引——这就是模块 3 §7 参考值问题的 GPU 版本，也是一个适合追问"那份 RIM 从哪来、由谁签名"的时刻。
 
-### 第 5 步 —— 测量传输惩罚
+### 第 6 步 —— 对着对照组实测传输代价
+
+在机密节点**和**普通节点上都跑一遍，然后 diff 结果：
 
 ```bash
-# CUDA 自带的带宽测试（如果有）
 /usr/local/cuda/extras/demo_suite/bandwidthTest --memory=pinned --mode=range \
   --start=1048576 --end=1073741824 --increment=104857600
 ```
 
-或者用一个极简的 PyTorch 等价物，对一个大张量的 `.cuda()` 与 `.cpu()` 计时。记录 host-to-device 与 device-to-host 带宽。
-
-如果你能拿到一台非 CC 的 A3 实例做对照，在那上面跑同样的测试。§5.1 预测的结果是：PCIe 带宽显著下降，而设备上的计算吞吐基本不变。**把后半句也验一下**——在两边各跑一个大矩阵乘基准，确认 FLOPs 相当。**证明算力"没有"受影响**，才是让 §5.2 的模型可信的那一步。
-
-### 第 6 步 —— 把它和服务连起来
-
-加载一个能装进 80 GB 的模型，把两个阶段分开计时：
+然后验证模型的另一半——计算*不*受影响——在两边跑同一个大矩阵乘基准：
 
 ```bash
-# 把权重加载（昂贵阶段）与服务分开计时
+python3 -c "
+import torch, time
+a = torch.randn(16384, 16384, device='cuda', dtype=torch.bfloat16)
+b = torch.randn(16384, 16384, device='cuda', dtype=torch.bfloat16)
+torch.cuda.synchronize(); t = time.time()
+for _ in range(50): c = a @ b
+torch.cuda.synchronize()
+print('TFLOP/s:', 50 * 2 * 16384**3 / (time.time() - t) / 1e12)
+"
+```
+
+**预期结果**：机密节点上 PCIe 带宽显著下降，而 TFLOP/s 与对照组之间的差异落在噪声范围内。证明计算*没有*受影响，才是让 §5.2 那个模型可信的关键——也正是这个数字，能拦住一个容量规划者对所有环节一律套用一个固定的开销系数。
+
+### 第 7 步 —— 在 Blackwell 上实测加密 NVLink
+
+§4.2 声称 Blackwell 增加了硬件加密的 NVLink，并支持向单个 CVM 分配 1/2/4/8 块 GPU。去测它：
+
+```bash
+gcloud container node-pools create cc-gpu-blackwell \
+  --cluster=YOUR_CLUSTER --location=us-central1 \
+  --confidential-node-type=TDX \
+  --machine-type=a4-highgpu-8g \
+  --accelerator=type=nvidia-b200,count=8,gpu-driver-version=latest \
+  --num-nodes=1
+```
+
+在第 2 步失败的地方，这次节点池创建成功了——这件事本身就是头条结果。现在分别在 CC 模式开与关的情况下测量互连：
+
+```bash
+nvidia-smi conf-compute -f            # 确认八块设备全部为 ON
+nvidia-smi nvlink --status            # 链路状态与每条链路的带宽
+
+git clone https://github.com/NVIDIA/nccl-tests && cd nccl-tests && make
+./build/all_reduce_perf -b 8M -e 4G -f 2 -g 8
+```
+
+记录每个消息尺寸下的总线带宽，CC 开 vs 关。**要看什么**：GPU↔GPU 这条路径靠的是硬件链路级加密，而不是绕经主机内存的 bounce buffer，因此集合通信的代价形态应当与第 6 步的 PCIe 代价完全不同。如果你的数字不是这样，先弄清为什么，再据此做设计——就这一项测量，决定了张量并行的机密服务是否可行。
+
+### 第 8 步 —— 用实验找出每一代的服务能力边界
+
+拿一个 bf16 的 70B 模型——按 §4.1 那张表，约 140 GB 权重——试着在机密 H100 上把它服务起来：
+
+```bash
+python3 -c "
+from vllm import LLM
+llm = LLM(model='YOUR_70B_MODEL', gpu_memory_utilization=0.9)
+"
+```
+
+它会因显存不足而失败，而且它本来也不可能有别的结果。现在把同一个模型跑在机密 Blackwell 节点上，用张量并行铺满全部八块 GPU：
+
+```bash
+python3 -c "
+from vllm import LLM
+llm = LLM(model='YOUR_70B_MODEL', tensor_parallel_size=8, gpu_memory_utilization=0.9)
+print('loaded')
+"
+```
+
+**这个对比就是第 4 部分的全部论点，浓缩成两条命令。** 一代硬件出多少钱都服务不了这个模型；下一代则能在 TEE 内部、带着加密互连把它服务起来。这正是 §4.2 坚持"加速器代次属于设计文档的开头而不是附录"的原因。
+
+### 第 9 步 —— 给模块 6 将要做预算的那些阶段计时
+
+在两个机密节点上，加载一个确实装得下的模型，把两个阶段分开计时：
+
+```bash
 time python3 -c "
 from vllm import LLM
 llm = LLM(model='YOUR_MODEL', gpu_memory_utilization=0.9)
@@ -415,15 +499,18 @@ print('loaded')
 "
 ```
 
-然后跑一个短的生成基准。你应当看到 §5.2 预测的模式：加载慢得不成比例，稳态生成接近基线。这一个观察，就是模块 6 里整段冷启动讨论的经验基础。
+然后跑一个简短的生成基准。你应该看到 §5.2 预测的形态：加载慢得不成比例，稳态生成则接近基线。也在对照节点上跑一遍，好把机密计算特有的那部分，从"搬运几十 GB 本身就要花的代价"里分离出来。这一次分解，就是模块 6 里整个冷启动讨论的经验基础。
 
-### 第 7 步 —— 删掉它
+### 第 10 步 —— 拆掉
 
 ```bash
-gcloud container node-pools delete cc-gpu-pool --cluster=YOUR_CLUSTER --location=us-central1 --quiet
+for p in cc-gpu-pool plain-gpu-pool cc-gpu-blackwell; do
+  gcloud container node-pools delete "$p" --cluster=YOUR_CLUSTER --location=us-central1 --quiet
+done
+gcloud container node-pools list --cluster=YOUR_CLUSTER --location=us-central1
 ```
 
-确认删除完成。**一个被遗忘的 A3 节点是一堂昂贵的课。**
+用最后那条命令确认删除，而不是假定它删掉了。加速器节点是本课程里唯一值得专门核实其已消失的资源——原因不是账单，而是一个删了一半的节点池会悄悄把你下一个实验调度到错误的硬件上，并且不动声色地让它的数字全部作废。
 
 ---
 

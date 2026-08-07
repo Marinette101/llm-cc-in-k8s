@@ -416,27 +416,30 @@ Six of six — with one honest asterisk on the third row, which is the reference
 
 ---
 
-## Lab: End-to-End Confidential Inference
+## Lab: End-to-End Confidential Inference at Production Scale
 
-**Goal:** run a small model in a Confidential Space instance with an H100 in CC mode, releasing the weight key only on composite CPU + GPU + image attestation, and have a client verify the attestation before sending a prompt.
+**Goal:** serve a model people would actually pay for — not a toy — inside a TEE, releasing the weight key only on composite CPU + GPU + image attestation, with TLS terminated where §5 says it must be, a client that refuses to talk to an unattested server, and a measured cold-start budget you can defend in a capacity review.
 
-**Cost:** ⚠️ **Expensive.** An A3 instance for the duration. Budget two hours and delete everything after. **Status:** this lab composes verified pieces from the Module 3, 4, and 5 labs; the composition itself is presented as a design exercise. Verify each command against current documentation.
+**Scope:** the confidential 8×B200 node from Module 4's lab, a 70B-class model, the provider-operated verifier from Module 3's lab, and a managed L7 load balancer stood up alongside the L4 path purely so you can demonstrate the failure in §5.1 rather than assert it. Run this at real size. A 3B model on one GPU will produce a cold-start number roughly an order of magnitude off, a KV cache too small to show the §6.2 effect, and a decrypt phase short enough to hide the problem the entire architecture exists to manage. The numbers from a toy run are not conservative — they are wrong in the flattering direction. **Status:** this lab composes verified pieces from the Module 3, 4, and 5 labs; the composition itself is presented as a design exercise. Verify each command against current documentation.
 
-### Step 1 — Encrypt a model
+### Step 1 — Encrypt a real model
 
 ```bash
-# Generate a DEK, encrypt the model, wrap the DEK under a KEK you control
+# Generate a DEK, encrypt the model, wrap the DEK under a KEK you control.
+# At 70B/bf16 this is ~140 GB — which is the point. Time this step too.
 openssl rand -out dek.bin 32
-tar czf - ./model | openssl enc -aes-256-gcm -kfile dek.bin > model.enc
+tar cf - ./model-70b | openssl enc -aes-256-gcm -kfile dek.bin > model.enc
 gcloud kms encrypt --key=weights-kek --keyring=cc-lab --location=global \
   --plaintext-file=dek.bin --ciphertext-file=dek.wrapped
-gsutil cp model.enc dek.wrapped gs://YOUR_BUCKET/
+gsutil -m cp model.enc dek.wrapped gs://YOUR_BUCKET/
 shred -u dek.bin   # the plaintext DEK must not survive this step
 ```
 
+Note the wall-clock time to encrypt and upload 140 GB. That number is your model-publication pipeline, and teams routinely discover it only when they first try to ship a model update on a deadline.
+
 ### Step 2 — Build the inference image
 
-The container should, in order: request the attestation token from the launcher socket; exchange it for a credential; unwrap the DEK; fetch and decrypt the model into `tmpfs`; start vLLM; and expose an endpoint that returns its own attestation token so a client can verify it.
+The container should, in order: request the attestation token from the launcher socket; present raw evidence to **your own verifier** from Module 3, Part E rather than to Google's; unwrap the DEK; fetch and decrypt the model into `tmpfs`; start vLLM with `tensor_parallel_size=8`; and expose an endpoint that returns its own attestation token so a client can verify it.
 
 Sign the image with cosign and record the digest.
 
@@ -457,29 +460,64 @@ gcloud iam workload-identity-pools providers create-oidc cc-infer-provider \
   "
 ```
 
-### Step 4 — Deploy and time each phase
+Then assert the same conditions in your own verifier, over raw evidence, and make *that* the one that gates the key. The Google-side policy becomes defence in depth rather than the guarantee.
 
-Instrument the container to log a timestamp at each cold-start milestone from §4.1: boot complete, attestation complete, key released, weights fetched, weights decrypted and loaded, first token served. **Produce the actual budget table for your configuration.** This artifact is more valuable than the rest of the lab combined — it is the number every capacity and pricing conversation will need.
+### Step 4 — Deploy and time every phase
 
-### Step 5 — Verify from the client side
+Instrument the container to log a timestamp at each cold-start milestone from §4.1: boot complete, memory acceptance complete (you measured its shape in Module 1, Step 6), attestation complete, key released, weights fetched, weights decrypted and loaded to protected HBM, first token served. **Produce the actual budget table for your configuration.** This artifact is more valuable than the rest of the lab combined — it is the number every capacity and pricing conversation will need.
+
+Run it at least five times. Cold start on this path has a long tail, and a single sample will mislead you about the p99 that actually sizes your warm pool.
+
+### Step 5 — Demonstrate the ingress failure, then fix it
+
+§5.1 calls a managed L7 load balancer in front of a TEE the most common silent failure in this design. Build it wrong on purpose, then prove it:
+
+```bash
+# Option A from §5.2 — Google terminates TLS and holds the private key
+gcloud compute backend-services create infer-l7 --global --protocol=HTTPS
+gcloud compute ssl-certificates create infer-cert --domains=YOUR_DOMAIN
+```
+
+Send a prompt through it, then read it back out of the load balancer's own request logging. **The prompt is plaintext in Google-operated infrastructure, and every confidential mechanism downstream is intact and irrelevant.** Capture that log line and put it in your design review deck; it ends the argument faster than the diagram does.
+
+Now switch to Option B — an L4 passthrough LB with RA-TLS terminated inside the TEE, the public key bound into `REPORT_DATA` — and confirm the same request produces nothing readable at any hop before the enclave.
+
+### Step 6 — Verify from the client side
 
 Write a client that, before sending any prompt:
 
-1. Fetches the server's attestation token.
-2. Verifies the signature and the claims — including `cc_mode` and the image digest.
-3. **Refuses to send anything if verification fails.**
+1. Fetches the server's attestation token and raw evidence.
+2. Verifies the signature and the claims against your own verifier — including `cc_mode`, the TCB floor, and the image digest.
+3. Confirms the RA-TLS public key hash appears in `REPORT_DATA`, so it is talking to *that* enclave and not a relay.
+4. **Refuses to send anything if any check fails.**
 
-Then break it: deploy an image whose digest is not in the allowlist and confirm the client refuses. That refusal is P3 working.
+Then break it three ways: deploy an image whose digest is not in the allowlist; put a proxy in the middle that relays a valid attestation from a different machine; and roll the TCB floor above the fleet. The client should refuse all three. That refusal is P3 working, and step 3 is what makes it survive the relay attack.
 
-### Step 6 — Demonstrate the prefix-cache oracle
+### Step 7 — Demonstrate the prefix-cache oracle properly
 
-With prefix caching enabled and shared, send a distinctive long prompt, then measure TTFT for a second request sharing that prefix versus a fresh one. The difference should be clearly measurable.
+With prefix caching enabled and shared across tenants, this is a measurement, not a demo — so measure it like one:
 
-**That measurable difference is §6.2's leak, in your own numbers.** Then disable cross-request prefix sharing and confirm the difference disappears. This is the most convincing demonstration in the book that a confidentiality failure need not involve reading any memory at all.
+```python
+# Victim "tenant" primes the cache with a distinctive long prefix.
+# Attacker tenant then times TTFT for a guessed prefix vs a control.
+for trial in range(200):
+    ttft_hit  = time_ttft(shared_prefix + attacker_suffix)
+    ttft_miss = time_ttft(random_prefix  + attacker_suffix)
+```
 
-### Step 7 — Clean up
+Plot the two distributions. With a long enough prefix they will be cleanly separated — meaning an attacker distinguishes "some other tenant has sent this text" from "nobody has" with high confidence, without reading a single byte of memory. Report it as an accuracy: how often does a single timing sample classify correctly?
 
-Delete the instance, the node pool, the bucket contents, and the KMS key version.
+Then set prefix caching to per-tenant and repeat until the distributions overlap. **That difference in your own numbers is §6.2**, and it is the most convincing demonstration in the book that a confidentiality failure need not involve reading any memory at all.
+
+### Step 8 — Run the adversarial review against the running system
+
+§9 lists what an insider with host root can still do. With the system live, work down that list and try each one for real: terminate the instance, deny it collateral, observe request timing and sizes from outside, correlate GPU power draw with load, and roll the platform image under it. For each, record whether you detected it and whether the client could have.
+
+The output is a list of residual risks you have personally verified rather than inherited from a threat-model template. That list is what a model provider's security team will actually ask you for.
+
+### Step 9 — Clean up
+
+Delete the instances and node pools, the bucket contents, the KMS key version, and the load balancer. Keep the cold-start budget table and the prefix-cache plot — those two artifacts are the reason this lab was worth running.
 
 ---
 

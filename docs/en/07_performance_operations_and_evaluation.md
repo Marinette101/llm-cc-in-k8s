@@ -281,11 +281,11 @@ The gap between a defensible design and Apple's bar is items 4, 5, and 6 — and
 
 ---
 
-## Lab: Build the Benchmark Harness and Run a Rotation Drill
+## Lab: Build the Benchmark Harness and Run the Failure Drills
 
-**Goal:** produce the overhead table your organization will actually cite, and rehearse the operation most likely to cause an outage.
+**Goal:** produce the overhead table your organization will actually cite, and rehearse the three operations most likely to cause an outage.
 
-**Cost:** ⚠️ Two A3 instances if you want a true A/B. Budget accordingly, or accept a within-instance comparison by toggling GPU CC mode. **Status:** a methodology exercise; the specific commands depend on your serving stack.
+**Scope:** stand up configurations 1, 2, and 3 as three separate live environments and run them concurrently. The within-instance CC toggle is a fallback, not the exercise — flipping `cc_mode` on one node cannot measure the CPU-TEE delta at all (config 1 vs 2 differs in the *VM*, not the GPU), and it forces you to serialize runs that should be interleaved. Serialized runs drift: driver state, cache warmth, and neighbour noise all move under you between config 1 and config 3, and the drift is the same order of magnitude as the effect you are trying to measure. Provision three. **Status:** a methodology exercise; the specific commands depend on your serving stack.
 
 ### Part A — The four-configuration matrix
 
@@ -297,7 +297,11 @@ Run an identical workload across the configurations from §1.1 and fill in this 
 | 2. CPU TEE only (`cc_mode=OFF`) | | | | | |
 | 3. Full CC (`cc_mode=ON`) | | | | | |
 
+Interleave the runs across all three environments rather than completing one column at a time — round-robin at the trial level, so any drift lands as noise in every column instead of as a systematic bias in the last one.
+
 Then sweep batch size $\in \{1, 4, 16, 64\}$ and input length $\in \{128, 1024, 8192\}$ for configurations 1 and 3, and plot overhead percentage against each. **You are looking for the downward slope predicted by Module 4, §5.2.** If you do not see it, your benchmark is transfer-bound in a way the model does not predict, and finding out why is more valuable than the numbers.
+
+Run the sweep on the 8×B200 confidential node as well as the single H100. Tensor parallelism moves activations over encrypted NVLink on every forward pass, which is a cost the single-GPU model does not contain at all — and it is the configuration a frontier-scale deployment will actually run.
 
 ### Part B — Decompose the cold start
 
@@ -315,6 +319,8 @@ Instrument every milestone from Module 6, §4.1 and produce:
 | Warm-up to first token | | |
 
 Run it twice — once with a warm collateral cache and once cold — and note the difference. That delta is your exposure to an AMD KDS or Intel PCS outage on the critical path.
+
+Then run it twenty times and report the distribution rather than the mean. Warm-pool sizing is a p99 question, and the p99 of this path is not close to its median.
 
 ### Part C — The key rotation drill
 
@@ -337,6 +343,24 @@ Raise the minimum TCB version in your release policy above what your fleet curre
 3. How would you have rolled back?
 
 Write the runbook from what you learn. Doing this deliberately on a Tuesday is much cheaper than discovering it the day a firmware advisory lands.
+
+### Part E — Kill the dependencies you do not control
+
+Modules 2 and 3 put AMD's KDS and Intel's PCS on the critical path of key release. You have never seen what happens when they are unavailable. Find out on purpose:
+
+```bash
+# On the confidential node, blackhole the vendor collateral endpoints
+sudo iptables -A OUTPUT -d kdsintf.amd.com -j REJECT
+sudo iptables -A OUTPUT -d api.trustedservices.intel.com -j REJECT
+```
+
+Then answer, with evidence rather than intent:
+
+1. Does a **running** instance keep serving? It should — collateral matters at attestation time, not per request. Confirm it, because a naive implementation that re-verifies per request will fail here and you want to know now.
+2. Can a **new** instance start? If your collateral cache is cold, probably not — and your autoscaler is now unable to add capacity during someone else's outage.
+3. Did you fail **closed or open**? §3 said to decide this explicitly. This is where you find out what you actually shipped, which is not always what you decided.
+
+Repeat with the verifier and the external key manager blackholed. The output is a dependency table with a blast radius and a fail mode for each entry — the artifact an SRE review will ask for and that almost nobody has.
 
 ---
 

@@ -319,37 +319,25 @@ The professional posture is the third column. A design document that lists these
 
 ---
 
-## Lab: Pull and Decode a Real Attestation Report
+## Lab: Pull and Decode Real Attestation Reports From Both Vendors
 
-**Goal:** obtain a genuine hardware-signed SEV-SNP attestation report and identify by hand every field discussed in §1.4. This is the exercise that converts Module 3 from abstraction into mechanics.
+**Goal:** obtain genuine hardware-signed attestation evidence from an AMD SEV-SNP guest *and* an Intel TDX guest, identify by hand every field discussed in §1.4 and §2.3, and then survey a fleet to see how much the TCB values actually vary across machines. This is the exercise that converts Module 3 from abstraction into mechanics.
 
-**Cost:** one `n2d-standard-2` for ~20 minutes. **Status:** `gcloud` invocation verified against Google Cloud documentation; `snpguest` steps follow the upstream VirTEE tool's documented interface — confirm subcommand names against `snpguest --help` for the version you install.
+**Scope:** reuse `cc-lab-snp` and `cc-lab-tdx` from Module 1, then add a spread of instances across zones and CPU generations for the fleet survey. Decoding one vendor's report teaches you a format; decoding both teaches you which parts of attestation are architectural and which are AMD's or Intel's local conventions. **Status:** `gcloud` invocations verified against Google Cloud documentation; `snpguest` steps follow the upstream VirTEE tool's documented interface — confirm subcommand names against `snpguest --help` for the version you install. The TDX quote path moves quickly; verify against current Intel and Google documentation.
 
-### Step 1 — Boot an SEV-SNP VM
+### Step 1 — Confirm both guests are what they claim
 
-```bash
-gcloud compute instances create snp-attest-lab \
-  --confidential-compute-type=SEV_SNP \
-  --machine-type=n2d-standard-2 \
-  --min-cpu-platform="AMD Milan" \
-  --maintenance-policy=TERMINATE \
-  --zone=us-central1-a \
-  --image-project=ubuntu-os-cloud \
-  --image-family=ubuntu-2404-lts-amd64
-
-gcloud compute ssh snp-attest-lab --zone=us-central1-a
-```
-
-### Step 2 — Confirm the guest device exists
+On `cc-lab-snp` and `cc-lab-tdx` respectively:
 
 ```bash
-ls -l /dev/sev-guest
-sudo dmesg | grep -i sev
+ls -l /dev/sev-guest      # on the SNP guest
+ls -l /dev/tdx_guest      # on the TDX guest
+sudo dmesg | grep -i -E 'sev|tdx'
 ```
 
-If `/dev/sev-guest` is absent, the instance is not actually running under SNP and nothing below will work. Fix that before proceeding — this is also the check your production readiness probe should perform.
+If the device node is absent, the instance is not actually running under the TEE and nothing below will work. Fix that before proceeding — this is also the check your production readiness probe should perform.
 
-### Step 3 — Install `snpguest`
+### Step 2 — Install `snpguest` on the AMD guest
 
 ```bash
 sudo apt-get update && sudo apt-get install -y build-essential pkg-config libssl-dev git
@@ -360,7 +348,7 @@ cd snpguest && cargo build --release
 sudo cp target/release/snpguest /usr/local/bin/
 ```
 
-### Step 4 — Request a report with your own `REPORT_DATA`
+### Step 3 — Request a report with your own `REPORT_DATA`
 
 ```bash
 # 64 bytes of caller-supplied data — in production this is the nonce
@@ -371,7 +359,7 @@ sudo snpguest report attestation-report.bin request-data.txt
 sudo snpguest display report attestation-report.bin
 ```
 
-### Step 5 — Read the fields
+### Step 4 — Read the fields
 
 Work through the decoded output and locate each of these. This is the actual learning objective of the lab:
 
@@ -382,7 +370,7 @@ Work through the decoded output and locate each of these. This is the actual lea
 - `VMPL` — which privilege level requested this. Expect 0 unless a paravisor is in use.
 - `SIGNATURE` — an ECDSA P-384 signature, meaningless until you verify it against a certificate chain.
 
-### Step 6 — Fetch the certificate chain
+### Step 5 — Fetch the certificate chain
 
 ```bash
 # Retrieve the VCEK and the ARK/ASK chain from AMD's Key Distribution Service
@@ -393,7 +381,7 @@ ls -l ./certs
 
 Note what just happened: verification required contacting an AMD service. That dependency is now on the critical path of your production key-release flow (§4.2.7).
 
-### Step 7 — Verify
+### Step 6 — Verify
 
 ```bash
 sudo snpguest verify certs ./certs
@@ -402,21 +390,78 @@ sudo snpguest verify attestation ./certs attestation-report.bin
 
 A successful verification establishes: *a genuine AMD EPYC processor, in SNP mode, at a specific firmware TCB level, launched a guest with this launch measurement and this policy, and echoed my `REPORT_DATA`.*
 
-### Step 8 — Notice what you still do not have
+### Step 7 — Now get a quote out of the Intel TDX guest
 
-Write down, before moving on, what this report does **not** tell you:
+Modern kernels expose a vendor-neutral request interface through configfs, which is the most efficient way to see what the two architectures share. On `cc-lab-tdx`:
+
+```bash
+# One kernel ABI, both vendors — the report provider registers per-platform
+ls /sys/kernel/config/tsm/report/ 2>/dev/null || sudo modprobe tsm
+
+sudo mkdir -p /sys/kernel/config/tsm/report/lab
+echo -n "$(openssl rand -hex 32)" | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
+sudo cat /sys/kernel/config/tsm/report/lab/provider     # expect a TDX provider
+sudo cat /sys/kernel/config/tsm/report/lab/outblob > tdx-quote.bin
+```
+
+Run the identical sequence on `cc-lab-snp` and note that it also works, producing an SNP report instead. **The request interface is common; the bytes that come back are not.** Parse the quote with Intel's DCAP quote-parsing sample or the Trust Authority CLI, and locate the TDX analogues of what you just read on AMD.
+
+### Step 8 — Diff the two architectures using your own evidence
+
+Fill this in from the two artifacts you just produced, not from the table in §2:
+
+| Question | SEV-SNP (`attestation-report.bin`) | TDX (`tdx-quote.bin`) |
+| :--- | :--- | :--- |
+| What holds the launch measurement? | `MEASUREMENT` | `MRTD` |
+| Where does post-launch measurement live? | *(nowhere — find this out)* | `RTMR0`–`RTMR3` |
+| What echoes your 64 bytes? | `REPORT_DATA` | `REPORTDATA` |
+| What identifies the firmware level? | `TCB_VERSION`, `*_SVN` | `TEE_TCB_SVN`, `SEAMSVN` |
+| What signs it, and what signs *that*? | VCEK ← ASK ← ARK | ECDSA AK ← PCK ← Intel root |
+| Is debug state in the evidence? | `POLICY` bits | `TD_ATTRIBUTES` |
+
+The empty cell is the important one. AMD's report has no equivalent of the RTMRs, which is exactly why §3.4 said SEV-SNP needs an external vTPM for runtime measurement — and why Google's confidential-GPU path is TDX-based. You have now proved that from evidence rather than accepted it from prose.
+
+### Step 9 — Survey how much your fleet actually varies
+
+Reference values are only useful if you know the spread they have to cover. Boot a spread of SNP instances and collect a report from each:
+
+```bash
+for z in us-central1-a us-central1-b us-east1-b europe-west4-a; do
+  for cpu in "AMD Milan" "AMD Genoa"; do
+    gcloud compute instances create "snp-survey-${z##*-}-${cpu##* }" \
+      --confidential-compute-type=SEV_SNP --machine-type=n2d-standard-2 \
+      --min-cpu-platform="$cpu" --maintenance-policy=TERMINATE --zone="$z" \
+      --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64 \
+      --async
+  done
+done
+```
+
+Pull a report from every one, then diff the `TCB_VERSION` and `MEASUREMENT` fields across the whole set. Two results to look for, both of which will shape a policy you write later:
+
+1. **`TCB_VERSION` varies across the fleet**, because hosts are patched on a rolling basis. A release policy that pins an exact TCB value would have just failed on some fraction of your own instances — which is why Module 3, §5.3 insists the policy express a *floor* and never an equality.
+2. **`MEASUREMENT` varies with things you did not think were inputs.** The same image on a different CPU generation or a different vCPU count can produce a different launch digest, because the count and the firmware are measured too. Anyone maintaining an allowlist of expected measurements is maintaining a matrix, not a value.
+
+Write down how many distinct measurements you observed for what you thought was one configuration. That number is the honest size of the reference-value problem, and it is the reason §7 of the next module is as long as it is.
+
+### Step 10 — Notice what you still do not have
+
+Write down, before moving on, what this evidence does **not** tell you:
 
 1. Whether that launch measurement corresponds to code you trust — you have a hash and no reference value.
-2. What the guest loaded *after* launch. The kernel, the container image, and your Python dependencies are nowhere in this report.
+2. What the guest loaded *after* launch. On AMD, nothing after launch is covered at all; on Intel, only what something deliberately extended into an RTMR.
 3. Whether the entity that showed you this report is the entity you are actually talking to — nothing binds it to a channel until you put a public key hash in `REPORT_DATA`.
 
 Those three gaps are Parts 2, 6, and 7 of Module 3.
 
-### Step 9 — Clean up
+### Step 11 — Clean up
 
 ```bash
-gcloud compute instances delete snp-attest-lab --zone=us-central1-a --quiet
+gcloud compute instances list --filter="name~'^snp-survey-'" --format="value(name,zone)" \
+  | while read n z; do gcloud compute instances delete "$n" --zone="$z" --quiet; done
 ```
+
+Keep `cc-lab-snp` and `cc-lab-tdx` once more — Module 3 uses a Confidential Space image rather than these, but having a working `snpguest` install to compare raw evidence against a Google-issued token is worth the two instances.
 
 ---
 

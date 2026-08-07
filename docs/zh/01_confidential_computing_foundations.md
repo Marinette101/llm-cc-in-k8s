@@ -379,9 +379,9 @@ flowchart TD
 
 ## Lab: 让 TEE 自己现形
 
-**目标**：并排启动一台普通 VM 和一台机密 VM，从 guest 内部找出差别。要点在于确立"TEE 是可观测的，而不是一个只体现在账单上的抽象"。
+**目标**：并排启动一台基线 VM、一台 AMD SEV-SNP VM 和一台 Intel TDX VM，从每个 guest 内部找出差别，然后实测机密内存在启动阶段到底要付出多少代价。要点在于确立"TEE 是可观测的，而不是一个只体现在账单上的抽象"，并且它的开销是可测量的，而不是口口相传的传说。
 
-**成本**：两台小 VM 跑几分钟——几分钱。**状态**：命令转录自 Google Cloud 文档；请用你本地 `gcloud compute instances create --help` 核对 flag 名称。
+**规模**：四台实例全部同时开出来，包括那台大内存的。两家厂商并排跑才是重点——只启动 SEV-SNP 的实验教给你的是 AMD，而不是机密计算。**状态**：命令转录自 Google Cloud 文档；请用你本地 `gcloud compute instances create --help` 核对 flag 名称。
 
 ### 第 1 步 —— 看清你的项目实际能跑什么
 
@@ -419,9 +419,23 @@ gcloud compute instances create cc-lab-snp \
 
 注意 `--maintenance-policy=TERMINATE`。SEV-SNP 实例无法热迁移，因此主机维护会停掉实例而不是迁走它。这不是 CLI 的怪癖——这是该架构的第一个具体运维后果，模块 2 第 4 部分会解释为什么完整性保护与热迁移在根本上相互冲突。
 
-### 第 4 步 —— 问每个 guest：你是什么
+### 第 4 步 —— 启动一台 Intel TDX 机密 VM
 
-在两台机器上都执行：
+```bash
+gcloud compute instances create cc-lab-tdx \
+  --confidential-compute-type=TDX \
+  --machine-type=c3-standard-4 \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud \
+  --image-family=ubuntu-2404-lts-amd64
+```
+
+两家厂商同时在你自己的项目里跑着。模块 2 里几乎每一处对比，你现在都可以直接核验，而不必照单全收——而且那些差异并不是表面功夫。把这两台留着别删，模块 2 的实验会分别从它们身上拉一份证明报告。
+
+### 第 5 步 —— 问每个 guest：你是什么
+
+在三台机器上都执行：
 
 ```bash
 # 内核在启动时会记录内存加密状态
@@ -434,19 +448,53 @@ lscpu | grep -i -E 'sev|tdx|flags' | tr ' ' '\n' | grep -i -E 'sev|tdx'
 ls -l /dev/sev-guest /dev/tdx_guest 2>/dev/null
 ```
 
-**预期差异**：在基线 VM 上，`dmesg` 那条 grep 是空的，`/dev/sev-guest` 不存在。在 SEV-SNP VM 上，你应当看到一行报告内存加密已激活（通常形如 `Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP`），并且字符设备 `/dev/sev-guest` 存在。
+**预期差异**：在基线 VM 上，`dmesg` 那条 grep 是空的，两个设备节点都不存在。在 SEV-SNP VM 上，你应当看到一行报告内存加密已激活（通常形如 `Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP`），以及字符设备 `/dev/sev-guest`。在 TDX VM 上，你看到的则应是一行点名 Intel TDX 的日志，以及设备 `/dev/tdx_guest`。
 
-这个设备就是整个模块 3 浓缩成的一个节点：它是 guest 请求 PSP 产出签名证明报告的**唯一**通道。
+两家不同的厂商，两个不同的设备名，两条不同的内核日志——以及一个完全相同的架构思想。写下那句对两个 guest 都成立、而对基线不成立的话。整门课就建立在那句定义之上。
 
-### 第 5 步 —— 确认那个否定结果
+这些设备节点用一个文件概括了模块 3 的全部主题：它们是 guest 向硬件索取一份签名证明报告的唯一通道。
 
-本实验最有意思的部分是你**看不到**什么。从机密 guest 内部，没有任何 API 能揭示内存加密密钥；从 host 侧，也没有受支持的路径能读到 guest 明文。试着用一句话说清楚：你刚刚排除掉了 §2.1 中的哪一个攻击者——以及还有哪四个没排除。
+### 第 6 步 —— 实测机密内存在启动阶段的代价
 
-### 第 6 步 —— 清理
+第 3.3 节说过，私有内存必须由 guest 显式接受后才能使用；模块 2 第 4 节则会断言这项开销与内存大小成正比。这个断言通常是被复述的，而不是被测量的。去测它。
 
 ```bash
-gcloud compute instances delete cc-lab-baseline cc-lab-snp --zone=us-central1-a --quiet
+# 一台大内存 SEV-SNP VM —— 要接受几百 GB 的内存
+gcloud compute instances create cc-lab-snp-large \
+  --confidential-compute-type=SEV_SNP \
+  --machine-type=n2d-standard-224 \
+  --min-cpu-platform="AMD Milan" \
+  --maintenance-policy=TERMINATE \
+  --zone=us-central1-a \
+  --image-project=ubuntu-os-cloud \
+  --image-family=ubuntu-2404-lts-amd64
 ```
+
+在小的和大的机密 VM 上，分别对比启动时间花在了哪里：
+
+```bash
+systemd-analyze                    # firmware / loader / kernel / userspace 的拆分
+systemd-analyze blame | head -20   # 哪些 unit 占大头（如果有的话）
+
+# 早期启动阶段的内存工作会出现在这里，那时 userspace 还不存在
+sudo dmesg | grep -i -E 'memory|accept|pvalidate|e820' | head -30
+```
+
+**要记录什么**：8 GB 与 896 GB 两台机密 guest 之间，firmware 阶段与 kernel 阶段的差值；以及同样两种规格的非机密机器上的同一差值，作为对照组。对照组才是让这个数字有意义的东西：大 VM 本来就启动得更慢，你要的是机密计算特有的那一部分，而不是两者之和。
+
+把这个数字带走。它会作为一个条目重新出现在模块 6 的冷启动预算里，在那里它与数 GB 权重解密争夺同一个延迟额度——在那里，把它估错两倍就会改变整个自动扩缩容的设计。
+
+### 第 7 步 —— 确认那个否定结果
+
+这个实验有意思的部分在于你*看不到*什么。从任一机密 guest 内部，都没有任何 API 能吐出内存加密密钥；从主机侧，也没有受支持的路径能读到 guest 明文。试着用一句话说清楚：你刚刚排除掉的是 §2.1 中的哪一类攻击者——以及还有哪四类没有排除。
+
+### 第 8 步 —— 清理
+
+```bash
+gcloud compute instances delete cc-lab-baseline cc-lab-snp-large --zone=us-central1-a --quiet
+```
+
+留着 `cc-lab-snp` 和 `cc-lab-tdx`——模块 2 的实验会分别从它们身上拉一份真实的证明报告，而搭建成本你已经付过了。
 
 ---
 
