@@ -323,7 +323,7 @@ The professional posture is the third column. A design document that lists these
 
 **Goal:** obtain genuine hardware-signed attestation evidence from an AMD SEV-SNP guest *and* an Intel TDX guest, identify by hand every field discussed in §1.4 and §2.3, and then survey a fleet to see how much the TCB values actually vary across machines. This is the exercise that converts Module 3 from abstraction into mechanics.
 
-**Scope:** reuse `cc-lab-snp` and `cc-lab-tdx` from Module 1, then add a spread of instances across zones and CPU generations for the fleet survey. Decoding one vendor's report teaches you a format; decoding both teaches you which parts of attestation are architectural and which are AMD's or Intel's local conventions. **Status:** `gcloud` invocations verified against Google Cloud documentation; `snpguest` steps follow the upstream VirTEE tool's documented interface — confirm subcommand names against `snpguest --help` for the version you install. The TDX quote path moves quickly; verify against current Intel and Google documentation.
+**Scope:** reuse `cc-lab-snp` and `cc-lab-tdx` from Module 1, then add a spread of instances across zones and machine shapes for the fleet survey. Decoding one vendor's report teaches you a format; decoding both teaches you which parts of attestation are architectural and which are AMD's or Intel's local conventions. **Status:** `gcloud` invocations and the SEV-SNP machine-type constraint in Step 9 verified against Google Cloud's supported-configurations documentation; `snpguest` commands written against **v0.10.x**, whose positional argument order differs from earlier releases — check `snpguest --version` and `--help` before assuming a failure is yours. The TDX quote path moves quickly; verify against current Intel and Google documentation.
 
 ### Step 1 — Confirm both guests are what they claim
 
@@ -346,16 +346,26 @@ source "$HOME/.cargo/env"
 git clone https://github.com/virtee/snpguest.git
 cd snpguest && cargo build --release
 sudo cp target/release/snpguest /usr/local/bin/
+
+snpguest --version    # this lab is written against 0.10.x
 ```
+
+**Pin the version, and check it.** `snpguest`'s positional argument order has changed between releases — `fetch ca` and `fetch vcek` in particular. If a command below fails with a usage error, that is almost always the cause, and `snpguest fetch ca --help` will show you the current order in ten seconds. This is not a flaw in the tool; it is what depending on a fast-moving attestation toolchain feels like, and it is a small preview of the collateral-versioning problem in Module 7.
 
 ### Step 3 — Request a report with your own `REPORT_DATA`
 
-```bash
-# 64 bytes of caller-supplied data — in production this is the nonce
-# and/or the hash of your TLS public key (Module 1 §3.4, Module 3 §6)
-openssl rand -hex 32 > request-data.txt
+The request file must be **exactly 64 bytes of binary** — the tool reads 64 bytes and does not pad. The easy way is to let it generate them:
 
-sudo snpguest report attestation-report.bin request-data.txt
+```bash
+# --random writes 64 random bytes into the request file and binds them
+# to REPORT_DATA. In production this is the nonce and/or the hash of
+# your TLS public key (Module 1 §3.4, Module 3 §6).
+sudo snpguest report attestation-report.bin request-data.bin --random
+
+# To supply your own instead, make sure it is 64 raw bytes, not 64 hex characters:
+#   openssl rand 64 > request-data.bin
+#   sudo snpguest report attestation-report.bin request-data.bin
+
 sudo snpguest display report attestation-report.bin
 ```
 
@@ -367,16 +377,23 @@ Work through the decoded output and locate each of these. This is the actual lea
 - `REPORT_DATA` — confirm it echoes the bytes you supplied.
 - `POLICY` — decode the bits. Is debug permitted?
 - `TCB_VERSION` and the `*_SVN` fields — the platform's firmware security versions.
-- `VMPL` — which privilege level requested this. Expect 0 unless a paravisor is in use.
+- `VMPL` — which privilege level requested this. `snpguest` defaults to **VMPL 1**, so that is what you will see unless you pass `-v 0`. Do that and pull a second report; the two differ, which is the point — the field records the requester, not the machine.
 - `SIGNATURE` — an ECDSA P-384 signature, meaningless until you verify it against a certificate chain.
 
 ### Step 5 — Fetch the certificate chain
 
 ```bash
-# Retrieve the VCEK and the ARK/ASK chain from AMD's Key Distribution Service
-sudo snpguest fetch ca pem milan ./certs
-sudo snpguest fetch vcek pem milan ./certs attestation-report.bin
+# Retrieve the ARK/ASK chain and the VCEK from AMD's Key Distribution Service.
+# Argument order is: ENCODING, then CERTS_DIR, then the processor model.
+sudo snpguest fetch ca pem ./certs milan
+sudo snpguest fetch vcek pem ./certs attestation-report.bin
 ls -l ./certs
+```
+
+Better still, let the report name its own processor model rather than hardcoding `milan`, which is wrong the moment you run the survey in Step 9 on anything else:
+
+```bash
+sudo snpguest fetch ca pem ./certs --report attestation-report.bin --endorser vcek
 ```
 
 Note what just happened: verification required contacting an AMD service. That dependency is now on the critical path of your production key-release flow (§4.2.7).
@@ -392,17 +409,22 @@ A successful verification establishes: *a genuine AMD EPYC processor, in SNP mod
 
 ### Step 7 — Now get a quote out of the Intel TDX guest
 
-Modern kernels expose a vendor-neutral request interface through configfs, which is the most efficient way to see what the two architectures share. On `cc-lab-tdx`:
+Kernels from **6.7 onward** expose a vendor-neutral request interface through configfs, which is the most efficient way to see what the two architectures share. Ubuntu 24.04 is new enough. On `cc-lab-tdx`:
 
 ```bash
-# One kernel ABI, both vendors — the report provider registers per-platform
-ls /sys/kernel/config/tsm/report/ 2>/dev/null || sudo modprobe tsm
+# The interface appears once the platform's guest driver is loaded; that
+# driver selects TSM_REPORTS, which is what creates the configfs tree.
+# There is no module called "tsm" — load the vendor driver instead.
+sudo modprobe tdx_guest      # or: sudo modprobe sev-guest, on the AMD box
+ls -d /sys/kernel/config/tsm/report/
 
-sudo mkdir -p /sys/kernel/config/tsm/report/lab
-echo -n "$(openssl rand -hex 32)" | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
-sudo cat /sys/kernel/config/tsm/report/lab/provider     # expect a TDX provider
+sudo mkdir /sys/kernel/config/tsm/report/lab
+openssl rand 64 | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
+sudo cat /sys/kernel/config/tsm/report/lab/provider     # expect "tdx_guest"
 sudo cat /sys/kernel/config/tsm/report/lab/outblob > tdx-quote.bin
 ```
+
+`inblob` takes up to 64 bytes of **raw binary**, so generate bytes rather than hex text — writing 64 hex characters silently gives you an ASCII string as your nonce, which works and is not what you meant. When you are done, `sudo rmdir /sys/kernel/config/tsm/report/lab` releases the entry.
 
 Run the identical sequence on `cc-lab-snp` and note that it also works, producing an SNP report instead. **The request interface is common; the bytes that come back are not.** Parse the quote with Intel's DCAP quote-parsing sample or the Trust Authority CLI, and locate the TDX analogues of what you just read on AMD.
 
@@ -423,24 +445,28 @@ The empty cell is the important one. AMD's report has no equivalent of the RTMRs
 
 ### Step 9 — Survey how much your fleet actually varies
 
-Reference values are only useful if you know the spread they have to cover. Boot a spread of SNP instances and collect a report from each:
+Reference values are only useful if you know the spread they have to cover. Boot a spread of SNP instances and collect a report from each.
+
+One constraint shapes this step, and it is worth knowing before you write the loop: on Google Cloud, **SEV-SNP is available only on N2D with AMD Milan.** C3D is Genoa but offers plain SEV, not SNP; C2D and C4D are SEV as well. So you cannot vary the CPU generation here even if you want to — asking for `--min-cpu-platform="AMD Genoa"` with `--confidential-compute-type=SEV_SNP` is simply rejected. Vary what you actually can:
 
 ```bash
 for z in us-central1-a us-central1-b us-east1-b europe-west4-a; do
-  for cpu in "AMD Milan" "AMD Genoa"; do
-    gcloud compute instances create "snp-survey-${z##*-}-${cpu##* }" \
-      --confidential-compute-type=SEV_SNP --machine-type=n2d-standard-2 \
-      --min-cpu-platform="$cpu" --maintenance-policy=TERMINATE --zone="$z" \
+  for size in 2 4 16; do
+    gcloud compute instances create "snp-survey-${z}-${size}" \
+      --confidential-compute-type=SEV_SNP --machine-type="n2d-standard-${size}" \
+      --min-cpu-platform="AMD Milan" --maintenance-policy=TERMINATE --zone="$z" \
       --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64 \
       --async
   done
 done
 ```
 
+Note the naming: instance names must be lowercase and unique, and `us-central1-b` and `us-east1-b` both end in `b`, so the zone has to go in whole.
+
 Pull a report from every one, then diff the `TCB_VERSION` and `MEASUREMENT` fields across the whole set. Two results to look for, both of which will shape a policy you write later:
 
 1. **`TCB_VERSION` varies across the fleet**, because hosts are patched on a rolling basis. A release policy that pins an exact TCB value would have just failed on some fraction of your own instances — which is why Module 3, §5.3 insists the policy express a *floor* and never an equality.
-2. **`MEASUREMENT` varies with things you did not think were inputs.** The same image on a different CPU generation or a different vCPU count can produce a different launch digest, because the count and the firmware are measured too. Anyone maintaining an allowlist of expected measurements is maintaining a matrix, not a value.
+2. **`MEASUREMENT` varies with things you did not think were inputs.** The same image at a different vCPU count produces a different launch digest, because the count and the firmware are measured alongside it. Anyone maintaining an allowlist of expected measurements is maintaining a matrix indexed by machine shape, not a value.
 
 Write down how many distinct measurements you observed for what you thought was one configuration. That number is the honest size of the reference-value problem, and it is the reason §7 of the next module is as long as it is.
 

@@ -323,7 +323,7 @@ Intel 的应对是通过 TDX Module 更新，这正是 §2.1 里那个灵活性�
 
 **目标**：分别从一个 AMD SEV-SNP guest *和*一个 Intel TDX guest 取得真实的、由硬件签名的证明证据，逐字段手工辨认 §1.4 与 §2.3 讨论过的每一项，然后扫一遍机群，看看 TCB 值在真实机器之间到底能差出多少。这个练习会把模块 3 从抽象变成机械操作。
 
-**规模**：复用模块 1 留下的 `cc-lab-snp` 与 `cc-lab-tdx`，再为机群普查铺开一批跨 zone、跨 CPU 世代的实例。解码一家厂商的报告，学到的是一种格式；两家都解码，学到的才是：证明机制里哪些部分是架构性的，哪些只是 AMD 或 Intel 的本地约定。**状态**：`gcloud` 调用已对照 Google Cloud 文档核实；`snpguest` 步骤遵循上游 VirTEE 工具的既有接口——请用你安装版本的 `snpguest --help` 核对子命令名。TDX 的 quote 路径变动很快，请对照 Intel 与 Google 的当前文档核实。
+**规模**：复用模块 1 留下的 `cc-lab-snp` 与 `cc-lab-tdx`，再为机群普查铺开一批跨 zone、跨机型规格的实例。解码一家厂商的报告，学到的是一种格式；两家都解码，学到的才是：证明机制里哪些部分是架构性的，哪些只是 AMD 或 Intel 的本地约定。**状态**：`gcloud` 调用以及第 9 步里 SEV-SNP 的机型约束，均已对照 Google Cloud 的"支持的配置"文档核实；`snpguest` 命令是按 **v0.10.x** 写的，它的位置参数顺序与更早的版本不同——在认定失败是你自己的问题之前，先跑 `snpguest --version` 和 `--help`。TDX 的 quote 路径变动很快，请对照 Intel 与 Google 的当前文档核实。
 
 ### 第 1 步 —— 确认两个 guest 确实是它们声称的东西
 
@@ -346,16 +346,26 @@ source "$HOME/.cargo/env"
 git clone https://github.com/virtee/snpguest.git
 cd snpguest && cargo build --release
 sudo cp target/release/snpguest /usr/local/bin/
+
+snpguest --version    # 本实验是按 0.10.x 写的
 ```
+
+**把版本钉住，并且去核对它。** `snpguest` 的位置参数顺序在不同版本之间变过——尤其是 `fetch ca` 与 `fetch vcek`。如果下面某条命令报的是用法错误，几乎一定就是这个原因，而 `snpguest fetch ca --help` 能在十秒内告诉你当前的顺序。这不是工具的缺陷；这就是依赖一条高速演进的证明工具链的感觉，也是模块 7 里 collateral 版本问题的一次小小预演。
 
 ### 第 3 步 —— 用你自己的 `REPORT_DATA` 请求一份报告
 
-```bash
-# 64 字节调用方提供的数据 —— 生产环境里这是 nonce
-# 和/或你 TLS 公钥的哈希（模块 1 §3.4、模块 3 §6）
-openssl rand -hex 32 > request-data.txt
+请求文件必须是**恰好 64 字节的二进制**——工具会读 64 字节，且不会补齐。最省事的办法是让它自己生成：
 
-sudo snpguest report attestation-report.bin request-data.txt
+```bash
+# --random 会往请求文件里写 64 个随机字节，并把它们绑定到 REPORT_DATA。
+# 生产环境里这是 nonce 和/或你 TLS 公钥的哈希
+#（模块 1 §3.4、模块 3 §6）。
+sudo snpguest report attestation-report.bin request-data.bin --random
+
+# 若要自己提供，请确保它是 64 个原始字节，而不是 64 个十六进制字符：
+#   openssl rand 64 > request-data.bin
+#   sudo snpguest report attestation-report.bin request-data.bin
+
 sudo snpguest display report attestation-report.bin
 ```
 
@@ -367,16 +377,23 @@ sudo snpguest display report attestation-report.bin
 - `REPORT_DATA` —— 确认它回显了你提供的那些字节。
 - `POLICY` —— 逐位解码。debug 是否被允许？
 - `TCB_VERSION` 与那些 `*_SVN` 字段 —— 平台的固件安全版本号。
-- `VMPL` —— 是哪个特权级请求的。除非用了 paravisor，否则应为 0。
+- `VMPL` —— 是哪个特权级请求的。`snpguest` 默认用 **VMPL 1**，所以除非你传 `-v 0`，你看到的就是 1。传一次再拉第二份报告；两份不一样，而这正是要点——这个字段记录的是请求方，不是机器。
 - `SIGNATURE` —— 一个 ECDSA P-384 签名，在你拿证书链验证它之前毫无意义。
 
 ### 第 5 步 —— 取回证书链
 
 ```bash
-# 从 AMD 的密钥分发服务取回 VCEK 以及 ARK/ASK 链
-sudo snpguest fetch ca pem milan ./certs
-sudo snpguest fetch vcek pem milan ./certs attestation-report.bin
+# 从 AMD 的密钥分发服务取回 ARK/ASK 链与 VCEK。
+# 参数顺序是：ENCODING，然后 CERTS_DIR，最后才是处理器型号。
+sudo snpguest fetch ca pem ./certs milan
+sudo snpguest fetch vcek pem ./certs attestation-report.bin
 ls -l ./certs
+```
+
+更好的做法是让报告自己说出处理器型号，而不是把 `milan` 写死——一旦你在第 9 步的普查里跑到别的机器上，写死的那个立刻就是错的：
+
+```bash
+sudo snpguest fetch ca pem ./certs --report attestation-report.bin --endorser vcek
 ```
 
 注意刚刚发生了什么：验证过程需要联系一个 AMD 的服务。这个依赖现在落在了你生产环境密钥释放流程的关键路径上（§4.2.7）。
@@ -392,17 +409,22 @@ sudo snpguest verify attestation ./certs attestation-report.bin
 
 ### 第 7 步 —— 现在从 Intel TDX guest 里取一份 quote
 
-较新的内核通过 configfs 暴露了一个厂商中立的请求接口，这是看清两种架构共性最省事的方式。在 `cc-lab-tdx` 上：
+**6.7 及以后**的内核通过 configfs 暴露了一个厂商中立的请求接口，这是看清两种架构共性最省事的方式。Ubuntu 24.04 足够新。在 `cc-lab-tdx` 上：
 
 ```bash
-# 一套内核 ABI，两家厂商 —— report provider 按平台注册
-ls /sys/kernel/config/tsm/report/ 2>/dev/null || sudo modprobe tsm
+# 这个接口在平台的 guest 驱动加载之后才出现；该驱动会 select TSM_REPORTS，
+# 而正是后者创建了 configfs 目录树。
+# 并不存在一个叫 "tsm" 的模块 —— 要加载的是厂商驱动。
+sudo modprobe tdx_guest      # 在 AMD 那台上则是：sudo modprobe sev-guest
+ls -d /sys/kernel/config/tsm/report/
 
-sudo mkdir -p /sys/kernel/config/tsm/report/lab
-echo -n "$(openssl rand -hex 32)" | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
-sudo cat /sys/kernel/config/tsm/report/lab/provider     # 期望是一个 TDX provider
+sudo mkdir /sys/kernel/config/tsm/report/lab
+openssl rand 64 | sudo tee /sys/kernel/config/tsm/report/lab/inblob >/dev/null
+sudo cat /sys/kernel/config/tsm/report/lab/provider     # 期望是 "tdx_guest"
 sudo cat /sys/kernel/config/tsm/report/lab/outblob > tdx-quote.bin
 ```
+
+`inblob` 接受最多 64 字节的**原始二进制**，所以要生成字节而不是十六进制文本——写进 64 个十六进制字符是能跑的，但你的 nonce 就成了一个 ASCII 字符串，那并不是你的本意。用完之后，`sudo rmdir /sys/kernel/config/tsm/report/lab` 会释放这个条目。
 
 在 `cc-lab-snp` 上跑一遍完全相同的序列，注意它同样能工作，只是吐出来的是一份 SNP 报告。**请求接口是共通的；回来的字节不是。** 用 Intel DCAP 的 quote 解析示例或 Trust Authority CLI 解析这份 quote，把你刚在 AMD 那边读到的每一项，在 TDX 侧找到对应物。
 
@@ -423,24 +445,28 @@ sudo cat /sys/kernel/config/tsm/report/lab/outblob > tdx-quote.bin
 
 ### 第 9 步 —— 普查一下你的机群到底有多不一致
 
-参考值只有在你知道它要覆盖多大范围时才有用。铺开一批 SNP 实例，从每一台收一份报告：
+参考值只有在你知道它要覆盖多大范围时才有用。铺开一批 SNP 实例，从每一台收一份报告。
+
+有一个约束会决定这一步怎么写，值得在动手前就知道：在 Google Cloud 上，**SEV-SNP 只在 N2D + AMD Milan 上可用。** C3D 是 Genoa，但它提供的是普通 SEV 而非 SNP；C2D 与 C4D 同样是 SEV。所以就算你想变，也变不了 CPU 世代——在 `--confidential-compute-type=SEV_SNP` 的同时要求 `--min-cpu-platform="AMD Genoa"` 会被直接拒绝。那就去变你真正能变的：
 
 ```bash
 for z in us-central1-a us-central1-b us-east1-b europe-west4-a; do
-  for cpu in "AMD Milan" "AMD Genoa"; do
-    gcloud compute instances create "snp-survey-${z##*-}-${cpu##* }" \
-      --confidential-compute-type=SEV_SNP --machine-type=n2d-standard-2 \
-      --min-cpu-platform="$cpu" --maintenance-policy=TERMINATE --zone="$z" \
+  for size in 2 4 16; do
+    gcloud compute instances create "snp-survey-${z}-${size}" \
+      --confidential-compute-type=SEV_SNP --machine-type="n2d-standard-${size}" \
+      --min-cpu-platform="AMD Milan" --maintenance-policy=TERMINATE --zone="$z" \
       --image-project=ubuntu-os-cloud --image-family=ubuntu-2404-lts-amd64 \
       --async
   done
 done
 ```
 
+注意命名：实例名必须全小写且唯一，而 `us-central1-b` 与 `us-east1-b` 都以 `b` 结尾，所以 zone 必须整个放进去。
+
 从每一台都拉一份报告，然后在整个集合上 diff `TCB_VERSION` 与 `MEASUREMENT` 字段。有两个结果值得留意，它们都会影响你之后要写的策略：
 
 1. **`TCB_VERSION` 在机群内是有差异的**，因为主机是滚动打补丁的。一条把 TCB 值钉死为某个精确取值的释放策略，刚刚已经在你自己的一部分实例上失效了——这正是模块 3 §5.3 坚持策略必须表达一个*下界*、而绝不能是等值判断的原因。
-2. **`MEASUREMENT` 会随着你没想到是输入的东西而变**。同一个镜像，换一个 CPU 世代或换一个 vCPU 数量，就可能产生不同的启动摘要，因为核数与固件同样被度量在内。任何维护"预期度量值白名单"的人，维护的其实是一个矩阵，而不是一个值。
+2. **`MEASUREMENT` 会随着你没想到是输入的东西而变**。同一个镜像，换一个 vCPU 数量就会产生不同的启动摘要，因为核数与固件同样被度量在内。任何维护"预期度量值白名单"的人，维护的其实是一个以机器规格为索引的矩阵，而不是一个值。
 
 写下来：对于你原以为是"一种配置"的东西，你一共观察到了多少个不同的度量值。这个数字就是参考值问题的诚实规模，也是下一模块 §7 为什么那么长的原因。
 
