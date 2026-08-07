@@ -2037,7 +2037,7 @@
 <hr />
 <h2 id="lab">Lab: 从两家厂商各拉一份真实的证明报告并解码<a class="headerlink" href="#lab" title="Permanent link">&para;</a></h2>
 <p><strong>目标</strong>：分别从一个 AMD SEV-SNP guest <em>和</em>一个 Intel TDX guest 取得真实的、由硬件签名的证明证据，逐字段手工辨认 §1.4 与 §2.3 讨论过的每一项，然后扫一遍机群，看看 TCB 值在真实机器之间到底能差出多少。这个练习会把模块 3 从抽象变成机械操作。</p>
-<p><strong>规模</strong>：复用模块 1 留下的 <code>cc-lab-snp</code> 与 <code>cc-lab-tdx</code>，再为机群普查铺开一批跨 zone、跨 CPU 世代的实例。解码一家厂商的报告，学到的是一种格式；两家都解码，学到的才是：证明机制里哪些部分是架构性的，哪些只是 AMD 或 Intel 的本地约定。<strong>状态</strong>：<code>gcloud</code> 调用已对照 Google Cloud 文档核实；<code>snpguest</code> 步骤遵循上游 VirTEE 工具的既有接口——请用你安装版本的 <code>snpguest --help</code> 核对子命令名。TDX 的 quote 路径变动很快，请对照 Intel 与 Google 的当前文档核实。</p>
+<p><strong>规模</strong>：复用模块 1 留下的 <code>cc-lab-snp</code> 与 <code>cc-lab-tdx</code>，再为机群普查铺开一批跨 zone、跨机型规格的实例。解码一家厂商的报告，学到的是一种格式；两家都解码，学到的才是：证明机制里哪些部分是架构性的，哪些只是 AMD 或 Intel 的本地约定。<strong>状态</strong>：<code>gcloud</code> 调用以及第 9 步里 SEV-SNP 的机型约束，均已对照 Google Cloud 的"支持的配置"文档核实；<code>snpguest</code> 命令是按 <strong>v0.10.x</strong> 写的，它的位置参数顺序与更早的版本不同——在认定失败是你自己的问题之前，先跑 <code>snpguest --version</code> 和 <code>--help</code>。TDX 的 quote 路径变动很快，请对照 Intel 与 Google 的当前文档核实。</p>
 <h3 id="1-guest">第 1 步 —— 确认两个 guest 确实是它们声称的东西<a class="headerlink" href="#1-guest" title="Permanent link">&para;</a></h3>
 <p>分别在 <code>cc-lab-snp</code> 与 <code>cc-lab-tdx</code> 上：</p>
 <div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest<span class="w">      </span><span class="c1"># 在 SNP guest 上</span>
@@ -2052,13 +2052,21 @@ curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/virtee/snpguest.git
 <span class="nb">cd</span><span class="w"> </span>snpguest<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cargo<span class="w"> </span>build<span class="w"> </span>--release
 sudo<span class="w"> </span>cp<span class="w"> </span>target/release/snpguest<span class="w"> </span>/usr/local/bin/
-</code></pre></div>
-<h3 id="3-report_data">第 3 步 —— 用你自己的 <code>REPORT_DATA</code> 请求一份报告<a class="headerlink" href="#3-report_data" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 64 字节调用方提供的数据 —— 生产环境里这是 nonce</span>
-<span class="c1"># 和/或你 TLS 公钥的哈希（模块 1 §3.4、模块 3 §6）</span>
-openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="w"> </span>&gt;<span class="w"> </span>request-data.txt
 
-sudo<span class="w"> </span>snpguest<span class="w"> </span>report<span class="w"> </span>attestation-report.bin<span class="w"> </span>request-data.txt
+snpguest<span class="w"> </span>--version<span class="w">    </span><span class="c1"># 本实验是按 0.10.x 写的</span>
+</code></pre></div>
+<p><strong>把版本钉住，并且去核对它。</strong> <code>snpguest</code> 的位置参数顺序在不同版本之间变过——尤其是 <code>fetch ca</code> 与 <code>fetch vcek</code>。如果下面某条命令报的是用法错误，几乎一定就是这个原因，而 <code>snpguest fetch ca --help</code> 能在十秒内告诉你当前的顺序。这不是工具的缺陷；这就是依赖一条高速演进的证明工具链的感觉，也是模块 7 里 collateral 版本问题的一次小小预演。</p>
+<h3 id="3-report_data">第 3 步 —— 用你自己的 <code>REPORT_DATA</code> 请求一份报告<a class="headerlink" href="#3-report_data" title="Permanent link">&para;</a></h3>
+<p>请求文件必须是<strong>恰好 64 字节的二进制</strong>——工具会读 64 字节，且不会补齐。最省事的办法是让它自己生成：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># --random 会往请求文件里写 64 个随机字节，并把它们绑定到 REPORT_DATA。</span>
+<span class="c1"># 生产环境里这是 nonce 和/或你 TLS 公钥的哈希</span>
+<span class="c1">#（模块 1 §3.4、模块 3 §6）。</span>
+sudo<span class="w"> </span>snpguest<span class="w"> </span>report<span class="w"> </span>attestation-report.bin<span class="w"> </span>request-data.bin<span class="w"> </span>--random
+
+<span class="c1"># 若要自己提供，请确保它是 64 个原始字节，而不是 64 个十六进制字符：</span>
+<span class="c1">#   openssl rand 64 &gt; request-data.bin</span>
+<span class="c1">#   sudo snpguest report attestation-report.bin request-data.bin</span>
+
 sudo<span class="w"> </span>snpguest<span class="w"> </span>display<span class="w"> </span>report<span class="w"> </span>attestation-report.bin
 </code></pre></div>
 <h3 id="4_1">第 4 步 —— 逐字段读<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
@@ -2068,14 +2076,18 @@ sudo<span class="w"> </span>snpguest<span class="w"> </span>display<span class="
 <li><code>REPORT_DATA</code> —— 确认它回显了你提供的那些字节。</li>
 <li><code>POLICY</code> —— 逐位解码。debug 是否被允许？</li>
 <li><code>TCB_VERSION</code> 与那些 <code>*_SVN</code> 字段 —— 平台的固件安全版本号。</li>
-<li><code>VMPL</code> —— 是哪个特权级请求的。除非用了 paravisor，否则应为 0。</li>
+<li><code>VMPL</code> —— 是哪个特权级请求的。<code>snpguest</code> 默认用 <strong>VMPL 1</strong>，所以除非你传 <code>-v 0</code>，你看到的就是 1。传一次再拉第二份报告；两份不一样，而这正是要点——这个字段记录的是请求方，不是机器。</li>
 <li><code>SIGNATURE</code> —— 一个 ECDSA P-384 签名，在你拿证书链验证它之前毫无意义。</li>
 </ul>
 <h3 id="5_2">第 5 步 —— 取回证书链<a class="headerlink" href="#5_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 从 AMD 的密钥分发服务取回 VCEK 以及 ARK/ASK 链</span>
-sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs
-sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>vcek<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
+<div class="highlight"><pre><span></span><code><span class="c1"># 从 AMD 的密钥分发服务取回 ARK/ASK 链与 VCEK。</span>
+<span class="c1"># 参数顺序是：ENCODING，然后 CERTS_DIR，最后才是处理器型号。</span>
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>milan
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>vcek<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
 ls<span class="w"> </span>-l<span class="w"> </span>./certs
+</code></pre></div>
+<p>更好的做法是让报告自己说出处理器型号，而不是把 <code>milan</code> 写死——一旦你在第 9 步的普查里跑到别的机器上，写死的那个立刻就是错的：</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>--report<span class="w"> </span>attestation-report.bin<span class="w"> </span>--endorser<span class="w"> </span>vcek
 </code></pre></div>
 <p>注意刚刚发生了什么：验证过程需要联系一个 AMD 的服务。这个依赖现在落在了你生产环境密钥释放流程的关键路径上（§4.2.7）。</p>
 <h3 id="6_1">第 6 步 —— 验证<a class="headerlink" href="#6_1" title="Permanent link">&para;</a></h3>
@@ -2084,15 +2096,19 @@ sudo<span class="w"> </span>snpguest<span class="w"> </span>verify<span class="w
 </code></pre></div>
 <p>一次成功的验证确立了：<em>一颗真实的 AMD EPYC 处理器，处于 SNP 模式，固件 TCB 处于某个特定级别，启动了一个具有该启动度量值与该策略的 guest，并回显了我的 <code>REPORT_DATA</code>。</em></p>
 <h3 id="7-intel-tdx-guest-quote">第 7 步 —— 现在从 Intel TDX guest 里取一份 quote<a class="headerlink" href="#7-intel-tdx-guest-quote" title="Permanent link">&para;</a></h3>
-<p>较新的内核通过 configfs 暴露了一个厂商中立的请求接口，这是看清两种架构共性最省事的方式。在 <code>cc-lab-tdx</code> 上：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># 一套内核 ABI，两家厂商 —— report provider 按平台注册</span>
-ls<span class="w"> </span>/sys/kernel/config/tsm/report/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>modprobe<span class="w"> </span>tsm
+<p><strong>6.7 及以后</strong>的内核通过 configfs 暴露了一个厂商中立的请求接口，这是看清两种架构共性最省事的方式。Ubuntu 24.04 足够新。在 <code>cc-lab-tdx</code> 上：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 这个接口在平台的 guest 驱动加载之后才出现；该驱动会 select TSM_REPORTS，</span>
+<span class="c1"># 而正是后者创建了 configfs 目录树。</span>
+<span class="c1"># 并不存在一个叫 &quot;tsm&quot; 的模块 —— 要加载的是厂商驱动。</span>
+sudo<span class="w"> </span>modprobe<span class="w"> </span>tdx_guest<span class="w">      </span><span class="c1"># 在 AMD 那台上则是：sudo modprobe sev-guest</span>
+ls<span class="w"> </span>-d<span class="w"> </span>/sys/kernel/config/tsm/report/
 
-sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/sys/kernel/config/tsm/report/lab
-<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/kernel/config/tsm/report/lab/inblob<span class="w"> </span>&gt;/dev/null
-sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/provider<span class="w">     </span><span class="c1"># 期望是一个 TDX provider</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>/sys/kernel/config/tsm/report/lab
+openssl<span class="w"> </span>rand<span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/kernel/config/tsm/report/lab/inblob<span class="w"> </span>&gt;/dev/null
+sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/provider<span class="w">     </span><span class="c1"># 期望是 &quot;tdx_guest&quot;</span>
 sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/outblob<span class="w"> </span>&gt;<span class="w"> </span>tdx-quote.bin
 </code></pre></div>
+<p><code>inblob</code> 接受最多 64 字节的<strong>原始二进制</strong>，所以要生成字节而不是十六进制文本——写进 64 个十六进制字符是能跑的，但你的 nonce 就成了一个 ASCII 字符串，那并不是你的本意。用完之后，<code>sudo rmdir /sys/kernel/config/tsm/report/lab</code> 会释放这个条目。</p>
 <p>在 <code>cc-lab-snp</code> 上跑一遍完全相同的序列，注意它同样能工作，只是吐出来的是一份 SNP 报告。<strong>请求接口是共通的；回来的字节不是。</strong> 用 Intel DCAP 的 quote 解析示例或 Trust Authority CLI 解析这份 quote，把你刚在 AMD 那边读到的每一项，在 TDX 侧找到对应物。</p>
 <h3 id="8">第 8 步 —— 用你自己的证据把两种架构对照一遍<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
 <p>下面这张表请用你刚生成的两份产物填，而不是抄 §2 里那张：</p>
@@ -2139,21 +2155,23 @@ sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/re
 </table>
 <p>那个空格才是重点。AMD 的报告里没有 RTMR 的对应物，这正是 §3.4 说 SEV-SNP 需要外挂 vTPM 才能做运行时度量的原因——也是 Google 的机密 GPU 路径基于 TDX 的原因。你现在是从证据里证明了这一点，而不是从行文里接受了它。</p>
 <h3 id="9">第 9 步 —— 普查一下你的机群到底有多不一致<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
-<p>参考值只有在你知道它要覆盖多大范围时才有用。铺开一批 SNP 实例，从每一台收一份报告：</p>
+<p>参考值只有在你知道它要覆盖多大范围时才有用。铺开一批 SNP 实例，从每一台收一份报告。</p>
+<p>有一个约束会决定这一步怎么写，值得在动手前就知道：在 Google Cloud 上，<strong>SEV-SNP 只在 N2D + AMD Milan 上可用。</strong> C3D 是 Genoa，但它提供的是普通 SEV 而非 SNP；C2D 与 C4D 同样是 SEV。所以就算你想变，也变不了 CPU 世代——在 <code>--confidential-compute-type=SEV_SNP</code> 的同时要求 <code>--min-cpu-platform="AMD Genoa"</code> 会被直接拒绝。那就去变你真正能变的：</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>z<span class="w"> </span><span class="k">in</span><span class="w"> </span>us-central1-a<span class="w"> </span>us-central1-b<span class="w"> </span>us-east1-b<span class="w"> </span>europe-west4-a<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span><span class="k">for</span><span class="w"> </span>cpu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="s2">&quot;AMD Genoa&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">    </span>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;snp-survey-</span><span class="si">${</span><span class="nv">z</span><span class="p">##*-</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">cpu</span><span class="p">##* </span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$cpu</span><span class="s2">&quot;</span><span class="w"> </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span>--zone<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$z</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span>size<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">16</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;snp-survey-</span><span class="si">${</span><span class="nv">z</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span>--machine-type<span class="o">=</span><span class="s2">&quot;n2d-standard-</span><span class="si">${</span><span class="nv">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span>--zone<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$z</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64<span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>--async
 <span class="w">  </span><span class="k">done</span>
 <span class="k">done</span>
 </code></pre></div>
+<p>注意命名：实例名必须全小写且唯一，而 <code>us-central1-b</code> 与 <code>us-east1-b</code> 都以 <code>b</code> 结尾，所以 zone 必须整个放进去。</p>
 <p>从每一台都拉一份报告，然后在整个集合上 diff <code>TCB_VERSION</code> 与 <code>MEASUREMENT</code> 字段。有两个结果值得留意，它们都会影响你之后要写的策略：</p>
 <ol>
 <li><strong><code>TCB_VERSION</code> 在机群内是有差异的</strong>，因为主机是滚动打补丁的。一条把 TCB 值钉死为某个精确取值的释放策略，刚刚已经在你自己的一部分实例上失效了——这正是模块 3 §5.3 坚持策略必须表达一个<em>下界</em>、而绝不能是等值判断的原因。</li>
-<li><strong><code>MEASUREMENT</code> 会随着你没想到是输入的东西而变</strong>。同一个镜像，换一个 CPU 世代或换一个 vCPU 数量，就可能产生不同的启动摘要，因为核数与固件同样被度量在内。任何维护"预期度量值白名单"的人，维护的其实是一个矩阵，而不是一个值。</li>
+<li><strong><code>MEASUREMENT</code> 会随着你没想到是输入的东西而变</strong>。同一个镜像，换一个 vCPU 数量就会产生不同的启动摘要，因为核数与固件同样被度量在内。任何维护"预期度量值白名单"的人，维护的其实是一个以机器规格为索引的矩阵，而不是一个值。</li>
 </ol>
 <p>写下来：对于你原以为是"一种配置"的东西，你一共观察到了多少个不同的度量值。这个数字就是参考值问题的诚实规模，也是下一模块 §7 为什么那么长的原因。</p>
 <h3 id="10">第 10 步 —— 注意你仍然没有得到什么<a class="headerlink" href="#10" title="Permanent link">&para;</a></h3>

@@ -2037,7 +2037,7 @@
 <hr />
 <h2 id="lab-pull-and-decode-real-attestation-reports-from-both-vendors">Lab: Pull and Decode Real Attestation Reports From Both Vendors<a class="headerlink" href="#lab-pull-and-decode-real-attestation-reports-from-both-vendors" title="Permanent link">&para;</a></h2>
 <p><strong>Goal:</strong> obtain genuine hardware-signed attestation evidence from an AMD SEV-SNP guest <em>and</em> an Intel TDX guest, identify by hand every field discussed in §1.4 and §2.3, and then survey a fleet to see how much the TCB values actually vary across machines. This is the exercise that converts Module 3 from abstraction into mechanics.</p>
-<p><strong>Scope:</strong> reuse <code>cc-lab-snp</code> and <code>cc-lab-tdx</code> from Module 1, then add a spread of instances across zones and CPU generations for the fleet survey. Decoding one vendor's report teaches you a format; decoding both teaches you which parts of attestation are architectural and which are AMD's or Intel's local conventions. <strong>Status:</strong> <code>gcloud</code> invocations verified against Google Cloud documentation; <code>snpguest</code> steps follow the upstream VirTEE tool's documented interface — confirm subcommand names against <code>snpguest --help</code> for the version you install. The TDX quote path moves quickly; verify against current Intel and Google documentation.</p>
+<p><strong>Scope:</strong> reuse <code>cc-lab-snp</code> and <code>cc-lab-tdx</code> from Module 1, then add a spread of instances across zones and machine shapes for the fleet survey. Decoding one vendor's report teaches you a format; decoding both teaches you which parts of attestation are architectural and which are AMD's or Intel's local conventions. <strong>Status:</strong> <code>gcloud</code> invocations and the SEV-SNP machine-type constraint in Step 9 verified against Google Cloud's supported-configurations documentation; <code>snpguest</code> commands written against <strong>v0.10.x</strong>, whose positional argument order differs from earlier releases — check <code>snpguest --version</code> and <code>--help</code> before assuming a failure is yours. The TDX quote path moves quickly; verify against current Intel and Google documentation.</p>
 <h3 id="step-1-confirm-both-guests-are-what-they-claim">Step 1 — Confirm both guests are what they claim<a class="headerlink" href="#step-1-confirm-both-guests-are-what-they-claim" title="Permanent link">&para;</a></h3>
 <p>On <code>cc-lab-snp</code> and <code>cc-lab-tdx</code> respectively:</p>
 <div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest<span class="w">      </span><span class="c1"># on the SNP guest</span>
@@ -2052,13 +2052,21 @@ curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/virtee/snpguest.git
 <span class="nb">cd</span><span class="w"> </span>snpguest<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cargo<span class="w"> </span>build<span class="w"> </span>--release
 sudo<span class="w"> </span>cp<span class="w"> </span>target/release/snpguest<span class="w"> </span>/usr/local/bin/
-</code></pre></div>
-<h3 id="step-3-request-a-report-with-your-own-report_data">Step 3 — Request a report with your own <code>REPORT_DATA</code><a class="headerlink" href="#step-3-request-a-report-with-your-own-report_data" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 64 bytes of caller-supplied data — in production this is the nonce</span>
-<span class="c1"># and/or the hash of your TLS public key (Module 1 §3.4, Module 3 §6)</span>
-openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="w"> </span>&gt;<span class="w"> </span>request-data.txt
 
-sudo<span class="w"> </span>snpguest<span class="w"> </span>report<span class="w"> </span>attestation-report.bin<span class="w"> </span>request-data.txt
+snpguest<span class="w"> </span>--version<span class="w">    </span><span class="c1"># this lab is written against 0.10.x</span>
+</code></pre></div>
+<p><strong>Pin the version, and check it.</strong> <code>snpguest</code>'s positional argument order has changed between releases — <code>fetch ca</code> and <code>fetch vcek</code> in particular. If a command below fails with a usage error, that is almost always the cause, and <code>snpguest fetch ca --help</code> will show you the current order in ten seconds. This is not a flaw in the tool; it is what depending on a fast-moving attestation toolchain feels like, and it is a small preview of the collateral-versioning problem in Module 7.</p>
+<h3 id="step-3-request-a-report-with-your-own-report_data">Step 3 — Request a report with your own <code>REPORT_DATA</code><a class="headerlink" href="#step-3-request-a-report-with-your-own-report_data" title="Permanent link">&para;</a></h3>
+<p>The request file must be <strong>exactly 64 bytes of binary</strong> — the tool reads 64 bytes and does not pad. The easy way is to let it generate them:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># --random writes 64 random bytes into the request file and binds them</span>
+<span class="c1"># to REPORT_DATA. In production this is the nonce and/or the hash of</span>
+<span class="c1"># your TLS public key (Module 1 §3.4, Module 3 §6).</span>
+sudo<span class="w"> </span>snpguest<span class="w"> </span>report<span class="w"> </span>attestation-report.bin<span class="w"> </span>request-data.bin<span class="w"> </span>--random
+
+<span class="c1"># To supply your own instead, make sure it is 64 raw bytes, not 64 hex characters:</span>
+<span class="c1">#   openssl rand 64 &gt; request-data.bin</span>
+<span class="c1">#   sudo snpguest report attestation-report.bin request-data.bin</span>
+
 sudo<span class="w"> </span>snpguest<span class="w"> </span>display<span class="w"> </span>report<span class="w"> </span>attestation-report.bin
 </code></pre></div>
 <h3 id="step-4-read-the-fields">Step 4 — Read the fields<a class="headerlink" href="#step-4-read-the-fields" title="Permanent link">&para;</a></h3>
@@ -2068,14 +2076,18 @@ sudo<span class="w"> </span>snpguest<span class="w"> </span>display<span class="
 <li><code>REPORT_DATA</code> — confirm it echoes the bytes you supplied.</li>
 <li><code>POLICY</code> — decode the bits. Is debug permitted?</li>
 <li><code>TCB_VERSION</code> and the <code>*_SVN</code> fields — the platform's firmware security versions.</li>
-<li><code>VMPL</code> — which privilege level requested this. Expect 0 unless a paravisor is in use.</li>
+<li><code>VMPL</code> — which privilege level requested this. <code>snpguest</code> defaults to <strong>VMPL 1</strong>, so that is what you will see unless you pass <code>-v 0</code>. Do that and pull a second report; the two differ, which is the point — the field records the requester, not the machine.</li>
 <li><code>SIGNATURE</code> — an ECDSA P-384 signature, meaningless until you verify it against a certificate chain.</li>
 </ul>
 <h3 id="step-5-fetch-the-certificate-chain">Step 5 — Fetch the certificate chain<a class="headerlink" href="#step-5-fetch-the-certificate-chain" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Retrieve the VCEK and the ARK/ASK chain from AMD&#39;s Key Distribution Service</span>
-sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs
-sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>vcek<span class="w"> </span>pem<span class="w"> </span>milan<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
+<div class="highlight"><pre><span></span><code><span class="c1"># Retrieve the ARK/ASK chain and the VCEK from AMD&#39;s Key Distribution Service.</span>
+<span class="c1"># Argument order is: ENCODING, then CERTS_DIR, then the processor model.</span>
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>milan
+sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>vcek<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>attestation-report.bin
 ls<span class="w"> </span>-l<span class="w"> </span>./certs
+</code></pre></div>
+<p>Better still, let the report name its own processor model rather than hardcoding <code>milan</code>, which is wrong the moment you run the survey in Step 9 on anything else:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snpguest<span class="w"> </span>fetch<span class="w"> </span>ca<span class="w"> </span>pem<span class="w"> </span>./certs<span class="w"> </span>--report<span class="w"> </span>attestation-report.bin<span class="w"> </span>--endorser<span class="w"> </span>vcek
 </code></pre></div>
 <p>Note what just happened: verification required contacting an AMD service. That dependency is now on the critical path of your production key-release flow (§4.2.7).</p>
 <h3 id="step-6-verify">Step 6 — Verify<a class="headerlink" href="#step-6-verify" title="Permanent link">&para;</a></h3>
@@ -2084,15 +2096,19 @@ sudo<span class="w"> </span>snpguest<span class="w"> </span>verify<span class="w
 </code></pre></div>
 <p>A successful verification establishes: <em>a genuine AMD EPYC processor, in SNP mode, at a specific firmware TCB level, launched a guest with this launch measurement and this policy, and echoed my <code>REPORT_DATA</code>.</em></p>
 <h3 id="step-7-now-get-a-quote-out-of-the-intel-tdx-guest">Step 7 — Now get a quote out of the Intel TDX guest<a class="headerlink" href="#step-7-now-get-a-quote-out-of-the-intel-tdx-guest" title="Permanent link">&para;</a></h3>
-<p>Modern kernels expose a vendor-neutral request interface through configfs, which is the most efficient way to see what the two architectures share. On <code>cc-lab-tdx</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># One kernel ABI, both vendors — the report provider registers per-platform</span>
-ls<span class="w"> </span>/sys/kernel/config/tsm/report/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>modprobe<span class="w"> </span>tsm
+<p>Kernels from <strong>6.7 onward</strong> expose a vendor-neutral request interface through configfs, which is the most efficient way to see what the two architectures share. Ubuntu 24.04 is new enough. On <code>cc-lab-tdx</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># The interface appears once the platform&#39;s guest driver is loaded; that</span>
+<span class="c1"># driver selects TSM_REPORTS, which is what creates the configfs tree.</span>
+<span class="c1"># There is no module called &quot;tsm&quot; — load the vendor driver instead.</span>
+sudo<span class="w"> </span>modprobe<span class="w"> </span>tdx_guest<span class="w">      </span><span class="c1"># or: sudo modprobe sev-guest, on the AMD box</span>
+ls<span class="w"> </span>-d<span class="w"> </span>/sys/kernel/config/tsm/report/
 
-sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/sys/kernel/config/tsm/report/lab
-<span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/kernel/config/tsm/report/lab/inblob<span class="w"> </span>&gt;/dev/null
-sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/provider<span class="w">     </span><span class="c1"># expect a TDX provider</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>/sys/kernel/config/tsm/report/lab
+openssl<span class="w"> </span>rand<span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/kernel/config/tsm/report/lab/inblob<span class="w"> </span>&gt;/dev/null
+sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/provider<span class="w">     </span><span class="c1"># expect &quot;tdx_guest&quot;</span>
 sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/report/lab/outblob<span class="w"> </span>&gt;<span class="w"> </span>tdx-quote.bin
 </code></pre></div>
+<p><code>inblob</code> takes up to 64 bytes of <strong>raw binary</strong>, so generate bytes rather than hex text — writing 64 hex characters silently gives you an ASCII string as your nonce, which works and is not what you meant. When you are done, <code>sudo rmdir /sys/kernel/config/tsm/report/lab</code> releases the entry.</p>
 <p>Run the identical sequence on <code>cc-lab-snp</code> and note that it also works, producing an SNP report instead. <strong>The request interface is common; the bytes that come back are not.</strong> Parse the quote with Intel's DCAP quote-parsing sample or the Trust Authority CLI, and locate the TDX analogues of what you just read on AMD.</p>
 <h3 id="step-8-diff-the-two-architectures-using-your-own-evidence">Step 8 — Diff the two architectures using your own evidence<a class="headerlink" href="#step-8-diff-the-two-architectures-using-your-own-evidence" title="Permanent link">&para;</a></h3>
 <p>Fill this in from the two artifacts you just produced, not from the table in §2:</p>
@@ -2139,21 +2155,23 @@ sudo<span class="w"> </span>cat<span class="w"> </span>/sys/kernel/config/tsm/re
 </table>
 <p>The empty cell is the important one. AMD's report has no equivalent of the RTMRs, which is exactly why §3.4 said SEV-SNP needs an external vTPM for runtime measurement — and why Google's confidential-GPU path is TDX-based. You have now proved that from evidence rather than accepted it from prose.</p>
 <h3 id="step-9-survey-how-much-your-fleet-actually-varies">Step 9 — Survey how much your fleet actually varies<a class="headerlink" href="#step-9-survey-how-much-your-fleet-actually-varies" title="Permanent link">&para;</a></h3>
-<p>Reference values are only useful if you know the spread they have to cover. Boot a spread of SNP instances and collect a report from each:</p>
+<p>Reference values are only useful if you know the spread they have to cover. Boot a spread of SNP instances and collect a report from each.</p>
+<p>One constraint shapes this step, and it is worth knowing before you write the loop: on Google Cloud, <strong>SEV-SNP is available only on N2D with AMD Milan.</strong> C3D is Genoa but offers plain SEV, not SNP; C2D and C4D are SEV as well. So you cannot vary the CPU generation here even if you want to — asking for <code>--min-cpu-platform="AMD Genoa"</code> with <code>--confidential-compute-type=SEV_SNP</code> is simply rejected. Vary what you actually can:</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>z<span class="w"> </span><span class="k">in</span><span class="w"> </span>us-central1-a<span class="w"> </span>us-central1-b<span class="w"> </span>us-east1-b<span class="w"> </span>europe-west4-a<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span><span class="k">for</span><span class="w"> </span>cpu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="s2">&quot;AMD Genoa&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">    </span>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;snp-survey-</span><span class="si">${</span><span class="nv">z</span><span class="p">##*-</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">cpu</span><span class="p">##* </span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span>--machine-type<span class="o">=</span>n2d-standard-2<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$cpu</span><span class="s2">&quot;</span><span class="w"> </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span>--zone<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$z</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span>size<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">16</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;snp-survey-</span><span class="si">${</span><span class="nv">z</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span>--machine-type<span class="o">=</span><span class="s2">&quot;n2d-standard-</span><span class="si">${</span><span class="nv">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span>--zone<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$z</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64<span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>--async
 <span class="w">  </span><span class="k">done</span>
 <span class="k">done</span>
 </code></pre></div>
+<p>Note the naming: instance names must be lowercase and unique, and <code>us-central1-b</code> and <code>us-east1-b</code> both end in <code>b</code>, so the zone has to go in whole.</p>
 <p>Pull a report from every one, then diff the <code>TCB_VERSION</code> and <code>MEASUREMENT</code> fields across the whole set. Two results to look for, both of which will shape a policy you write later:</p>
 <ol>
 <li><strong><code>TCB_VERSION</code> varies across the fleet</strong>, because hosts are patched on a rolling basis. A release policy that pins an exact TCB value would have just failed on some fraction of your own instances — which is why Module 3, §5.3 insists the policy express a <em>floor</em> and never an equality.</li>
-<li><strong><code>MEASUREMENT</code> varies with things you did not think were inputs.</strong> The same image on a different CPU generation or a different vCPU count can produce a different launch digest, because the count and the firmware are measured too. Anyone maintaining an allowlist of expected measurements is maintaining a matrix, not a value.</li>
+<li><strong><code>MEASUREMENT</code> varies with things you did not think were inputs.</strong> The same image at a different vCPU count produces a different launch digest, because the count and the firmware are measured alongside it. Anyone maintaining an allowlist of expected measurements is maintaining a matrix indexed by machine shape, not a value.</li>
 </ol>
 <p>Write down how many distinct measurements you observed for what you thought was one configuration. That number is the honest size of the reference-value problem, and it is the reason §7 of the next module is as long as it is.</p>
 <h3 id="step-10-notice-what-you-still-do-not-have">Step 10 — Notice what you still do not have<a class="headerlink" href="#step-10-notice-what-you-still-do-not-have" title="Permanent link">&para;</a></h3>
