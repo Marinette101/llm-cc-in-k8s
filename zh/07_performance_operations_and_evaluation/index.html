@@ -716,10 +716,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#43" class="md-nav__link">
+  <a href="#43-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.3 重新审视自动扩缩容
+        4.3 GKE Hypercluster 上的自动扩缩容与机群编排
       
     </span>
   </a>
@@ -808,7 +808,7 @@
   <a href="#63" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.3 值得知道的一项进展
+        6.3 业界前沿：规模化混合部署现实
       
     </span>
   </a>
@@ -816,10 +816,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#64-gke" class="md-nav__link">
+  <a href="#64-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.4 一份 GKE 设计该瞄准什么
+        6.4 生产级 GKE Hypercluster 设计该瞄准什么
       
     </span>
   </a>
@@ -1209,10 +1209,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#43" class="md-nav__link">
+  <a href="#43-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.3 重新审视自动扩缩容
+        4.3 GKE Hypercluster 上的自动扩缩容与机群编排
       
     </span>
   </a>
@@ -1301,7 +1301,7 @@
   <a href="#63" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.3 值得知道的一项进展
+        6.3 业界前沿：规模化混合部署现实
       
     </span>
   </a>
@@ -1309,10 +1309,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#64-gke" class="md-nav__link">
+  <a href="#64-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.4 一份 GKE 设计该瞄准什么
+        6.4 生产级 GKE Hypercluster 设计该瞄准什么
       
     </span>
   </a>
@@ -1700,13 +1700,14 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 <li>一个到期即无条件抬高门槛的<strong>事先承诺日期</strong>。</li>
 <li>一张全机群 <strong>TCB 版本分布看板</strong>——公告落地那天你会需要它，而在压力下临时建它不是个好时机。</li>
 </ul>
-<h3 id="43">4.3 重新审视自动扩缩容<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
-<p>模块 6 §4.3 已确立：在分钟级冷启动下，被动式自动扩缩容不管用。可行的运维形态是：</p>
+<h3 id="43-gke-hypercluster">4.3 GKE Hypercluster 上的自动扩缩容与机群编排<a class="headerlink" href="#43-gke-hypercluster" title="Permanent link">&para;</a></h3>
+<p>模块 6 §4.3 已确立：在分钟级冷启动下，被动式自动扩缩容不管用。在 GKE Hypercluster 上，生产级机群运维需要利用先进的 AI 编排原语：</p>
 <ul>
-<li><strong>预测式扩缩容</strong>，基于预测而非瞬时队列深度。</li>
-<li><strong>按到达过程 p99 定容的预热池</strong>，而不是按均值。</li>
-<li><strong>显式背压</strong> —— 排队并以明确错误拒绝，而不是超时。</li>
-<li><strong>把证明健康度当成一等信号。</strong> 一个通过了证明并释放了密钥的实例才是 "ready"；一个只是启动完成的不是。<strong>你的 readiness probe 必须检查 GPU CC 模式与证明状态</strong>，而不只是 HTTP 端口通不通（模块 4 实验第 2 步）。</li>
+<li><strong>基于 Dynamic Workload Scheduler (DWS) 的预测式扩缩容与日历预约</strong>：使用 DWS <code>flex-start</code> 模式在预定需求高峰前批量调度（Gang-schedule）并锁定多节点 GPU 算力容量，彻底规避运行时预置失败。</li>
+<li><strong>基于 Kueue 的队列与优先级管理</strong>：通过 Kueue 管理推理作业流、多租户配额与队列优先级，避免瞬时海量请求冲击未就绪的后端。</li>
+<li><strong>按到达峰值 p99 而非均值来定容量的预热池</strong>，通过 LeaderWorkerSet (LWS) 维护预先完成证明、预加载权重的常驻 Pod 组。</li>
+<li><strong>显式背压与过载保护</strong>：排队并在超限时返回清晰的背压头信息，而不是让客户端连接硬超时。</li>
+<li><strong>把证明健康度作为 Kubernetes 一等公民的就绪信号</strong>：仅完成系统引导的 Pod <strong>并不算就绪</strong>。GKE readiness probe 必须严格验证 CPU TDX 证明已通过、GPU CC 模式已开启（<code>cc_mode == ON</code>）、权重 DEK 已解密且模型前向传播预热完成。</li>
 </ul>
 <hr />
 <h2 id="5">第 5 部分: 合规与定位<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
@@ -1721,44 +1722,34 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">"云运营商读不到使用中的数据"</td>
+<td style="text-align: left;">"Google 看不到 Prompt 内容"</td>
 <td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">需同时具备 SEV-SNP/TDX <strong>且</strong> GPU CC 模式 <strong>且</strong> TEE 内 TLS 终结</td>
+<td style="text-align: left;">不变式 P2a 成立，前提是 L4 入口与 Pod 内 RA-TLS / HPKE 载荷加密（模块 6 §5）</td>
 </tr>
 <tr>
-<td style="text-align: left;">"数据受保护，免于被攻陷的 hypervisor"</td>
+<td style="text-align: left;">"Google 看不到模型权重"</td>
 <td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">这是核心的、证据充分的性质</td>
-</tr>
-<tr>
-<td style="text-align: left;">"只有被批准的代码能解密数据"</td>
-<td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">前提是释放策略完整且验证方独立</td>
-</tr>
-<tr>
-<td style="text-align: left;">"客户可以独立验证这一点"</td>
-<td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">仅当验证方独立；若云运营商就是验证方则 ❌</td>
+<td style="text-align: left;">不变式 P1 成立，前提是提供方运营的 EKM 与基于证明的密钥释放（模块 6 §3）</td>
 </tr>
 <tr>
 <td style="text-align: left;">"数据永不离开该司法辖区"</td>
 <td style="text-align: left;">⚠️ 部分</td>
-<td style="text-align: left;">CC 不控制部署位置；那是另一个地域级控制</td>
+<td style="text-align: left;">CC 不控制物理部署位置；需结合区域 VPC-SC 与 GKE 节点池地理约束</td>
 </tr>
 <tr>
 <td style="text-align: left;">"这满足 [某法规]"</td>
 <td style="text-align: left;">⚠️ 视情况</td>
-<td style="text-align: left;">CC 是支撑某个控制目标的<strong>证据</strong>，不是一张认证</td>
+<td style="text-align: left;">CC 是支撑某个控制目标的<strong>技术证据</strong>，不是一张法规认证证书</td>
 </tr>
 <tr>
 <td style="text-align: left;">"工作负载无法外泄数据"</td>
 <td style="text-align: left;">❌ <strong>否</strong></td>
-<td style="text-align: left;">TEE 保护工作负载免受平台侵害，<strong>从不</strong>反过来</td>
+<td style="text-align: left;">TEE 保护工作负载免受平台侵害；P2b 仍需网络出网防火墙与镜像审计</td>
 </tr>
 <tr>
 <td style="text-align: left;">"数据免于一切攻击"</td>
 <td style="text-align: left;">❌ <strong>否</strong></td>
-<td style="text-align: left;">侧信道、流量分析与可用性依然在（模块 2 §5.4）</td>
+<td style="text-align: left;">侧信道、流量分析与可用性依然在硬件 TEE 范围之外（模块 2 §5.4）</td>
 </tr>
 </tbody>
 </table>
@@ -1781,88 +1772,87 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 <th style="text-align: left;"><strong>AWS Nitro Enclaves</strong></th>
 <th style="text-align: left;"><strong>Azure Confidential Containers</strong></th>
 <th style="text-align: left;"><strong>Apple Private Cloud Compute</strong></th>
-<th style="text-align: left;"><strong>本设计（GKE）</strong></th>
+<th style="text-align: left;"><strong>本设计（GKE Hypercluster）</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">隔离单位</td>
+<td style="text-align: left;"><strong>隔离单位</strong></td>
 <td style="text-align: left;">从父 EC2 实例中切出的 enclave</td>
-<td style="text-align: left;">Pod 沙箱（Kata + SEV-SNP）</td>
+<td style="text-align: left;">Pod 沙箱（Kata MicroVM + SEV-SNP）</td>
 <td style="text-align: left;">整台专用节点</td>
-<td style="text-align: left;">一个 Confidential Space 实例</td>
+<td style="text-align: left;">GKE Hypercluster 机密加速节点池 / Pod</td>
 </tr>
 <tr>
-<td style="text-align: left;">硬件基础</td>
+<td style="text-align: left;"><strong>硬件基础</strong></td>
 <td style="text-align: left;">Nitro hypervisor 与 Nitro 卡</td>
-<td style="text-align: left;">AMD SEV-SNP</td>
-<td style="text-align: left;">Apple 芯片，扩展部署中还有 Intel TDX 与 NVIDIA CC</td>
-<td style="text-align: left;">Intel TDX + NVIDIA H100 CC</td>
+<td style="text-align: left;">AMD SEV-SNP / Intel TDX</td>
+<td style="text-align: left;">Apple 芯片，云端扩展中包含 Intel TDX 与 NVIDIA CC</td>
+<td style="text-align: left;">Intel TDX + NVIDIA H100 / B200 CC 模式</td>
 </tr>
 <tr>
-<td style="text-align: left;">证明模型</td>
+<td style="text-align: left;"><strong>证明模型</strong></td>
 <td style="text-align: left;">background-check——enclave 把文档交给 KMS</td>
 <td style="text-align: left;">来自 Microsoft Azure Attestation 的 JWT</td>
 <td style="text-align: left;">客户端强制，对照透明日志</td>
-<td style="text-align: left;">经 Google Cloud Attestation 的 passport，或提供方自验原始证据</td>
+<td style="text-align: left;">提供方自验原始硬件证据（或经 Google Cloud Attestation）</td>
 </tr>
 <tr>
-<td style="text-align: left;">密钥释放</td>
+<td style="text-align: left;"><strong>密钥释放</strong></td>
 <td style="text-align: left;">针对证明的 KMS 条件键</td>
-<td style="text-align: left;">Managed HSM 安全密钥释放</td>
+<td style="text-align: left;">Azure Managed HSM 安全密钥释放</td>
 <td style="text-align: left;">Apple 控制，客户端验证</td>
-<td style="text-align: left;">提供方运营的外部 KMS</td>
+<td style="text-align: left;">提供方运营的外部 KMS (Cloud EKM)</td>
 </tr>
 <tr>
-<td style="text-align: left;">无交互式访问</td>
+<td style="text-align: left;"><strong>无交互式访问</strong></td>
 <td style="text-align: left;">enclave 无持久存储、无网络、无 shell</td>
 <td style="text-align: left;">沙箱边界</td>
 <td style="text-align: left;"><strong>在设计上被剔除</strong>——无远程 shell、无交互式调试</td>
-<td style="text-align: left;">Confidential Space 生产镜像</td>
+<td style="text-align: left;">加固 GKE 节点池 + Binary Authorization + 只读根文件系统</td>
 </tr>
 <tr>
-<td style="text-align: left;">参考值</td>
+<td style="text-align: left;"><strong>参考值</strong></td>
 <td style="text-align: left;">客户自管的 PCR</td>
 <td style="text-align: left;">针对容器镜像的策略</td>
 <td style="text-align: left;"><strong>可复现构建 + 公开二进制 + 只可追加日志</strong></td>
-<td style="text-align: left;">签名的黄金值；摘要白名单</td>
+<td style="text-align: left;">签名的黄金度量值 + 容器摘要白名单</td>
 </tr>
 <tr>
-<td style="text-align: left;">GPU 支持</td>
-<td style="text-align: left;">有限</td>
+<td style="text-align: left;"><strong>GPU 与 AI 编排</strong></td>
+<td style="text-align: left;">GPU 隔离支持有限</td>
 <td style="text-align: left;">正在形成</td>
-<td style="text-align: left;">有，NVIDIA CC</td>
-<td style="text-align: left;">有，每实例一块 H100</td>
+<td style="text-align: left;">有，云端集群支持 NVIDIA CC</td>
+<td style="text-align: left;"><strong>完整 AI Hypercomputer 技术栈</strong>（LeaderWorkerSet, Kueue, DWS flex-start, GCS FUSE）</td>
 </tr>
 </tbody>
 </table>
 <h3 id="62">6.2 各家做对了什么<a class="headerlink" href="#62" title="Permanent link">&para;</a></h3>
-<p><strong>AWS Nitro Enclaves</strong> 的密钥释放故事最干净：KMS 策略被表达成针对证明度量值的条件键，并由 KMS 自己执行。这个机制简单到可以用一张图向客户讲清楚，而那是一项<strong>真实的工程美德</strong>。它的局限在于作用域——enclave 没有持久存储、没有直接网络，这对密钥操作很优雅，对挂 GPU 的推理则很别扭。</p>
-<p><strong>Azure Confidential Containers</strong> 把<strong>机密性单位</strong>选对了。让每个 Pod 跑在自己的 VM TEE 里（Kata 加 SEV-SNP），意味着 kubelet 与节点代理留在信任边界之外——<strong>恰恰是 Confidential GKE Nodes 所缺的那个性质</strong>（模块 5 §2.3）。如果 GKE 提供一个 Pod 沙箱式的机密运行时，模块 6 的架构会简单得多，因为你可以既保留 Kubernetes、又把控制面排除在外。</p>
+<p><strong>AWS Nitro Enclaves</strong> 的密钥释放故事最干净：KMS 策略被表达成针对证明度量值的条件键，并由 KMS 自己执行。这个机制简单到可以用一张图向客户讲清楚，而那是一项<strong>真实的工程美德</strong>。它的局限在于作用域——enclave 没有持久存储、没有直接网络，这对密钥操作很优雅，对挂 GPU 的多节点分布式推理则很别扭。</p>
+<p><strong>Azure Confidential Containers</strong> 把<strong>机密性单位</strong>选对了。让每个 Pod 跑在自己的 VM TEE 里（Kata 加 SEV-SNP/TDX），意味着 kubelet 与节点代理留在信任边界之外。在 GKE Hypercluster 上，通过 Kata 运行机密容器也能获得类似的 Pod 级 MicroVM 封装。</p>
 <p><strong>Apple Private Cloud Compute</strong> 是对参考值问题最完整的公开处理，也是最值得下功夫研究的那个设计。它陈述的五条要求——无状态计算、可强制执行的保证、无特权运行时访问、不可定向、可验证透明性——读起来就是对本书所罗列的那些缺口的直接回答。其中两条正是 GKE 设计最常达不到的：</p>
 <ul>
 <li><strong>无特权运行时访问，是"设计上剔除"而非"配置上关闭"。</strong> Apple 声明它<strong>刻意</strong>没有在 PCC 节点上包含远程 shell 与交互式调试机制，因为这种开放式访问会提供一个宽阔的攻击面。请与模块 5 §2.3 那次 <code>kubectl exec</code> 演示对照。</li>
 <li><strong>可验证透明性，由客户端强制。</strong> 镜像以可复现方式构建，二进制公开供检视，度量值进入一个可密码学验证的只可追加账本，而且——<strong>承重的那部分</strong>——客户端设备<strong>拒绝</strong>向镜像不在该日志中的节点发送数据。<strong>如果客户端不据此强制，发布度量值什么也换不来。</strong></li>
 </ul>
-<h3 id="63">6.3 值得知道的一项进展<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
-<p>Apple 已把 Private Cloud Compute 扩展到自有数据中心之外，与 Google 和 NVIDIA 合作，在 Google Cloud 上运行 Apple Intelligence 负载。已公开的技术栈是 <strong>NVIDIA GPU 上的 NVIDIA Confidential Computing、带 TDX 的 Intel CPU，以及 Google 的 Titan 芯片</strong>——这在组件层面上，<strong>就是模块 6 所描述的那套架构</strong>。</p>
-<p>Apple 的表述中有两个细节值得内化，因为它们恰恰是本书一直在主张的立场：</p>
+<h3 id="63">6.3 业界前沿：规模化混合部署现实<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<p>Apple 已把 Private Cloud Compute 扩展到自有数据中心之外，与 Google 和 NVIDIA 合作，在 Google Cloud 上运行 Apple Intelligence 负载。已公开的技术栈是 <strong>NVIDIA GPU 上的 NVIDIA Confidential Computing、带 TDX 的 Intel CPU，以及 Google 的 Titan 芯片</strong>——这在组件层面上，<strong>正是模块 6 在 GKE Hypercluster 上所描述的基础架构</strong>。</p>
+<p>Apple 的架构实践中有两个核心细节值得内化，因为它们恰恰是本书一直在主张的工程立场：</p>
 <ol>
-<li><strong>Apple 保有对软件的完全控制。</strong> Apple 设备只信任经 Apple 密码学批准的 PCC 软件，并且所有二进制都公开供检视。<strong>Google 提供基础设施；Google 没有成为验证方。</strong> 这就是模块 3 §1.3 的规则——<strong>验证方与密钥持有方应当是资产处于风险中的那一方</strong>——由一个有足够筹码去坚持它的一方，在规模上实现了出来。</li>
-<li><strong>Apple 明确表示不单靠机密计算。</strong> 他们公开的立场是：不单独依赖机密计算来缓解那些利用机密 VM <strong>之外</strong>特权访问的攻击，<strong>包括侧信道攻击</strong>。这就是模块 2 §5.4 那份诚实总结被采纳为一种工程姿态：<strong>在"TEE 的保证是有边界的"这一假设下做分层防御。</strong></li>
+<li><strong>模型拥有方保有对软件的完全控制。</strong> 客户端设备只信任经 Apple 密码学批准的 PCC 软件，并且所有二进制都公开供检视。<strong>Google 提供算力基础设施；Google 没有成为验证方。</strong> 这就是模块 3 §1.3 的规则——<strong>验证方与密钥持有方应当是资产处于风险中的那一方</strong>——在超大规模生产环境中得到了全球落地。</li>
+<li><strong>超越单一硬件 TEE 的分层纵深防御。</strong> Apple 明确表示不单靠机密计算。他们公开的立场是：不单独依赖机密计算来缓解那些利用机密 VM <strong>之外</strong>特权访问的攻击，<strong>包括侧信道攻击</strong>。这就是模块 2 §5.4 那份诚实总结被采纳为一种工程姿态：<strong>在"硬件 TEE 保证是有边界的"这一事实前提下做多层防御。</strong></li>
 </ol>
-<p>对一份 Vertex 3P MaaS 设计而言，其现实意义很直接：<strong>一个成熟的模型提供方，在 Google Cloud 基础设施上运行、自带独立验证方、自己控制软件——这不是假设。</strong> 它是一个已公开、已上线的安排，并且它设定了一个可比产品将被拿来衡量的预期。</p>
-<h3 id="64-gke">6.4 一份 GKE 设计该瞄准什么<a class="headerlink" href="#64-gke" title="Permanent link">&para;</a></h3>
+<p>对一份 Vertex 3P MaaS 设计而言，其现实意义很直接：<strong>一个成熟的模型提供方，在 Google Cloud 基础设施上运行、自带独立验证方、自己控制软件——这不是假设。</strong> 它是一个已公开、已上线验证的成熟模式，并且它设定了企业级机密推理将被拿来衡量的标杆。</p>
+<h3 id="64-gke-hypercluster">6.4 生产级 GKE Hypercluster 设计该瞄准什么<a class="headerlink" href="#64-gke-hypercluster" title="Permanent link">&para;</a></h3>
 <p>按"价值/投入"比排序：</p>
 <ol>
-<li><strong>独立验证。</strong> 模型提供方自己验证原始硬件证据。价值最高；今天完全做得到。</li>
-<li><strong>外部密钥管理。</strong> 权重 KEK 放在 Google 之外。用 Cloud EKM 可达。</li>
-<li><strong>生产环境无交互式访问。</strong> Confidential Space 生产镜像，以及一条永不接受 <code>dbgstat == enabled</code> 的策略。<strong>免费</strong>——它就是一行策略。</li>
-<li><strong>客户端强制证明。</strong> 客户端在发送前验证。需要一个 SDK；<strong>这是大多数设计跳过的那一步，也正是那个让保证归客户所有而不是归运营商所有的一步。</strong></li>
-<li><strong>发布参考值。</strong> 一份签名的、带版本的可接受度量值清单。投入中等，可信度高。</li>
-<li><strong>可复现构建。</strong> 投入最高，强度最高。朝它去；如果必须先发，就先发，<strong>并且说明这一点</strong>。</li>
+<li><strong>独立验证。</strong> 模型提供方基于芯片厂商根证书自行验证原始硬件证据。价值最高；今天完全做得到。</li>
+<li><strong>外部密钥管理。</strong> 权重 KEK 放在 Google 之外。通过 Cloud EKM 实现。</li>
+<li><strong>先进 AI 编排集成。</strong> 充分发挥 LeaderWorkerSet (LWS) 管理张量并行工作组、DWS flex-start 锁定算力容量、GCS FUSE 并行读取加密权重。</li>
+<li><strong>生产环境杜绝交互式访问。</strong> 禁用节点 SSH/调试权限，强制 Binary Authorization 镜像验签，容器镜像剥离调试 shell。</li>
+<li><strong>客户端强制证明。</strong> 客户端在发送 Prompt 前完成 Pod 硬件证据与 RA-TLS / HPKE 临时公钥校验。</li>
+<li><strong>发布参考值与可复现构建。</strong> 维护容器摘要与固件基线的防篡改日志。</li>
 </ol>
-<p>一份站得住脚的设计与 Apple 的标尺之间的差距，就是第 4、5、6 项——<strong>而它们没有一项是硬件限制。</strong> 它们全都是产品与工程的投入决策。</p>
 <hr />
 <h2 id="lab">Lab: 搭出基准框架，并演练那几次故障<a class="headerlink" href="#lab" title="Permanent link">&para;</a></h2>
 <p><strong>目标</strong>：产出你们组织真正会去引用的那张开销表，并演练最可能造成故障的三类操作。</p>

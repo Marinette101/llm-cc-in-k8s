@@ -1702,6 +1702,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#gke-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GKE Hypercluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-hypercomputer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Hypercomputer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#confidential-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1717,6 +1739,17 @@
     <span class="md-ellipsis">
       
         Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-containers-coco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Containers (CoCo)
       
     </span>
   </a>
@@ -1883,16 +1916,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-llm-serving-intersection" class="md-nav__link">
+  <a href="#9-llm-serving-ai-orchestration-intersection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. LLM Serving Intersection
+        9. LLM Serving &amp; AI Orchestration Intersection
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="9. LLM Serving Intersection">
+    <nav class="md-nav" aria-label="9. LLM Serving &amp; AI Orchestration Intersection">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leaderworkerset-lws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LeaderWorkerSet (LWS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-workload-scheduler-dws-flex-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Workload Scheduler (DWS) / flex-start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kueue
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#kv-cache-key-value-cache" class="md-nav__link">
@@ -3214,6 +3280,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#gke-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GKE Hypercluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-hypercomputer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AI Hypercomputer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#confidential-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3229,6 +3317,17 @@
     <span class="md-ellipsis">
       
         Confidential GKE Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidential-containers-coco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidential Containers (CoCo)
       
     </span>
   </a>
@@ -3395,16 +3494,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-llm-serving-intersection" class="md-nav__link">
+  <a href="#9-llm-serving-ai-orchestration-intersection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. LLM Serving Intersection
+        9. LLM Serving &amp; AI Orchestration Intersection
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="9. LLM Serving Intersection">
+    <nav class="md-nav" aria-label="9. LLM Serving &amp; AI Orchestration Intersection">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#leaderworkerset-lws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LeaderWorkerSet (LWS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-workload-scheduler-dws-flex-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Workload Scheduler (DWS) / flex-start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kueue
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#kv-cache-key-value-cache" class="md-nav__link">
@@ -3731,10 +3863,16 @@
 <p>The hardware gate that refuses compute until attestation has succeeded (<code>nvidia-smi conf-compute -srs 1</code>). Puts attestation on the cold-start critical path by design. → Module 4, §2.4</p>
 <hr />
 <h2 id="8-google-cloud">8. Google Cloud<a class="headerlink" href="#8-google-cloud" title="Permanent link">&para;</a></h2>
+<h3 id="gke-hypercluster">GKE Hypercluster<a class="headerlink" href="#gke-hypercluster" title="Permanent link">&para;</a></h3>
+<p>Google Cloud's purpose-built supercomputing-scale Kubernetes architecture designed for massive AI training and confidential LLM serving. Integrates confidential GPU node pools, high-throughput storage (GCS FUSE / Hyperdisk ML), and AI orchestration engines. → Module 5, §2 &amp; Module 6, §2</p>
+<h3 id="ai-hypercomputer">AI Hypercomputer<a class="headerlink" href="#ai-hypercomputer" title="Permanent link">&para;</a></h3>
+<p>Google Cloud's holistic AI supercomputing architecture combining performance-optimized hardware, open software frameworks (LeaderWorkerSet, Kueue, JobSet), and storage systems. → Module 5, §2</p>
 <h3 id="confidential-vm">Confidential VM<a class="headerlink" href="#confidential-vm" title="Permanent link">&para;</a></h3>
 <p>The base product. <code>--confidential-compute-type=SEV | SEV_SNP | TDX</code>. <strong>Plain SEV lacks memory integrity.</strong> → Module 5, §1</p>
 <h3 id="confidential-gke-nodes">Confidential GKE Nodes<a class="headerlink" href="#confidential-gke-nodes" title="Permanent link">&para;</a></h3>
 <p>Node pools whose VMs are Confidential VMs. <code>--confidential-node-type=sev|sev_snp|tdx</code>. <strong>Does not cover the Google-operated control plane.</strong> → Module 5, §2</p>
+<h3 id="confidential-containers-coco">Confidential Containers (CoCo)<a class="headerlink" href="#confidential-containers-coco" title="Permanent link">&para;</a></h3>
+<p>An upstream Kubernetes architecture running pods in isolated hardware microVM TEEs (e.g. Kata Containers on TDX/SEV-SNP), keeping the node Kubelet and host OS outside the pod's TCB. → Module 5, §6 &amp; Module 6, §2.1</p>
 <h3 id="confidential-space">Confidential Space<a class="headerlink" href="#confidential-space" title="Permanent link">&para;</a></h3>
 <p>A hardened, measured image running exactly one container and emitting an attestation token. Separates workload author, workload operator, and data collaborators — the operator has full project admin and still cannot read the data. → Module 5, §3</p>
 <h3 id="container-launcher">Container Launcher<a class="headerlink" href="#container-launcher" title="Permanent link">&para;</a></h3>
@@ -3764,7 +3902,13 @@
 <h3 id="vpc-sc-vpc-service-controls"><code>VPC-SC</code> (VPC Service Controls)<a class="headerlink" href="#vpc-sc-vpc-service-controls" title="Permanent link">&para;</a></h3>
 <p>Perimeter controls on data egress — one of the few places a control <em>outside</em> the TEE helps, because the threat is the workload itself. → Module 5, §5.3</p>
 <hr />
-<h2 id="9-llm-serving-intersection">9. LLM Serving Intersection<a class="headerlink" href="#9-llm-serving-intersection" title="Permanent link">&para;</a></h2>
+<h2 id="9-llm-serving-ai-orchestration-intersection">9. LLM Serving &amp; AI Orchestration Intersection<a class="headerlink" href="#9-llm-serving-ai-orchestration-intersection" title="Permanent link">&para;</a></h2>
+<h3 id="leaderworkerset-lws"><code>LeaderWorkerSet</code> (<code>LWS</code>)<a class="headerlink" href="#leaderworkerset-lws" title="Permanent link">&para;</a></h3>
+<p>An open-source Kubernetes API controller for distributed multi-node AI workloads. Coordinates 1 Leader Pod and N Worker Pods as a unified group, handling mutual attestation and tensor parallel weight distribution. → Module 6, §2 &amp; §3.2</p>
+<h3 id="dynamic-workload-scheduler-dws-flex-start"><code>Dynamic Workload Scheduler</code> (<code>DWS</code>) / <code>flex-start</code><a class="headerlink" href="#dynamic-workload-scheduler-dws-flex-start" title="Permanent link">&para;</a></h3>
+<p>Google Cloud scheduling mechanism for accelerator infrastructure. <code>flex-start</code> allows gang-scheduling multi-node GPU capacity with deterministic execution windows, mitigating cold-start provisioning jitter. → Module 5, §2 &amp; Module 6, §4.2</p>
+<h3 id="kueue"><code>Kueue</code><a class="headerlink" href="#kueue" title="Permanent link">&para;</a></h3>
+<p>A Kubernetes-native queue manager that orchestrates batch and inference capacity, fair-sharing, and priority preemption across multi-tenant GPU pools. → Module 6, §4.2 &amp; Module 7, §4.3</p>
 <h3 id="kv-cache-key-value-cache"><code>KV cache</code> (Key-Value cache)<a class="headerlink" href="#kv-cache-key-value-cache" title="Permanent link">&para;</a></h3>
 <p>Cached attention keys and values. <strong>A high-fidelity encoding of everything the model has been told</strong> — treat it with the sensitivity of the prompt itself. → Module 6, §6.1</p>
 <h3 id="prefix-caching">Prefix Caching<a class="headerlink" href="#prefix-caching" title="Permanent link">&para;</a></h3>

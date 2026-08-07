@@ -548,7 +548,7 @@
   <a href="#21" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 设计
+        2.1 架构范式光谱
       
     </span>
   </a>
@@ -556,10 +556,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22" class="md-nav__link">
+  <a href="#22-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 组件逐一说明
+        2.2 参考设计（原生 GKE Hypercluster）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 组件逐一说明
       
     </span>
   </a>
@@ -584,10 +595,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31" class="md-nav__link">
+  <a href="#31-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 流程
+        3.1 GKE Hypercluster 上的流程
       
     </span>
   </a>
@@ -595,10 +606,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32" class="md-nav__link">
+  <a href="#32-gpu" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 要紧的设计决策
+        3.2 多节点与多 GPU 张量并行权重分发
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 要紧的设计决策
       
     </span>
   </a>
@@ -611,22 +633,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
+  <a href="#4-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 部分: 冷启动问题
+        第 4 部分: 冷启动问题与 Hypercluster 优化
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 4 部分: 冷启动问题">
+    <nav class="md-nav" aria-label="第 4 部分: 冷启动问题与 Hypercluster 优化">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#41" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 预算
+        4.1 延迟预算
       
     </span>
   </a>
@@ -634,10 +656,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42" class="md-nav__link">
+  <a href="#42-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 缓解手段及其安全代价
+        4.2 GKE Hypercluster 冷启动缓解方案
       
     </span>
   </a>
@@ -676,7 +698,7 @@
   <a href="#51" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5.1 那个作废其余一切的问题
+        5.1 那个作废机密性的入口问题
       
     </span>
   </a>
@@ -687,18 +709,7 @@
   <a href="#52" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5.2 选项
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#53" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.3 建议
+        5.2 入口方案对比
       
     </span>
   </a>
@@ -714,19 +725,19 @@
   <a href="#6-kv-cacheprefix-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 6 部分: KV cache、Prefix Caching 与分离式推理
+        第 6 部分: KV Cache、Prefix Caching 与解耦推理
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 6 部分: KV cache、Prefix Caching 与分离式推理">
+    <nav class="md-nav" aria-label="第 6 部分: KV Cache、Prefix Caching 与解耦推理">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#61-kv-cache-prompt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.1 KV cache 就是 prompt 内容
+        6.1 KV Cache 即 Prompt 内容
       
     </span>
   </a>
@@ -737,7 +748,7 @@
   <a href="#62-prefix-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.2 Prefix Caching：一条等价于明文的泄露信道
+        6.2 Prefix Caching：跨租户时序预言机
       
     </span>
   </a>
@@ -745,10 +756,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#63-prefill-decode" class="md-nav__link">
+  <a href="#63-gke-hypercluster-prefill-decode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.3 分离式 Prefill 与 Decode
+        6.3 GKE Hypercluster 上的 Prefill 与 Decode 解耦服务
       
     </span>
   </a>
@@ -761,22 +772,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7" class="md-nav__link">
+  <a href="#7-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 7 部分: 多租户
+        第 7 部分: GKE Hypercluster 上的多租户
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 7 部分: 多租户">
+    <nav class="md-nav" aria-label="第 7 部分: GKE Hypercluster 上的多租户">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#71" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.1 光谱
+        7.1 多租户隔离模型
       
     </span>
   </a>
@@ -787,18 +798,7 @@
   <a href="#72" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.2 必须说明的那条注意事项
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#73" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7.3 可观测的跨租户信号
+        7.2 多租户软件隔离注意点
       
     </span>
   </a>
@@ -814,19 +814,19 @@
   <a href="#8" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 8 部分: 可观测性与安全监控盲区
+        第 8 部分: 可观测性与安全监控的张力
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 8 部分: 可观测性与安全监控盲区">
+    <nav class="md-nav" aria-label="第 8 部分: 可观测性与安全监控的张力">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#81" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.1 你能输出什么
+        8.1 遥测数据白名单
       
     </span>
   </a>
@@ -837,7 +837,7 @@
   <a href="#82" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.2 安全监控的张力
+        8.2 安全与滥用监控的张力
       
     </span>
   </a>
@@ -865,7 +865,7 @@
   <a href="#91" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9.1 复盘
+        9.1 威胁模型评估
       
     </span>
   </a>
@@ -873,21 +873,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#92-host-root" class="md-nav__link">
+  <a href="#92" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9.2 一个拿到 host root 的内部人员仍然能做什么
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#93" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9.3 六论断清单，逐条回答
+        9.2 六项断言核对清单
       
     </span>
   </a>
@@ -900,22 +889,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab" class="md-nav__link">
+  <a href="#lab-gke-hypercluster-llm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: 生产规模的端到端机密推理
+        Lab: 在 GKE Hypercluster 上部署生产级机密 LLM 服务
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: 生产规模的端到端机密推理">
+    <nav class="md-nav" aria-label="Lab: 在 GKE Hypercluster 上部署生产级机密 LLM 服务">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1_1" class="md-nav__link">
+  <a href="#1-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 1 步 —— 加密一个真实的模型
+        第 1 步 —— 创建带机密加速节点池的 GKE Hypercluster
       
     </span>
   </a>
@@ -923,10 +912,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2_1" class="md-nav__link">
+  <a href="#2-gcs-fuse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 2 步 —— 构建推理镜像
+        第 2 步 —— 配置加密存储与 GCS FUSE
       
     </span>
   </a>
@@ -934,10 +923,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3_1" class="md-nav__link">
+  <a href="#3-leaderworkerset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 3 步 —— 写出复合释放策略
+        第 3 步 —— 部署带证明代理的 LeaderWorkerSet
       
     </span>
   </a>
@@ -945,65 +934,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
+  <a href="#4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 步 —— 部署，并给每一个阶段计时
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 5 步 —— 先把入口的失败演出来，再修好它
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 6 步 —— 从客户端一侧验证
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 7 步 —— 把前缀缓存预言机认真测出来
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#8_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 8 步 —— 对着运行中的系统做一次对抗性评审
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#9_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 9 步 —— 清理
+        第 4 步 —— 验证端到端证明与密钥释放
       
     </span>
   </a>
@@ -1016,10 +950,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#gke" class="md-nav__link">
     <span class="md-ellipsis">
       
-        总结: 设计检查清单
+        总结：GKE 机密推理设计核对清单
       
     </span>
   </a>
@@ -1196,7 +1130,7 @@
   <a href="#21" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 设计
+        2.1 架构范式光谱
       
     </span>
   </a>
@@ -1204,10 +1138,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22" class="md-nav__link">
+  <a href="#22-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 组件逐一说明
+        2.2 参考设计（原生 GKE Hypercluster）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 组件逐一说明
       
     </span>
   </a>
@@ -1232,10 +1177,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31" class="md-nav__link">
+  <a href="#31-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 流程
+        3.1 GKE Hypercluster 上的流程
       
     </span>
   </a>
@@ -1243,10 +1188,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32" class="md-nav__link">
+  <a href="#32-gpu" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 要紧的设计决策
+        3.2 多节点与多 GPU 张量并行权重分发
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 要紧的设计决策
       
     </span>
   </a>
@@ -1259,22 +1215,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
+  <a href="#4-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 部分: 冷启动问题
+        第 4 部分: 冷启动问题与 Hypercluster 优化
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 4 部分: 冷启动问题">
+    <nav class="md-nav" aria-label="第 4 部分: 冷启动问题与 Hypercluster 优化">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#41" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 预算
+        4.1 延迟预算
       
     </span>
   </a>
@@ -1282,10 +1238,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42" class="md-nav__link">
+  <a href="#42-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 缓解手段及其安全代价
+        4.2 GKE Hypercluster 冷启动缓解方案
       
     </span>
   </a>
@@ -1324,7 +1280,7 @@
   <a href="#51" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5.1 那个作废其余一切的问题
+        5.1 那个作废机密性的入口问题
       
     </span>
   </a>
@@ -1335,18 +1291,7 @@
   <a href="#52" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5.2 选项
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#53" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5.3 建议
+        5.2 入口方案对比
       
     </span>
   </a>
@@ -1362,19 +1307,19 @@
   <a href="#6-kv-cacheprefix-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 6 部分: KV cache、Prefix Caching 与分离式推理
+        第 6 部分: KV Cache、Prefix Caching 与解耦推理
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 6 部分: KV cache、Prefix Caching 与分离式推理">
+    <nav class="md-nav" aria-label="第 6 部分: KV Cache、Prefix Caching 与解耦推理">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#61-kv-cache-prompt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.1 KV cache 就是 prompt 内容
+        6.1 KV Cache 即 Prompt 内容
       
     </span>
   </a>
@@ -1385,7 +1330,7 @@
   <a href="#62-prefix-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.2 Prefix Caching：一条等价于明文的泄露信道
+        6.2 Prefix Caching：跨租户时序预言机
       
     </span>
   </a>
@@ -1393,10 +1338,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#63-prefill-decode" class="md-nav__link">
+  <a href="#63-gke-hypercluster-prefill-decode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6.3 分离式 Prefill 与 Decode
+        6.3 GKE Hypercluster 上的 Prefill 与 Decode 解耦服务
       
     </span>
   </a>
@@ -1409,22 +1354,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7" class="md-nav__link">
+  <a href="#7-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 7 部分: 多租户
+        第 7 部分: GKE Hypercluster 上的多租户
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 7 部分: 多租户">
+    <nav class="md-nav" aria-label="第 7 部分: GKE Hypercluster 上的多租户">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#71" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.1 光谱
+        7.1 多租户隔离模型
       
     </span>
   </a>
@@ -1435,18 +1380,7 @@
   <a href="#72" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.2 必须说明的那条注意事项
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#73" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7.3 可观测的跨租户信号
+        7.2 多租户软件隔离注意点
       
     </span>
   </a>
@@ -1462,19 +1396,19 @@
   <a href="#8" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 8 部分: 可观测性与安全监控盲区
+        第 8 部分: 可观测性与安全监控的张力
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第 8 部分: 可观测性与安全监控盲区">
+    <nav class="md-nav" aria-label="第 8 部分: 可观测性与安全监控的张力">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#81" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.1 你能输出什么
+        8.1 遥测数据白名单
       
     </span>
   </a>
@@ -1485,7 +1419,7 @@
   <a href="#82" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.2 安全监控的张力
+        8.2 安全与滥用监控的张力
       
     </span>
   </a>
@@ -1513,7 +1447,7 @@
   <a href="#91" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9.1 复盘
+        9.1 威胁模型评估
       
     </span>
   </a>
@@ -1521,21 +1455,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#92-host-root" class="md-nav__link">
+  <a href="#92" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9.2 一个拿到 host root 的内部人员仍然能做什么
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#93" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9.3 六论断清单，逐条回答
+        9.2 六项断言核对清单
       
     </span>
   </a>
@@ -1548,22 +1471,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab" class="md-nav__link">
+  <a href="#lab-gke-hypercluster-llm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: 生产规模的端到端机密推理
+        Lab: 在 GKE Hypercluster 上部署生产级机密 LLM 服务
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: 生产规模的端到端机密推理">
+    <nav class="md-nav" aria-label="Lab: 在 GKE Hypercluster 上部署生产级机密 LLM 服务">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1_1" class="md-nav__link">
+  <a href="#1-gke-hypercluster" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 1 步 —— 加密一个真实的模型
+        第 1 步 —— 创建带机密加速节点池的 GKE Hypercluster
       
     </span>
   </a>
@@ -1571,10 +1494,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2_1" class="md-nav__link">
+  <a href="#2-gcs-fuse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 2 步 —— 构建推理镜像
+        第 2 步 —— 配置加密存储与 GCS FUSE
       
     </span>
   </a>
@@ -1582,10 +1505,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3_1" class="md-nav__link">
+  <a href="#3-leaderworkerset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 3 步 —— 写出复合释放策略
+        第 3 步 —— 部署带证明代理的 LeaderWorkerSet
       
     </span>
   </a>
@@ -1593,65 +1516,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4_1" class="md-nav__link">
+  <a href="#4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 步 —— 部署，并给每一个阶段计时
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 5 步 —— 先把入口的失败演出来，再修好它
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 6 步 —— 从客户端一侧验证
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 7 步 —— 把前缀缓存预言机认真测出来
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#8_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 8 步 —— 对着运行中的系统做一次对抗性评审
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#9_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第 9 步 —— 清理
+        第 4 步 —— 验证端到端证明与密钥释放
       
     </span>
   </a>
@@ -1664,10 +1532,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#gke" class="md-nav__link">
     <span class="md-ellipsis">
       
-        总结: 设计检查清单
+        总结：GKE 机密推理设计核对清单
       
     </span>
   </a>
@@ -1692,8 +1560,8 @@
 
 
 <h1 id="6-gke-llm">模块 6: 在 GKE 上设计机密 LLM 服务<a class="headerlink" href="#6-gke-llm" title="Permanent link">&para;</a></h1>
-<p>本模块之前的一切，都是为了让本模块读得懂。机制已经就位：带完整性的内存加密、一条抵达容器摘要的度量链、基于证明的密钥释放、一块进入信任边界的 GPU，以及暴露它们的平台原语。本模块把它们组装成一个设计，然后——这才是工程文档区别于市场文档的地方——把成型的设计拖回攻击者清单过一遍，明明白白地说清楚<strong>还有什么在泄露</strong>。</p>
-<p>本模块涵盖 <strong>需求拆解</strong>、<strong>参考架构</strong>、<strong>加密权重管线</strong>、<strong>冷启动预算</strong>、<strong>TLS 在哪里终结</strong>、<strong>KV cache 与 prefix cache 泄露</strong>、<strong>多租户</strong>、<strong>可观测性与安全监控的张力</strong>，以及<strong>对结果的对抗性复盘</strong>。</p>
+<p>本模块之前的一切，都是为了让本模块读得懂。机制已经就位：带完整性的内存加密、一条抵达容器摘要的度量链、基于证明的密钥释放、一块进入信任边界的 GPU，以及暴露它们的平台原语。本模块把它们组装成基于 <strong>GKE Hypercluster</strong>（以及 Google Cloud AI Hypercomputer 架构）的端到端生产级设计，然后——这才是工程文档区别于市场文档的地方——把成型的设计拖回攻击者清单过一遍，明明白白地说清楚<strong>还有什么在泄露</strong>。</p>
+<p>本模块涵盖 <strong>需求拆解</strong>、<strong>GKE Hypercluster 上的参考架构</strong>、<strong>加密权重管线</strong>、<strong>冷启动预算与 Hypercluster 优化</strong>、<strong>TLS 在哪里终结</strong>、<strong>KV cache 与 prefix cache 泄露</strong>、<strong>多租户</strong>、<strong>可观测性与安全监控的张力</strong>，以及<strong>对结果的对抗性复盘</strong>。</p>
 <hr />
 <h2 id="1">第 1 部分: 需求拆解<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
 <h3 id="11">1.1 把四条性质讲精确<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
@@ -1751,46 +1619,66 @@
 </ul>
 <hr />
 <h2 id="2">第 2 部分: 参考架构<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
-<h3 id="21">2.1 设计<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<h3 id="21">2.1 架构范式光谱<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<p>在机密计算下提供前沿 LLM（70B、405B、MoE 架构）服务需要高带宽多 GPU 互联、分布式多节点编排、低延迟权重流式加载以及动态算力调度。现代生产架构分布在三种不同模式上：</p>
+<ol>
+<li><strong>原生 GKE Hypercluster（配合机密加速节点池，主要参考架构）</strong>：通过 <a href="https://github.com/kubernetes-sigs/lws">LeaderWorkerSet (LWS)</a> 直接在机密 GPU 节点池上运行分布式推理（如 vLLM / TensorRT-LLM）。Pod 内运行的证明代理直接获取底层硬件 quote，向模型提供方外部 KMS 解封 DEK 并流式加载到受保护 HBM 中。控制面风险通过 Binary Authorization 镜像签名准入、严格 Pod 安全策略、私有端点以及 Pod 内端到端载荷加密彻底化解。</li>
+<li><strong>GKE Hypercluster 分离平面 / 混合编排</strong>：由 GKE Hypercluster 充当不可信前端调度器（Kueue / Dynamic Workload Scheduler）与 L4 路由器，将实际计算分发给独立的 <a href="../05_google_cloud_confidential_surface/#part-3-confidential-space">Confidential Space</a> 工作节点（适用于合规政策绝对严禁任何宿主机 agent 驻留的场景）。</li>
+<li><strong>基于机密容器（CoCo）的 GKE Hypercluster</strong>：采用 microVM 运行时（如基于 TDX/SEV-SNP 的 Kata Containers），每个 Pod 独占独立的硬件 TEE，将宿主机 Kubelet 与操作系统彻底置于 Pod 的信任边界之外。</li>
+</ol>
+<h3 id="22-gke-hypercluster">2.2 参考设计（原生 GKE Hypercluster）<a class="headerlink" href="#22-gke-hypercluster" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart TD
     subgraph CLIENT ["👤 客户"]
-        C1["客户端 SDK&lt;br&gt;发送**之前**先验证证明&lt;br&gt;用已证明的公钥加密载荷"]
+        C1["客户端 SDK&lt;br&gt;发送**之前**先验证证明&lt;br&gt;用已证明的公钥加密载荷 (RA-TLS / HPKE)"]
     end
 
-    subgraph NORMAL ["☁️ 普通 GKE —— 永不接触明文"]
-        LB["L4 透传负载均衡器&lt;br&gt;⚠️ **不是** L7 —— 见第 5 部分"]
-        RT["路由器 / 分发器&lt;br&gt;按模型 + 租户路由密文"]
-        CTL["机群控制器&lt;br&gt;扩缩容、健康、发布"]
-        OBS["指标与不含内容的日志"]
+    subgraph GKE ["☁️ GKE Hypercluster 编排平面 —— 永不接触明文"]
+        LB["L4 透传负载均衡器 / Gateway API&lt;br&gt;⚠️ **不是** L7 —— 仅转发加密报文"]
+        SCHED["Kueue + Dynamic Workload Scheduler&lt;br&gt;群调度与 flex-start 算力容量预留"]
+        LWS["LeaderWorkerSet (LWS) 控制器&lt;br&gt;编排多 GPU / 多节点推理工作组"]
+        OBS["Prometheus 与 Cloud Monitoring&lt;br&gt;指标与不含内容的日志"]
     end
 
-    subgraph CONF ["🔒 机密数据平面 —— 明文**唯一**存在之处"]
-        ATT["证明代理&lt;br&gt;CPU + GPU 复合证据&lt;br&gt;把 TLS 公钥绑进 REPORT_DATA"]
-        TLS["TLS / 载荷解密&lt;br&gt;在 TEE **内部**终结"]
-        INF["vLLM 推理服务&lt;br&gt;权重在受保护 HBM&lt;br&gt;KV cache 在受保护 HBM"]
+    subgraph CONF_NODE ["🔒 机密 GKE 数据平面 (A3/A4 加速节点池)"]
+        subgraph POD_LEADER ["Leader Pod (vLLM Engine)"]
+            ATT["Pod 内证明代理&lt;br&gt;TDX + GPU 复合证据&lt;br&gt;把临时 TLS 公钥绑进 REPORT_DATA"]
+            TLS["Pod 内 RA-TLS / HPKE 解密&lt;br&gt;在 TEE **内部**严格终结"]
+            LEAD_ENG["Leader 协调引擎&lt;br&gt;编排张量/流水线并行"]
+        end
+
+        subgraph POD_WORKER ["Worker Pods (TP / PP Workers)"]
+            WRK_ENG["Worker 计算引擎&lt;br&gt;权重在受保护 HBM&lt;br&gt;KV cache 在受保护 HBM"]
+        end
+
+        FUSE["Cloud Storage FUSE&lt;br&gt;本地 SSD 密文缓存"]
+        NVL["🔒 硬件加密 NVLink / 加密 RoCE&lt;br&gt;节点内与跨节点张量并行 Fabric"]
+
+        POD_LEADER &lt;--&gt; NVL &lt;--&gt; POD_WORKER
+        FUSE --&gt; POD_LEADER
+        FUSE --&gt; POD_WORKER
     end
 
     subgraph PROVIDER ["🏭 模型提供方域 —— 在 Google 之外"]
         VER["提供方运营的验证方&lt;br&gt;拿原始硬件证据对&lt;br&gt;AMD/Intel/NVIDIA 根做评估"]
-        EKM["提供方运营的密钥管理器&lt;br&gt;持有权重 KEK"]
+        EKM["提供方运营的密钥管理器 (EKM)&lt;br&gt;持有权重 KEK"]
     end
 
     subgraph STORE ["📦 不可信对象存储"]
-        W["weights.enc + 被封装的 DEK"]
+        W["GCS Bucket&lt;br&gt;weights.enc + 被封装的 DEK"]
     end
 
     C1 --&gt;|"1 挑战 + nonce"| ATT
-    ATT --&gt;|"2 证据"| VER
+    ATT --&gt;|"2 硬件证据"| VER
     VER --&gt;|"3 裁决"| C1
-    C1 --&gt;|"4 加密请求"| LB --&gt; RT --&gt;|"密文"| TLS
-    ATT --&gt;|"5 证据 + nonce"| EKM
-    EKM --&gt;|"6 解封后的 DEK"| INF
-    W --&gt;|"7 加密权重"| INF
-    TLS --&gt; INF
-    INF --&gt;|"加密响应"| RT
-    INF --&gt;|"仅计数与延迟"| OBS
-    CTL --&gt;|"仅生命周期，无数据访问"| CONF</code></pre>
-<h3 id="22">2.2 组件逐一说明<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+    C1 --&gt;|"4 加密请求"| LB --&gt;|"密文"| TLS
+    ATT --&gt;|"5 复合证据 + nonce"| EKM
+    EKM --&gt;|"6 解封后的 DEK 直入 Pod 内存"| LEAD_ENG
+    W --&gt;|"7 流式传输加密权重"| FUSE
+    TLS --&gt; LEAD_ENG
+    LEAD_ENG --&gt;|"加密响应"| LB
+    LEAD_ENG --&gt;|"仅计数与延迟"| OBS
+    SCHED --&gt;|"仅生命周期指令"| CONF_NODE</code></pre>
+<h3 id="23">2.3 组件逐一说明<a class="headerlink" href="#23" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1801,55 +1689,65 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">机密运行时</td>
-<td style="text-align: left;">Confidential Space 实例，由普通 GKE 中的控制器编排</td>
-<td style="text-align: left;">模块 5 §6.2——Confidential GKE Nodes 会让 Google 运营的控制面能向信任边界注入代码</td>
+<td style="text-align: left;"><strong>机密运行时</strong></td>
+<td style="text-align: left;">GKE Hypercluster 机密加速节点池</td>
+<td style="text-align: left;">获得完整 AI Hypercomputer 编排能力（LWS, Kueue, DWS flex-start, GCS FUSE），同时数据受硬件 TEE 保护</td>
 </tr>
 <tr>
-<td style="text-align: left;">CPU TEE</td>
+<td style="text-align: left;"><strong>CPU TEE</strong></td>
 <td style="text-align: left;">Intel TDX</td>
-<td style="text-align: left;">模块 2 §4.1——原生 <code>RTMR</code> 运行时度量；而且它就是机密 GPU 路径</td>
+<td style="text-align: left;">模块 2 §4.1——原生 <code>RTMR</code> 运行时度量、安全 EPT 完整性保护；机密 GPU 推荐路径</td>
 </tr>
 <tr>
-<td style="text-align: left;">加速器</td>
-<td style="text-align: left;">CC 模式 H100，断言 <code>cc_mode == ON</code>，每实例一块</td>
-<td style="text-align: left;">模块 4 §2.1 与 §4.1</td>
+<td style="text-align: left;"><strong>加速器</strong></td>
+<td style="text-align: left;">NVIDIA H100/H200 (A3) 或 B200 (A4) CC 模式（<code>cc_mode == ON</code>）</td>
+<td style="text-align: left;">模块 4 §2.1 与 §4.2——权重与 KV cache 置于受保护 HBM 中；B200 支持 8 块 GPU 间硬件加密 NVLink</td>
 </tr>
 <tr>
-<td style="text-align: left;">验证方</td>
+<td style="text-align: left;"><strong>工作负载编排器</strong></td>
+<td style="text-align: left;">GKE 上的 LeaderWorkerSet (LWS)</td>
+<td style="text-align: left;">管理复杂的分布式推理拓扑（跨 Worker 工作组的张量并行 + 流水线并行）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>验证方</strong></td>
 <td style="text-align: left;"><strong>提供方运营</strong>，评估原始证据</td>
 <td style="text-align: left;">模块 3 §1.3——Google 运营的验证方会让 P3 变成 Google 的一句承诺</td>
 </tr>
 <tr>
-<td style="text-align: left;">密钥管理器</td>
-<td style="text-align: left;"><strong>提供方运营的外部 KMS</strong></td>
-<td style="text-align: left;">模块 5 §4.3——Cloud KMS 会把保证降级为一条 IAM 策略</td>
+<td style="text-align: left;"><strong>密钥管理器</strong></td>
+<td style="text-align: left;"><strong>提供方运营的外部 KMS (Cloud EKM)</strong></td>
+<td style="text-align: left;">模块 5 §4.3——Cloud KMS 会把保证降级为内部 IAM 策略</td>
 </tr>
 <tr>
-<td style="text-align: left;">入口</td>
-<td style="text-align: left;">L4 透传，或客户端载荷加密</td>
+<td style="text-align: left;"><strong>入口</strong></td>
+<td style="text-align: left;">L4 透传（Gateway API）+ Pod 内 RA-TLS，或客户端载荷加密（HPKE）</td>
 <td style="text-align: left;">第 5 部分——L7 LB 会在 TEE 之外终结 TLS 并作废 P2a</td>
 </tr>
 <tr>
-<td style="text-align: left;">控制面</td>
-<td style="text-align: left;">普通 GKE，显式置于信任边界之外</td>
-<td style="text-align: left;">它<strong>可以</strong>编排；它<strong>绝不能</strong>看到明文</td>
+<td style="text-align: left;"><strong>存储层</strong></td>
+<td style="text-align: left;">Cloud Storage FUSE + 本地 SSD 缓存</td>
+<td style="text-align: left;">将分块加密的模型权重高速并行流式读取到客户机内存中</td>
 </tr>
 <tr>
-<td style="text-align: left;">可观测性</td>
+<td style="text-align: left;"><strong>控制面安全</strong></td>
+<td style="text-align: left;">加固版 GKE Autopilot / Standard + Binary Authorization</td>
+<td style="text-align: left;">通过签名容器摘要与严格准入控制消除 Kubelet/控制面注入风险</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>可观测性</strong></td>
 <td style="text-align: left;">仅计数、延迟与错误类别</td>
 <td style="text-align: left;">第 8 部分</td>
 </tr>
 </tbody>
 </table>
-<p>让这个分离平面设计自洽的那条规则，值得作为不变式写下来：</p>
+<p>让这个架构自洽的那条核心规则，值得作为不变式写下来：</p>
 <blockquote>
-<p><strong>编排平面可以启动、停止、伸缩机密平面并向其路由。它绝不可持有任何能解密什么东西的密钥，也绝不可观测任何请求或响应内容。</strong></p>
+<p><strong>编排平面可以管理容量、调度作业并路由加密流量。它绝不可持有解密密钥，也绝不可观测任何明文 prompt 或权重数据。</strong></p>
 </blockquote>
 <p>任何违反它的提议——一个调试端点、一个内容感知的路由器、一个模型前面的缓存层——都是对<strong>安全架构</strong>的改动，必须按安全改动来评审。</p>
 <hr />
 <h2 id="3">第 3 部分: 加密权重管线<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
-<h3 id="31">3.1 流程<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<h3 id="31-gke-hypercluster">3.1 GKE Hypercluster 上的流程<a class="headerlink" href="#31-gke-hypercluster" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart TD
     subgraph PROV ["🏭 提供方，在自己的基础设施上"]
         A["明文权重"] --&gt;|"1 用随机 DEK 加密"| B["weights.enc"]
@@ -1860,20 +1758,28 @@
     B --&gt;|"3 上传 —— 不需要任何秘密"| F["📦 GCS bucket&lt;br&gt;Google 能读它，但学不到任何东西"]
     D --&gt; F
 
-    subgraph TEE ["🔒 已证明的推理实例"]
-        G["取回 weights.enc&lt;br&gt;批量传输，无需认证秘密"]
-        H["产出复合证据&lt;br&gt;CPU TEE + GPU + 镜像摘要 + nonce"]
-        I["接收解封后的 DEK"]
-        J["在 TEE 内存中解密，&lt;br&gt;流式写入受保护 HBM"]
+    subgraph GKE_TEE ["🔒 GKE Hypercluster 机密 Pod 组"]
+        G["Cloud Storage FUSE / Hyperdisk ML&lt;br&gt;高速并行流式读取 weights.enc"]
+        H["Pod 内部证明代理&lt;br&gt;复合 CPU TDX + GPU RIM + 镜像摘要 + nonce"]
+        I["直接在 Pod 内存中接收解封后的 DEK"]
+        J["在内存中解密，&lt;br&gt;跨 GPU 流式写入受保护 HBM"]
     end
 
     F --&gt; G
     H --&gt;|"4 证据"| E
     E --&gt;|"5 策略校验通过 → 解封"| I
     I --&gt; J</code></pre>
-<h3 id="32">3.2 要紧的设计决策<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
-<p><strong>绝不把明文权重写到磁盘。</strong> 解密到内存，再流进 GPU 显存。持久盘上的明文权重文件，无论它是怎么到那儿的，平台都读得到。如果内存压力迫使你做暂存，那就暂存到 TEE 内部的 <code>tmpfs</code>，绝不放到持久卷上。</p>
-<p><strong>密钥粒度。</strong> 三种合理方案，各有真实权衡：</p>
+<h3 id="32-gpu">3.2 多节点与多 GPU 张量并行权重分发<a class="headerlink" href="#32-gpu" title="Permanent link">&para;</a></h3>
+<p>在 GKE Hypercluster 上通过 LeaderWorkerSet (LWS) 运行大模型（如 70B+ 参数）的多 GPU / 多节点推理时：</p>
+<ol>
+<li><strong>Leader Pod 证明</strong>：Leader Pod 初始化并执行 CPU + GPU 复合硬件证明，向模型提供方外部 KMS (EKM) 证明自身环境，将解封后的 DEK 直接接收至受保护的客户机内存中。</li>
+<li><strong>工作组内安全密钥/权重分发</strong>：</li>
+<li><em>单节点多卡（Blackwell B200）</em>：权重在 CVM 内存中解密，并通过 PCIe bounce buffer 流式写入 GPU 0–7，GPU 间通过硬件加密的 NVLink 共享中间激活值。</li>
+<li><em>多节点分布式（跨主机流水线并行）</em>：Worker Pods 在 GKE Hypercluster 内部网络上通过双向 RA-TLS 频道与 Leader Pod 相互证明。解封后的 DEK（或加密的权重流）通过这条相互认证且加密的 Pod 间通道安全传输。</li>
+<li><strong>绝不把明文权重写到磁盘</strong>：严格在内存/<code>tmpfs</code> 中解密并直接写入 GPU HBM。Cloud Storage FUSE 与本地 SSD 仅缓存<strong>密文</strong>。</li>
+</ol>
+<h3 id="33">3.3 要紧的设计决策<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<p><strong>密钥粒度：</strong></p>
 <table>
 <thead>
 <tr>
@@ -1884,29 +1790,28 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">每个模型版本一把 DEK</td>
+<td style="text-align: left;"><strong>每个模型版本一把 DEK</strong></td>
 <td style="text-align: left;">该模型版本，全网</td>
-<td style="text-align: left;">最低</td>
+<td style="text-align: left;">最低 —— 推荐的生产起点</td>
 </tr>
 <tr>
-<td style="text-align: left;">每个模型版本 × 每个部署地域一把 DEK</td>
+<td style="text-align: left;"><strong>每个模型版本 × 每个部署地域一把 DEK</strong></td>
 <td style="text-align: left;">一个地域</td>
-<td style="text-align: left;">中等</td>
+<td style="text-align: left;">中等 —— 强制实施地理合规边界</td>
 </tr>
 <tr>
-<td style="text-align: left;">每实例一把 DEK，在释放时派生</td>
-<td style="text-align: left;">一个实例</td>
-<td style="text-align: left;">最高；使缓存复杂化</td>
+<td style="text-align: left;"><strong>每实例 / 每 Pod 组一把 DEK</strong></td>
+<td style="text-align: left;">单个 Pod 工作组</td>
+<td style="text-align: left;">最高 —— 使权重缓存复杂化</td>
 </tr>
 </tbody>
 </table>
-<p>"按模型版本"是通常的起点。当监管边界要紧时，"按地域"值得。</p>
-<p><strong>轮转。</strong> 轮转 KEK 意味着重新封装 DEK——很便宜，且完全不触碰加密后的权重。轮转 DEK 意味着重新加密模型——很贵。<strong>把设计做成"日常操作是 KEK 轮转"。</strong></p>
-<p><strong>吊销。</strong> 从释放策略里删掉一个镜像摘要，能阻止<strong>新</strong>实例拿到密钥；它<strong>阻止不了</strong>已经在跑、密钥已在内存里的实例。如果吊销必须立即生效，你需要短期密钥租约与周期性重新证明，并让工作负载在租约续不上时自行终止。想清楚你需要哪一种；两者的差别是<strong>设计改动</strong>，不是配置改动。</p>
+<p><strong>轮转：</strong> 轮转 KEK 意味着在提供方 KMS 中重新封装 DEK——很便宜，毫秒级生效，且完全不触碰加密后的权重文件。轮转 DEK 意味着重新加密整个模型——很贵。<strong>将系统设计为"日常操作仅轮转 KEK"。</strong></p>
+<p><strong>吊销：</strong> 从释放策略里删掉一个镜像摘要，能阻止<strong>新</strong> Pod 拿到密钥。已在运行的 Pod 仍在内存中持有 DEK。如果吊销必须立即生效，需结合短期密钥租约与周期性重新证明机制；一旦租约续期失败，推理进程立即销毁并擦除 GPU 显存。</p>
 <hr />
-<h2 id="4">第 4 部分: 冷启动问题<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
-<h3 id="41">4.1 预算<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
-<p>这是整个设计中最主要的实际成本，它需要是一份<strong>预算</strong>，而不是一个愿望。</p>
+<h2 id="4-hypercluster">第 4 部分: 冷启动问题与 Hypercluster 优化<a class="headerlink" href="#4-hypercluster" title="Permanent link">&para;</a></h2>
+<h3 id="41">4.1 延迟预算<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
+<p>冷启动是机密推理最核心的运维挑战，必须作为一份严密的预算来工程化。</p>
 <table>
 <thead>
 <tr>
@@ -1917,53 +1822,51 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">实例预置</td>
-<td style="text-align: left;">分配一台 A3 机密实例</td>
-<td style="text-align: left;">容量受限；可能排队</td>
+<td style="text-align: left;"><strong>容量分配</strong></td>
+<td style="text-align: left;">GKE 调度分配 A3/A4 机密节点池</td>
+<td style="text-align: left;">容量排队延迟（通过 Dynamic Workload Scheduler 消除）</td>
 </tr>
 <tr>
-<td style="text-align: left;">TEE 启动</td>
-<td style="text-align: left;">固件、guest kernel、<strong>私有内存接受</strong></td>
-<td style="text-align: left;">接受循环与 VM 内存成正比（模块 2 §4.2.3）</td>
+<td style="text-align: left;"><strong>TEE 启动与内存接受</strong></td>
+<td style="text-align: left;">固件、guest OS、私有内存接受</td>
+<td style="text-align: left;">与 VM 内存大小成正比（模块 2 §4.2.3）</td>
 </tr>
 <tr>
-<td style="text-align: left;">证明</td>
-<td style="text-align: left;">合成 CPU + GPU 证据，与验证方往返</td>
-<td style="text-align: left;">网络往返；缓存冷时还要取厂商 collateral</td>
+<td style="text-align: left;"><strong>证明</strong></td>
+<td style="text-align: left;">合成 TDX + GPU 硬件证据并向验证方提交</td>
+<td style="text-align: left;">网络往返；缓存冷时拉取厂商 collateral</td>
 </tr>
 <tr>
-<td style="text-align: left;">GPU ready state</td>
-<td style="text-align: left;">证明成功后执行 <code>conf-compute -srs 1</code></td>
-<td style="text-align: left;">在此之前硬件拒绝计算（模块 4 §2.4）</td>
+<td style="text-align: left;"><strong>GPU ready state</strong></td>
+<td style="text-align: left;">证明通过后触发 <code>conf-compute -srs 1</code></td>
+<td style="text-align: left;">硬件在验证前锁死计算（模块 4 §2.4）</td>
 </tr>
 <tr>
-<td style="text-align: left;">密钥释放</td>
-<td style="text-align: left;">与提供方外部密钥管理器往返</td>
-<td style="text-align: left;">跨组织网络依赖</td>
+<td style="text-align: left;"><strong>密钥释放</strong></td>
+<td style="text-align: left;">向外部 KMS 发起 EKM unwrap 请求</td>
+<td style="text-align: left;">跨云 / 跨数据中心网络延迟</td>
 </tr>
 <tr>
-<td style="text-align: left;">权重取回</td>
-<td style="text-align: left;">从对象存储拉数十 GB</td>
-<td style="text-align: left;">与非机密相同</td>
+<td style="text-align: left;"><strong>权重流式取回</strong></td>
+<td style="text-align: left;">从 GCS 拉取数十/数百 GB 权重</td>
+<td style="text-align: left;">通过 GCS FUSE / Hyperdisk ML 并行带宽拉取</td>
 </tr>
 <tr>
-<td style="text-align: left;">解密 + 加载</td>
-<td style="text-align: left;">在 TEE 内存中解密，流式写入受保护 HBM</td>
-<td style="text-align: left;"><strong>大头</strong>——每个字节都要加密、bounce、DMA、解密（模块 4 §5.3）</td>
+<td style="text-align: left;"><strong>解密 + 加载至 HBM</strong></td>
+<td style="text-align: left;">内存中 AES-GCM 解密 + PCIe bounce buffer DMA</td>
+<td style="text-align: left;"><strong>主导耗时项</strong>——受加密 PCIe 传输瓶颈制约（模块 4 §5.3）</td>
 </tr>
 <tr>
-<td style="text-align: left;">预热</td>
-<td style="text-align: left;">CUDA graph 捕获、首 token 延迟稳定</td>
-<td style="text-align: left;">与非机密相同</td>
+<td style="text-align: left;"><strong>预热</strong></td>
+<td style="text-align: left;">CUDA graph 捕获、KV cache 分配、首 token 准备</td>
+<td style="text-align: left;">与非机密环境相同</td>
 </tr>
 </tbody>
 </table>
-<p>有两个结构性性质让它比普通冷启动更糟：这个序列在很大程度上是<strong>串行</strong>的（你不能在证明之前取密钥，也不能在 GPU 就绪之前加载权重），而且它对验证方与密钥管理器有<strong>外部依赖</strong>，这是普通部署所没有的。</p>
 <div class="arithmatex">\[
 T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T_{\text{key}} + \frac{S_{\text{model}}}{B_{\text{fetch}}} + \frac{S_{\text{model}}}{B_{\text{cc-effective}}} + T_{\text{warm}}
 \]</div>
-<p><strong>逐项分别测量。</strong> 一个混合数字不会告诉你该攻哪一项。</p>
-<h3 id="42">4.2 缓解手段及其安全代价<a class="headerlink" href="#42" title="Permanent link">&para;</a></h3>
+<h3 id="42-gke-hypercluster">4.2 GKE Hypercluster 冷启动缓解方案<a class="headerlink" href="#42-gke-hypercluster" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1974,544 +1877,466 @@ T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong>预热池</strong></td>
-<td style="text-align: left;">预先证明、预先加载的实例吸收需求尖峰</td>
-<td style="text-align: left;"><strong>无。</strong> 只是花钱。这是首要答案。</td>
+<td style="text-align: left;"><strong>Dynamic Workload Scheduler (DWS) / <code>flex-start</code></strong></td>
+<td style="text-align: left;">预先分配并群调度（Gang-schedule）整个多节点加速节点池，提供确定性的算力执行窗口</td>
+<td style="text-align: left;"><strong>无。</strong> 彻底消除运行时容量排队抖动。</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud Storage FUSE 本地缓存</strong></td>
+<td style="text-align: left;">在 Pod 重启间隙将加密权重块缓存在本地 NVMe SSD 上</td>
+<td style="text-align: left;"><strong>无。</strong> 缓存的数据是密文；无 DEK 无法读取任何内容。</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>取回与证明重叠</strong></td>
-<td style="text-align: left;">在证明在途时就去拉加密权重；它们不需要任何秘密</td>
-<td style="text-align: left;"><strong>无。</strong> 白捡的收益，而且经常被漏掉。</td>
+<td style="text-align: left;">在证明与密钥释放进行的同时，通过 GCS FUSE 并行拉取加密权重</td>
+<td style="text-align: left;"><strong>无。</strong> 加密权重拉取无需任何敏感密钥。</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>封存的本地缓存</strong></td>
-<td style="text-align: left;">用封存密钥把已解密权重缓存在本地 SSD（模块 1 §3.5）</td>
-<td style="text-align: left;">中等——把攻击面扩展到持久介质；且缓存绑定到度量值，镜像更新即作废</td>
+<td style="text-align: left;"><strong>基于 Kueue 的预热池</strong></td>
+<td style="text-align: left;">维持预先完成证明、预加载权重的 Pod 组以吸收流量尖峰</td>
+<td style="text-align: left;"><strong>无。</strong> 纯财务成本；标准生产实践。</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>激进缓存 collateral</strong></td>
-<td style="text-align: left;">避免在关键路径上冷取 AMD KDS 或 Intel PCS</td>
-<td style="text-align: left;">无，前提是陈旧问题被处理（模块 3 §4.2）</td>
+<td style="text-align: left;"><strong>容器镜像流式加载</strong></td>
+<td style="text-align: left;">配合辅助引导盘（Secondary boot disks）实现秒级容器冷启</td>
+<td style="text-align: left;"><strong>无</strong>，前提是容器摘要经过准入白名单校验。</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>量化</strong></td>
-<td style="text-align: left;">要解密与传输的字节更少；还能缓解 Hopper 的 80 GB 天花板</td>
-<td style="text-align: left;">对机密性无代价；这是一个质量决策</td>
+<td style="text-align: left;"><strong>量化（fp8 / int4）</strong></td>
+<td style="text-align: left;">减半或缩减四分之三通过 PCIe bounce buffer 传输的字节数</td>
+<td style="text-align: left;">对机密性无代价；属于精度与速度的权衡。</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>VM 快照 / 恢复</strong></td>
-<td style="text-align: left;">能完全跳过启动与加载</td>
-<td style="text-align: left;">❌ <strong>对证明具有根本敌意。</strong> 快照在不重新执行被度量的启动路径的情况下恢复内存状态；launch measurement 不再反映这块内存是如何形成的。<strong>在没有专门为此设计的方案之前，别做这个。</strong></td>
+<td style="text-align: left;">从磁盘恢复预热好的 VM 内存镜像</td>
+<td style="text-align: left;">❌ <strong>对证明具有根本敌意。</strong> 快照绕过了度量启动过程；启动度量值无法反映当前内存真实状态。</td>
 </tr>
 </tbody>
 </table>
-<p>快照那一行值得强调，因为它是<strong>最诱人</strong>、也是最能悄无声息毁掉保证的优化。如果有人提议它，该问的问题是：<strong>对一台内存是被"恢复"而不是被"构建"出来的 VM，launch measurement 还意味着什么？</strong></p>
 <h3 id="43">4.3 对自动扩缩容的后果<a class="headerlink" href="#43" title="Permanent link">&para;</a></h3>
-<p>当冷启动以<strong>分钟</strong>而非秒计时，被动式自动扩缩容就不管用了——等新实例开始服务时，流量尖峰早就过去了。可行的模式是：</p>
+<p>当冷启动以<strong>分钟</strong>而非秒计时，被动式自动扩缩容在流量突发时无法及时响应。GKE Hypercluster 上的可行模式：</p>
 <ol>
-<li><strong>预测式扩缩容</strong>，基于流量预测而非瞬时队列深度。</li>
-<li><strong>充裕的预热池</strong>，按到达过程的 p99 而非均值来定容量。</li>
-<li><strong>排队并降级</strong>，承认部分请求要等，用显式背压而不是超时。</li>
-<li><strong>超配并接受成本。</strong> 对一个溢价机密档位来说，这往往是诚实的答案，而且它应当<strong>计入定价</strong>，而不是靠工程去绕开。</li>
+<li><strong>基于 Kueue 与 DWS 的预测式扩缩容</strong>：基于流量预测曲线提前向调度器预约算力。</li>
+<li><strong>充裕的预热池</strong>：按照请求到达分布的 p99 峰值而非均值来预留基础常驻实例。</li>
+<li><strong>排队与显式降级</strong>：通过网关实施显式背压限流，防止级联超时。</li>
+<li><strong>超配并接受成本</strong>：机密推理档位属于高溢价企业服务，算力冗余应直接计入定价模型。</li>
 </ol>
 <hr />
 <h2 id="5-tls">第 5 部分: TLS 在哪里终结<a class="headerlink" href="#5-tls" title="Permanent link">&para;</a></h2>
-<h3 id="51">5.1 那个作废其余一切的问题<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
-<p>这是机密推理设计中最常见的无声失效，值得说得直白些。</p>
+<h3 id="51">5.1 那个作废机密性的入口问题<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart TD
-    subgraph BAD ["❌ 默认配置 —— P2a 已经丢了"]
-        A1["客户"] --&gt;|"TLS"| B1["托管 L7 负载均衡器&lt;br&gt;🔴 终结 TLS&lt;br&gt;🔴 Google 持有私钥&lt;br&gt;🔴 **明文 prompt 在内存里**"]
-        B1 --&gt;|"重新加密"| C1["🔒 机密推理&lt;br&gt;保护得完美，且毫无意义"]
+    subgraph BAD ["❌ 托管式 L7 负载均衡器 —— P2a 立即失效"]
+        A1["客户"] --&gt;|"TLS"| B1["托管 L7 负载均衡器&lt;br&gt;🔴 终结 TLS&lt;br&gt;🔴 Google 持有私钥&lt;br&gt;🔴 内存中存在明文 PROMPT"]
+        B1 --&gt;|"重新加密"| C1["🔒 机密 GKE Pod&lt;br&gt;下游保护得再好也毫无意义"]
     end
 
     subgraph GOOD ["✅ 在 TEE 内部终结"]
-        A2["客户"] --&gt;|"端到端 TLS"| B2["L4 透传 LB&lt;br&gt;只转发数据包；&lt;br&gt;无密钥，无明文"]
-        B2 --&gt; C2["🔒 机密推理&lt;br&gt;RA-TLS 在**内部**终结&lt;br&gt;密钥被绑进证明报告"]
+        A2["客户"] --&gt;|"TLS / 端到端加密载荷"| B2["L4 透传（Gateway API）&lt;br&gt;仅转发原始数据包；&lt;br&gt;无密钥、无明文"]
+        B2 --&gt; C2["🔒 机密 GKE Pod&lt;br&gt;RA-TLS 在**内部**终结&lt;br&gt;公钥绑定进 TDX REPORT_DATA"]
     end</code></pre>
-<p>这个失效的后果一点都不微妙，却在评审中极易被漏掉——因为架构中<strong>机密的那部分确实是正确的</strong>。prompt 在到达 TEE 之前，就已经是 Google 运营的负载均衡器里的明文了。<strong>P2a 在第一跳就失效了</strong>，而那一点之后的每一张图，描述的都是一份已经不再要紧的保护。</p>
-<h3 id="52">5.2 选项<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<p>如果在 TEE 之前由 L7 负载均衡器终结 TLS，<strong>Prompt 就会在 Google 运营的基础设施上以明文存在</strong>。无论下游的机密 GPU 有多安全，P2a 在第一跳就已经被打破了。</p>
+<h3 id="52">5.2 入口方案对比<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">选项</th>
-<th style="text-align: left;">怎么工作</th>
+<th style="text-align: left;">方案</th>
+<th style="text-align: left;">机制</th>
 <th style="text-align: left;">P2a 成立？</th>
-<th style="text-align: left;">代价</th>
+<th style="text-align: left;">运维权衡</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><strong>A. 托管 L7 LB</strong></td>
-<td style="text-align: left;">Google 终结 TLS，重新加密到后端</td>
-<td style="text-align: left;">❌ <strong>否</strong></td>
-<td style="text-align: left;">零工作量；零保证</td>
+<td style="text-align: left;">Google 终结 TLS 并重新加密发给 Pod</td>
+<td style="text-align: left;">❌ <strong>不成立</strong></td>
+<td style="text-align: left;">零开发成本；但完全作废机密性保证</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>B. L4 透传 + TEE 内 RA-TLS</strong></td>
-<td style="text-align: left;">LB 转发数据包；TEE 持有唯一私钥，并绑进它的证明报告（模块 3 §6）</td>
-<td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">失去 L7 路由、WAF、HTTP 感知限流；客户端需要自定义校验</td>
+<td style="text-align: left;"><strong>B. L4 透传 + Pod 内 RA-TLS</strong></td>
+<td style="text-align: left;">GKE Gateway API / L4 LB 转发报文；Pod 内使用绑定至证明报告的密钥终结 TLS</td>
+<td style="text-align: left;">✅ 成立</td>
+<td style="text-align: left;">失去 L7 WAF 与路径路由能力；客户端需证明验证 SDK</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>C. 客户端载荷加密</strong></td>
-<td style="text-align: left;">客户端用一把只释放给已证明 TEE 的公钥加密 prompt（HPKE）；传输层 TLS 在哪终结都行</td>
-<td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">应用层协议；需要客户端 SDK；流式响应需逐块加密</td>
+<td style="text-align: left;"><strong>C. 客户端载荷加密（HPKE）</strong></td>
+<td style="text-align: left;">客户端使用 Pod 已证明的公钥加密 prompt 体；传输层 TLS 可在任意位置终结</td>
+<td style="text-align: left;">✅ 成立</td>
+<td style="text-align: left;">应用层协议；对网络拓扑变更或误配置具有天然免疫力</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>D. B + C 一起</strong></td>
-<td style="text-align: left;">双保险</td>
-<td style="text-align: left;">✅ 是</td>
-<td style="text-align: left;">复杂度最高</td>
+<td style="text-align: left;"><strong>D. B + C（纵深防御）</strong></td>
+<td style="text-align: left;">L4 透传与客户端载荷加密相结合</td>
+<td style="text-align: left;">✅ 成立</td>
+<td style="text-align: left;">最高安全等级保证</td>
 </tr>
 </tbody>
 </table>
-<h3 id="53">5.3 建议<a class="headerlink" href="#53" title="Permanent link">&para;</a></h3>
-<p><strong>选 C，并在客户端支持得了的地方同时上 B。</strong></p>
-<p>理由是选项 C <strong>优雅降级</strong>。载荷加密与传输层无关，因此这个设计能在负载均衡器配置错误、服务网格变更，或者某位 SRE 出于正当运维理由加了一跳 L7 之后<strong>依然成立</strong>。单靠选项 B 是正确的，但脆弱：它依赖一条网络拓扑不变式，而一个不相干的团队可以在完全不知道自己破坏了什么的情况下破坏它。</p>
-<p>选项 C 的代价是真实的：每一个客户端都必须使用一个 SDK 去取回已证明公钥、验证证明、加密载荷、解密流式分块。对第一方或企业集成，这可以接受。对一个公开的、curl 就能用的 API，这是实打实的采纳障碍——<strong>这也正是机密推理产品往往是企业档位而非默认端点的原因。</strong></p>
-<p><strong>无论你选哪个，都把那条不变式写下来并为它加一个测试。</strong> "任何 Google 运营的组件都不曾持有能解密请求内容的密钥"是一条你可以在设计评审上断言、并且花点力气就能持续验证的性质。</p>
+<p><strong>建议：</strong> 生产推荐采用 <strong>方案 C</strong>（客户端 HPKE 载荷加密）结合 <strong>方案 B</strong>（基于 GKE Gateway API 的 L4 透传）。应用层载荷加密确保即使运维人员接入了 L7 调试代理或误配置了入口网络，用户的 Prompt 明文也绝不暴露。</p>
 <hr />
-<h2 id="6-kv-cacheprefix-caching">第 6 部分: KV cache、Prefix Caching 与分离式推理<a class="headerlink" href="#6-kv-cacheprefix-caching" title="Permanent link">&para;</a></h2>
-<h3 id="61-kv-cache-prompt">6.1 KV cache 就是 prompt 内容<a class="headerlink" href="#61-kv-cache-prompt" title="Permanent link">&para;</a></h3>
-<p>KV cache 是模型所关注过的一切的、按请求的张量编码：system prompt、检索到的文档、用户消息、对话历史。<strong>请以对待 prompt 本身的敏感度来对待它</strong>，因为它就是那个东西。</p>
-<p>在机密 GPU 内部，它住在受保护 HBM 里，没问题。危险来自每一个<strong>移动它、共享它或持久化它</strong>的机制。</p>
-<h3 id="62-prefix-caching">6.2 Prefix Caching：一条等价于明文的泄露信道<a class="headerlink" href="#62-prefix-caching" title="Permanent link">&para;</a></h3>
-<p>Prefix caching 跨请求复用共享 prompt 前缀已算好的 KV 块。它是现代服务中价值最高的优化之一。它同时也是——<strong>跨租户时</strong>——一条信息泄露信道，而且更糟的是，一条<strong>可主动探测</strong>的信道。</p>
+<h2 id="6-kv-cacheprefix-caching">第 6 部分: KV Cache、Prefix Caching 与解耦推理<a class="headerlink" href="#6-kv-cacheprefix-caching" title="Permanent link">&para;</a></h2>
+<h3 id="61-kv-cache-prompt">6.1 KV Cache 即 Prompt 内容<a class="headerlink" href="#61-kv-cache-prompt" title="Permanent link">&para;</a></h3>
+<p>KV Cache 编码了模型处理过的所有历史 token（系统 prompt、RAG 文档、用户输入）。在机密 GPU 中，它安全地保存在硬件保护的 HBM 中。任何移动、共享或持久化 KV block 的机制，都必须遵循与 Prompt 相同的机密性要求。</p>
+<h3 id="62-prefix-caching">6.2 Prefix Caching：跨租户时序预言机<a class="headerlink" href="#62-prefix-caching" title="Permanent link">&para;</a></h3>
+<p>Prefix caching 会复用共享前缀计算好的 KV block。一旦跨租户共享，它就会变成高精度的时序预言机：</p>
 <pre class="mermaid"><code>flowchart TD
-    A["租户 A 发送：&lt;br&gt;'CONFIDENTIAL_PROJECT_NAME：季度数据…'"] --&gt; B["KV 块被算出并缓存，&lt;br&gt;键是该前缀的哈希"]
-    C["攻击者（租户 B）发送：&lt;br&gt;'CONFIDENTIAL_PROJECT_NAME：…'"] --&gt; D{"缓存命中？"}
+    A["租户 A 发送：&lt;br&gt;'PROJECT_ACQUISITION_TARGET: 季度数据…'"] --&gt; B["计算 KV blocks&lt;br&gt;并按前缀哈希缓存"]
+    C["攻击者（租户 B）探测：&lt;br&gt;'PROJECT_ACQUISITION_TARGET: …'"] --&gt; D{"缓存命中？"}
     B --&gt; D
-    D --&gt;|"命中 → TTFT 可测量地更快"| E["🔴 攻击者得知租户 A&lt;br&gt;提交过这个精确前缀"]
-    D --&gt;|"未命中 → 正常 TTFT"| F["攻击者得知它没有"]</code></pre>
-<p>这是一条针对<strong>其他租户 prompt 内容</strong>的时序预言机。一个拥有 API 访问权的攻击者可以通过观测 TTFT 来二分搜索一个秘密。<strong>内存加密在这里毫无帮助</strong>——泄露走的是<strong>延迟</strong>，不是内存访问，而延迟对任何能发请求的人都可见。</p>
-<p><strong>规则：</strong></p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">配置</th>
-<th style="text-align: left;">裁决</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Prefix cache 跨租户共享</td>
-<td style="text-align: left;">❌ <strong>绝不。</strong> 这是一台跨租户内容预言机。</td>
-</tr>
-<tr>
-<td style="text-align: left;">Prefix cache 按租户隔离</td>
-<td style="text-align: left;">✅ 可接受——预言机只会把租户自己的 prompt 泄露给自己</td>
-</tr>
-<tr>
-<td style="text-align: left;">为提供方提供的 system prompt 做共享 prefix cache</td>
-<td style="text-align: left;">⚠️ 仅当该前缀不是秘密时可接受；务必确认其中不含租户数据</td>
-</tr>
-<tr>
-<td style="text-align: left;">KV cache 卸载到 CPU 内存</td>
-<td style="text-align: left;">✅ 在机密 VM 内部没问题；❌ 绝不卸载到 host 共享内存</td>
-</tr>
-<tr>
-<td style="text-align: left;">KV cache 持久化到磁盘</td>
-<td style="text-align: left;">❌ 除非用证明门控的密钥加密，否则不行</td>
-</tr>
-</tbody>
-</table>
-<p>一条适用范围远超 prefix caching 的通则：<strong>任何以内容为键、跨信任边界共享的缓存，都是该内容的一台预言机。</strong> 把它同样应用到 tokenizer 缓存、语义缓存、embedding 缓存和投机解码的草稿缓存上。</p>
-<h3 id="63-prefill-decode">6.3 分离式 Prefill 与 Decode<a class="headerlink" href="#63-prefill-decode" title="Permanent link">&para;</a></h3>
-<p>分离式服务把 prefill 与 decode 跑在不同机器上，并在它们之间搬运 KV cache。这是一项可观的吞吐收益，而如果实现得天真，它会在信任边界上开一辆卡车过去。</p>
-<p>KV cache——也就是 prompt 内容——要在两个节点之间跨网络传输。在机密设计中，这次传输必须：</p>
+    D --&gt;|"命中 → TTFT 显著缩短"| E["🔴 攻击者确认租户 A&lt;br&gt;提交过完全相同的前缀"]
+    D --&gt;|"未命中 → 正常 TTFT"| F["攻击者确认没有"]</code></pre>
+<p>由于 TTFT 延迟差异可以通过公网 API 轻易测量，内存加密对这种侧信道完全无能为力。</p>
+<p><strong>机密服务的硬性规则：</strong>
+- <strong>跨租户共享 Prefix Cache</strong>：❌ <strong>绝对禁止。</strong>
+- <strong>租户内私有 Prefix Cache</strong>：✅ 允许（预言机仅向租户自身暴露自身数据）。
+- <strong>静态提供方系统 Prompt 缓存</strong>：⚠️ 仅在 Prompt 完全公开且不含任何租户数据时允许。
+- <strong>KV Cache 卸载至 CPU RAM</strong>：✅ 允许在机密 VM 内存内；❌ 严禁卸载至宿主机共享内存。</p>
+<h3 id="63-gke-hypercluster-prefill-decode">6.3 GKE Hypercluster 上的 Prefill 与 Decode 解耦服务<a class="headerlink" href="#63-gke-hypercluster-prefill-decode" title="Permanent link">&para;</a></h3>
+<p>Prefill 与 Decode 解耦（PD 分离）将计算密集的预填充节点与显存密集的解码节点拆分，在网络间传输 KV Tensor。在 GKE Hypercluster 上，这要求：</p>
 <ol>
-<li><strong>传输中加密</strong>，密钥由两个 TEE 之间协商建立。</li>
-<li><strong>双向证明</strong>——prefill 节点在发送前必须验证 decode 节点是一个被批准的、已证明的 TEE，反之亦然。否则攻击者起一个假 decode 节点就能收到明文 KV 块。</li>
-<li><strong>不在任何中间缓冲区、传输服务或 RDMA 暂存区里以明文暂存。</strong></li>
+<li><strong>双向证明（mRA-TLS）</strong>：Prefill 与 Decode Pod 在传输张量前必须互相验证对方的硬件 TEE 与容器镜像摘要。</li>
+<li><strong>加密跨节点 Fabric</strong>：通过 RoCE 或 VPC 网络传输的 KV blocks 必须使用在 TEE 内部协商的临时会话密钥加密。</li>
+<li><strong>零明文暂存</strong>：张量绝不能在未加密的宿主机内存或未经认证的 RDMA 缓冲区中暂存。</li>
 </ol>
-<p>这相当于在推理节点之间、在热路径上、对大张量做 RA-TLS（模块 3 §6）。可以做到，但分离式带来的性能收益必须与增加的延迟和显著增加的复杂度相权衡。<strong>对第一版机密部署，不要做分离式。</strong> 先把单节点路径做对、测准，再回头考虑。</p>
 <hr />
-<h2 id="7">第 7 部分: 多租户<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
-<h3 id="71">7.1 光谱<a class="headerlink" href="#71" title="Permanent link">&para;</a></h3>
+<h2 id="7-gke-hypercluster">第 7 部分: GKE Hypercluster 上的多租户<a class="headerlink" href="#7-gke-hypercluster" title="Permanent link">&para;</a></h2>
+<h3 id="71">7.1 多租户隔离模型<a class="headerlink" href="#71" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">模型</th>
-<th style="text-align: left;">隔离性</th>
-<th style="text-align: left;">效率</th>
-<th style="text-align: left;">什么时候是对的</th>
+<th style="text-align: left;">隔离机制</th>
+<th style="text-align: left;">资源利用率</th>
+<th style="text-align: left;">推荐适用场景</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong>每租户一实例</strong></td>
-<td style="text-align: left;">最强——租户之间隔着一道 TEE 边界</td>
-<td style="text-align: left;">差：每租户一块 GPU，每租户一次冷启动</td>
-<td style="text-align: left;">高价值租户；监管隔离要求</td>
+<td style="text-align: left;"><strong>每租户独占节点池</strong></td>
+<td style="text-align: left;">节点级硬件 TEE 物理边界</td>
+<td style="text-align: left;">低（每租户承担 GPU 空闲成本）</td>
+<td style="text-align: left;">高合规要求的顶级企业专享档</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>每模型一实例，租户混批</strong></td>
-<td style="text-align: left;">相对平台是硬件隔离；<strong>租户之间是软件隔离</strong></td>
-<td style="text-align: left;">好——标准服务模型</td>
-<td style="text-align: left;">多数场景，前提是你接受下面那条注意事项</td>
+<td style="text-align: left;"><strong>机密容器（Pod TEE）</strong></td>
+<td style="text-align: left;">共享节点上每 Pod 独占 MicroVM TEE</td>
+<td style="text-align: left;">高</td>
+<td style="text-align: left;">兼具多租户共享与硬件隔离要求</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>一实例多模型</strong></td>
-<td style="text-align: left;">最弱</td>
-<td style="text-align: left;">最好</td>
-<td style="text-align: left;">在机密单卡约束下本来也做不了</td>
+<td style="text-align: left;"><strong>共享 Pod 内连续批处理</strong></td>
+<td style="text-align: left;">对平台硬件隔离；<strong>租户间属于软件隔离</strong></td>
+<td style="text-align: left;">最高</td>
+<td style="text-align: left;">标准多租户推理服务（需向客户明确下述边界）</td>
 </tr>
 </tbody>
 </table>
-<h3 id="72">7.2 必须说明的那条注意事项<a class="headerlink" href="#72" title="Permanent link">&para;</a></h3>
-<p>在中间那一行——也就是常规那一行——连续批处理会把多个租户的 token 放进同一次前向、同一块 GPU 显存、同一个进程。TEE 边界围的是<strong>整个实例</strong>，而不是每个租户。</p>
-<p><strong>后果</strong>：租户 A 与租户 B 之间的隔离，是由推理服务请求处理逻辑的<strong>正确性</strong>来保证的，而不是由硬件保证的。vLLM 块管理器里一个在序列之间泄露 KV 块的 bug，就是一次跨租户数据泄露，而机密计算对此<strong>无能为力</strong>——泄露完全发生在信任边界<strong>之内</strong>。</p>
-<p>这值得对客户明说，因为"机密计算"的自然读法是"与其他租户硬件隔离"，而<strong>批处理部署提供的不是这个</strong>。它提供的是相对<strong>平台</strong>的硬件隔离，那是另一个、同样有价值的性质。把两者混为一谈，正是那种会在安全评审时变成问题的不精确。</p>
-<p>如果某个租户要求与其他租户硬件隔离，他们需要独占实例——而那应该是一个<strong>定价档位</strong>，而不是一场争论。</p>
-<h3 id="73">7.3 可观测的跨租户信号<a class="headerlink" href="#73" title="Permanent link">&para;</a></h3>
-<p>即便隔离正确，共享实例的租户之间仍可间接互相观测：</p>
-<ul>
-<li><strong>排队延迟</strong>揭示其他租户的负载。</li>
-<li><strong>批次组成</strong>对 token 间延迟的影响揭示并发活动。</li>
-<li><strong>Prefix cache 命中</strong>在共享时揭示内容（§6.2）。</li>
-<li>内存压力下的<strong>抢占与驱逐</strong>揭示其他租户的序列长度。</li>
-</ul>
-<p>在多数威胁模型下这些都不致命，但它们该被写进设计文档里<strong>枚举出来</strong>，而不是被客户的红队发现。</p>
+<h3 id="72">7.2 多租户软件隔离注意点<a class="headerlink" href="#72" title="Permanent link">&para;</a></h3>
+<p>在标准连续批处理中，多个租户的 token 在同一次前向传播中共享 GPU HBM 与进程空间。硬件 TEE 保护的是整个实例不受云运营商侵犯，但<strong>租户间的隔离依赖于推理引擎（如 vLLM）内存管理代码的正确性</strong>。引擎内部的 block 泄漏 bug 属于信任边界内部的跨租户泄露。</p>
+<p>如果客户明确要求对抗其他恶意租户的<em>硬件级隔离</em>，必须为其分配独立机密节点或 Pod 级 MicroVM TEE。</p>
 <hr />
-<h2 id="8">第 8 部分: 可观测性与安全监控盲区<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
-<h3 id="81">8.1 你能输出什么<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
-<p>§2.2 的不变式把遥测约束得很死。一份可用的分类：</p>
+<h2 id="8">第 8 部分: 可观测性与安全监控的张力<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<h3 id="81">8.1 遥测数据白名单<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
+<p>为维持 P2a 机密性不变式，机密平面发出的遥测必须遵循严格的字段白名单：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">信号</th>
-<th style="text-align: left;">输出？</th>
-<th style="text-align: left;">备注</th>
+<th style="text-align: left;">允许发出？</th>
+<th style="text-align: left;">理由</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">请求数、延迟、TTFT、TPOT</td>
+<td style="text-align: left;"><strong>请求计数、延迟、TTFT、TPOT</strong></td>
 <td style="text-align: left;">✅</td>
-<td style="text-align: left;">不含内容</td>
+<td style="text-align: left;">不含内容的纯性能指标</td>
 </tr>
 <tr>
-<td style="text-align: left;">Token 计数（输入与输出）</td>
+<td style="text-align: left;"><strong>Token 计数（Prompt 与 Completion）</strong></td>
 <td style="text-align: left;">✅</td>
-<td style="text-align: left;">计费需要；注意它<strong>确实</strong>是一点点泄露——不过长度本来就可观测</td>
+<td style="text-align: left;">计费所需（长度本就可通过流量分析推断）</td>
 </tr>
 <tr>
-<td style="text-align: left;">错误类别与错误码</td>
+<td style="text-align: left;"><strong>错误代码与类别</strong></td>
 <td style="text-align: left;">✅</td>
-<td style="text-align: left;">而<strong>不是</strong>错误<strong>消息</strong>，后者常常内嵌内容</td>
+<td style="text-align: left;">仅脱敏后的状态码</td>
 </tr>
 <tr>
-<td style="text-align: left;">模型、版本、实例、证明状态</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">运维必需</td>
-</tr>
-<tr>
-<td style="text-align: left;">队列深度、批大小、缓存命中率</td>
-<td style="text-align: left;">⚠️</td>
-<td style="text-align: left;">仅聚合值；按租户的缓存命中率会泄露（§6.2）</td>
-</tr>
-<tr>
-<td style="text-align: left;">Prompt 或生成结果文本</td>
+<td style="text-align: left;"><strong>错误详细信息与调用栈</strong></td>
 <td style="text-align: left;">❌</td>
-<td style="text-align: left;">作废 P2a</td>
+<td style="text-align: left;">经常内插 Prompt 文本；必须在边界处剥离</td>
 </tr>
 <tr>
-<td style="text-align: left;">堆栈跟踪、core dump</td>
+<td style="text-align: left;"><strong>原始 Prompt / Completion 文本</strong></td>
 <td style="text-align: left;">❌</td>
-<td style="text-align: left;">例行地包含内容</td>
+<td style="text-align: left;">彻底打破 P2a</td>
 </tr>
 <tr>
-<td style="text-align: left;">用于质量评估的采样请求</td>
+<td style="text-align: left;"><strong>Heap Dump 与 Core Dump</strong></td>
 <td style="text-align: left;">❌</td>
-<td style="text-align: left;">哪怕 0.1% 的采样也是一条明文外泄信道</td>
+<td style="text-align: left;">包含明文权重与内存 Prompt 数据</td>
 </tr>
 </tbody>
 </table>
-<p>堆栈跟踪那一行是生产中真会咬人的。一个未处理异常，其消息里带着 prompt 的一部分，被写进 Cloud Logging——这是一次经由<strong>普通代码路径</strong>的明文泄露，而没有人把那条路径当作安全边界来评审过。<strong>这里，带显式字段白名单的结构化日志不是可选项</strong>——黑名单一定会失守。</p>
-<h3 id="82">8.2 安全监控的张力<a class="headerlink" href="#82" title="Permanent link">&para;</a></h3>
-<p>这是那个真正困难、尚未解决的问题，它值得被<strong>点名</strong>，而不是被悄悄绕过。</p>
-<p>负责任的模型服务包含滥用监控、安全分类和事件调查。这些全都需要读取用户内容。机密计算禁止在 TEE 之外读取用户内容。<strong>这两条要求直接冲突。</strong></p>
+<h3 id="82">8.2 安全与滥用监控的张力<a class="headerlink" href="#82" title="Permanent link">&para;</a></h3>
+<p>负责任的 AI 服务需要检测违规内容，但机密计算禁止外部审查内容。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["要求：机密性&lt;br&gt;TEE 之外任何人&lt;br&gt;都不得读取用户内容"] --&gt; C{"⚔️ 直接冲突"}
-    B["要求：安全&lt;br&gt;检测滥用、执行策略、&lt;br&gt;调查事件"] --&gt; C
+    A["要求：机密性&lt;br&gt;TEE 外部绝对零明文披露"] --&gt; C{"⚔️ 固有冲突"}
+    B["要求：安全合规&lt;br&gt;滥用检测与违规审计"] --&gt; C
 
-    C --&gt; D["方案 1：TEE 内分类器&lt;br&gt;在边界内跑安全模型；&lt;br&gt;只输出裁决，绝不输出内容"]
-    C --&gt; E["方案 2：提供方侧执行&lt;br&gt;模型在上下文内拒答；&lt;br&gt;完全没有外部监控"]
-    C --&gt; F["方案 3：经同意的遥测&lt;br&gt;按租户选择加入内容审查，&lt;br&gt;已证明且可审计"]
-    C --&gt; G["方案 4：仅聚合信号&lt;br&gt;拒答率、异常分数；&lt;br&gt;内容永不离开"]</code></pre>
-<p>没有一个是完整的：</p>
-<ul>
-<li><strong>TEE 内分类器</strong>适用于自动化策略执行，是最强的选项，但它支撑不了对某个具体事件的人工复核，会增加延迟，并且会扩大被度量的镜像。</li>
-<li><strong>提供方侧执行</strong>完全依赖模型行为，没有纵深防御。</li>
-<li><strong>经同意的遥测</strong>对企业客户是诚实且可行的，而且它应当是<strong>被证明的</strong>——租户的同意状态应当是策略所执行的一部分，而不是运营商拨的一个开关。</li>
-<li><strong>聚合信号</strong>告诉你出事了，但不告诉你出了什么事。</li>
-</ul>
-<p><strong>该采取的设计立场</strong>：挑一个组合，把它写进面向客户的文档，并且明说机密档位的<strong>滥用监控弱于</strong>标准档位。那是客户有权知道的一个真实权衡，而假装不是，正是一套安全架构变成负债的方式。</p>
+    C --&gt; D["TEE 内置安全分类器&lt;br&gt;安全模型在 TEE 内部运行；&lt;br&gt;仅发出布尔判定信号，绝不输出文本"]
+    C --&gt; E["经证明的客户授权遥测&lt;br&gt;租户明确授权调试日志，&lt;br&gt;并在释放策略中密码学强制"]
+    C --&gt; F["提供方模型自律防御&lt;br&gt;依赖模型自身在上下文中的拒绝生成能力"]</code></pre>
+<p><strong>生产落地方案：</strong> 在 TEE 内部协同运行轻量级安全分类器模型。分类器仅向外发出违规布尔标记，实现平台安全合规的同时确保 Prompt 内容不外泄。</p>
 <hr />
 <h2 id="9">第 9 部分: 对抗性复盘<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
-<p>现在动用模块 1 §2.1 的那套纪律。拿成型的设计，把攻击者清单走一遍。</p>
-<h3 id="91">9.1 复盘<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<h3 id="91">9.1 威胁模型评估<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<p>将成型的 GKE Hypercluster 设计拖回模块 1 的攻击者清单逐项检验：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">攻击者</th>
-<th style="text-align: left;">对本设计的能力</th>
-<th style="text-align: left;">裁决</th>
+<th style="text-align: left;">面对本架构的能力</th>
+<th style="text-align: left;">结论</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong>A1 —— 恶意同租户</strong></td>
-<td style="text-align: left;">读不到另一台机密实例的内存</td>
-<td style="text-align: left;">✅ 已解决</td>
+<td style="text-align: left;"><strong>A1 — 恶意邻居租户</strong></td>
+<td style="text-align: left;">无法访问 CVM DRAM 或 GPU HBM；受硬件 TEE 隔离</td>
+<td style="text-align: left;">✅ 已防御</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>A2 —— 被攻陷的 hypervisor</strong></td>
-<td style="text-align: left;">在 DRAM 与 PCIe 路径上看到的是密文；有完整性保护</td>
-<td style="text-align: left;">✅ 已解决</td>
+<td style="text-align: left;"><strong>A2 — 被攻破的 Hypervisor</strong></td>
+<td style="text-align: left;">在 DRAM 与 PCIe 总线上只能看到密文；受 TDX 与 GPU CC 完整性保护</td>
+<td style="text-align: left;">✅ 已防御</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>A3 —— 拿到 host root 的云内部人员</strong></td>
-<td style="text-align: left;">能停掉负载、观测流量模式、尝试密文侧信道。读不到权重或 prompt。改不了释放策略——它在提供方的密钥管理器里</td>
-<td style="text-align: left;">✅ 机密性方面已解决</td>
+<td style="text-align: left;"><strong>A3 — 拥有 Host Root 的云内部人员</strong></td>
+<td style="text-align: left;">能停机或分析流量时序；无法读取权重、Prompt 或 KV Cache；无法绕过提供方 EKM 策略</td>
+<td style="text-align: left;">✅ 机密性已防御</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>A4 —— 物理攻击者</strong></td>
-<td style="text-align: left;">DRAM 与总线内容是带完整性的密文</td>
-<td style="text-align: left;">✅ 已解决</td>
+<td style="text-align: left;"><strong>A4 — 物理 / DMA 攻击者</strong></td>
+<td style="text-align: left;">内存与总线具备硬件级完整性加密</td>
+<td style="text-align: left;">✅ 已防御</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>B1 —— 被攻陷的工作负载镜像</strong></td>
-<td style="text-align: left;">对边界内一切拥有完整访问权</td>
-<td style="text-align: left;">⚠️ <strong>仅靠供应链缓解</strong>：最小镜像、签名、可复现构建、已证明的摘要白名单</td>
+<td style="text-align: left;"><strong>B1 — 被篡改的镜像</strong></td>
+<td style="text-align: left;">在 Enclave 内拥有完全权限</td>
+<td style="text-align: left;">⚠️ 依赖供应链防护：cosign 签名、Binary Authorization、证明摘要白名单</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>B2 —— 恶意模型提供方</strong></td>
-<td style="text-align: left;">写了那份持有明文 prompt 的代码</td>
-<td style="text-align: left;">⚠️ <strong>部分解决</strong>：不出网、不持久化、已证明摘要、VPC-SC。对镜像行为的残余信任仍在——这就是 P2b，硬件解不了</td>
+<td style="text-align: left;"><strong>B2 — 恶意模型提供方</strong></td>
+<td style="text-align: left;">编写了持有明文 Prompt 的代码</td>
+<td style="text-align: left;">⚠️ 部分防御：VPC Service Controls、阻断任意出网、开源审计（P2b 边界）</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>B3 —— TEE 厂商</strong></td>
-<td style="text-align: left;">AMD、Intel、NVIDIA 固件按构造被信任</td>
-<td style="text-align: left;">⚠️ 不可约减；在设计文档里点名它</td>
+<td style="text-align: left;"><strong>B3 — 硅片 TEE 厂商</strong></td>
+<td style="text-align: left;">硬件/固件信任根</td>
+<td style="text-align: left;">⚠️ 不可消除的基础信任（Intel/AMD/NVIDIA）</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>C1 —— 可用性</strong></td>
-<td style="text-align: left;">Google 可随时终止工作负载</td>
-<td style="text-align: left;">❌ 永久不在范围内</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>C2 —— 流量分析</strong></td>
-<td style="text-align: left;">请求数、大小、时序、流式行为全都可见</td>
-<td style="text-align: left;">❌ 不在范围内；披露它</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>C3 —— 侧信道</strong></td>
-<td style="text-align: left;">针对 guest 内存中密钥的密文侧信道；单步执行</td>
-<td style="text-align: left;">⚠️ 真实存在；保持固件最新，尽量减少 guest DRAM 中的长期密钥</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>C4 —— 客户自己的端点</strong></td>
-<td style="text-align: left;">客户可能记录自己的明文</td>
+<td style="text-align: left;"><strong>C1 — 可用性威胁</strong></td>
+<td style="text-align: left;">云厂商可随时终止实例</td>
 <td style="text-align: left;">❌ 不在范围内</td>
 </tr>
+<tr>
+<td style="text-align: left;"><strong>C2 — 流量时序分析</strong></td>
+<td style="text-align: left;">报文速率、流式生成节奏、载荷大小可见</td>
+<td style="text-align: left;">❌ 不在范围内；需向客户披露</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>C3 — 侧信道攻击</strong></td>
+<td style="text-align: left;">针对 DRAM/Cache 的密文侧信道</td>
+<td style="text-align: left;">⚠️ 通过及时升级固件与强制 TCB 基线缓解</td>
+</tr>
 </tbody>
 </table>
-<h3 id="92-host-root">9.2 一个拿到 host root 的内部人员仍然能做什么<a class="headerlink" href="#92-host-root" title="Permanent link">&para;</a></h3>
-<p>直说，因为模型提供方的安全团队问的就是这个：</p>
-<ol>
-<li><strong>停掉你。</strong> 终止实例、不给容量、吊销项目。</li>
-<li><strong>观测元数据。</strong> 多少请求、多大、多频繁、响应流了多久——由此可<strong>直接推断输出长度</strong>。</li>
-<li><strong>尝试侧信道。</strong> 针对 guest 内存中密码学密钥的密文侧信道（模块 2 §5.1）；用单步执行放大其他信道。不轻松，但也不是理论上的。</li>
-<li><strong>攻击供应链。</strong> 如果他们能影响构建出什么镜像、或者哪个摘要进了白名单，他们就赢了——<strong>这正是白名单必须住在提供方的密钥管理器里、而不是一条 Google Cloud IAM 策略里的原因。</strong></li>
-<li><strong>经由固件漏洞提权。</strong> 这正是模块 3 §4.2 里的 TCB 下限与更新姿态是<strong>安全控制</strong>而非卫生习惯的原因。</li>
-</ol>
-<p>他们<strong>做不到</strong>的：读权重、读 prompt、读生成结果、读 KV cache。</p>
-<h3 id="93">9.3 六论断清单，逐条回答<a class="headerlink" href="#93" title="Permanent link">&para;</a></h3>
-<p>模块 1 §5.2 把"Google 看不到权重"分解成了六条可核验论断。成型的设计：</p>
+<h3 id="92">9.2 六项断言核对清单<a class="headerlink" href="#92" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">论断</th>
-<th style="text-align: left;">本设计中的状态</th>
+<th style="text-align: left;">断言</th>
+<th style="text-align: left;">验证状态</th>
+<th style="text-align: left;">本架构中的具体实现</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">权重以 Google 不持有的密钥静态加密</td>
-<td style="text-align: left;">✅ 提供方运营的外部密钥管理器（§2.2、§3.1）</td>
+<td style="text-align: left;"><strong>1. 权重静态加密</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">GCS 中使用提供方 KEK 封装的 AES-256-GCM 密文（§3.1）</td>
 </tr>
 <tr>
-<td style="text-align: left;">权重仅在 TEE 内部被解密</td>
-<td style="text-align: left;">✅ 基于证明的密钥释放（§3.1）</td>
+<td style="text-align: left;"><strong>2. 权重仅在 TEE 中解密</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">仅当硬件 TDX + GPU CC 证明通过后 EKM 才向内存释放 DEK（§3.1）</td>
 </tr>
 <tr>
-<td style="text-align: left;">TEE 运行的正是被批准的那个镜像</td>
-<td style="text-align: left;">✅ 令牌中的 Confidential Space 镜像摘要；⚠️ 受模块 3 §7 参考值问题所限</td>
+<td style="text-align: left;"><strong>3. 运行经批准的镜像</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">Binary Authorization + 证明令牌中校验镜像摘要</td>
 </tr>
 <tr>
-<td style="text-align: left;">Host RAM 不可读</td>
-<td style="text-align: left;">✅ 带完整性的 TDX 内存加密</td>
+<td style="text-align: left;"><strong>4. 宿主机 RAM 不可读</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">Intel TDX 硬件内存加密与安全 EPT 完整性校验</td>
 </tr>
 <tr>
-<td style="text-align: left;">GPU HBM 不可读</td>
-<td style="text-align: left;">✅ 释放策略中断言 <code>cc_mode == ON</code></td>
+<td style="text-align: left;"><strong>5. GPU HBM 不可读</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">启用 NVIDIA CC 模式（<code>cc_mode == ON</code>）与受保护 HBM</td>
 </tr>
 <tr>
-<td style="text-align: left;">提供方能自行验证以上全部</td>
-<td style="text-align: left;">✅ 提供方运营的验证方，评估原始证据</td>
+<td style="text-align: left;"><strong>6. 提供方自主验证</strong></td>
+<td style="text-align: left;">✅ 通过</td>
+<td style="text-align: left;">提供方验证服务根据芯片厂商根证书验证原始证据</td>
 </tr>
 </tbody>
 </table>
-<p>六中之六——第三行上带一个诚实的星号，那就是参考值问题，也是模块 3 §7 存在的理由。</p>
 <hr />
-<h2 id="lab">Lab: 生产规模的端到端机密推理<a class="headerlink" href="#lab" title="Permanent link">&para;</a></h2>
-<p><strong>目标</strong>：在 TEE 内部服务一个真的会有人付钱的模型——不是玩具——权重密钥只在 CPU + GPU + 镜像的复合证明通过时才释放，TLS 终结在 §5 所要求的位置上，客户端会拒绝与未经证明的服务端对话，并产出一份你能在容量评审上站得住脚的、实测的冷启动预算。</p>
-<p><strong>规模</strong>：模块 4 实验里那个机密 8×B200 节点、一个 70B 级模型、模块 3 实验里那个由提供方运营的验证方，以及一个专门立起来的托管 L7 负载均衡器——立它纯粹是为了让你能<em>演示</em> §5.1 里那个失败，而不是断言它。请按真实尺寸跑。一个 3B 模型跑在单卡上，会给出一个差着约一个数量级的冷启动数字、一个小到显现不出 §6.2 效应的 KV 缓存，以及一个短到足以掩盖"整套架构正是为管理它而存在"的解密阶段。玩具规模跑出来的数字并不保守——它们是朝着好看的方向错的。<strong>状态</strong>：本实验由模块 3、4、5 实验中已核实的部件组合而成；组合本身作为设计练习给出。请逐条对照当前文档核实命令。</p>
-<h3 id="1_1">第 1 步 —— 加密一个真实的模型<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># 生成 DEK、加密模型、用你控制的 KEK 包裹 DEK。</span>
-<span class="c1"># 70B/bf16 下这是约 140 GB —— 这正是重点。这一步也要计时。</span>
+<h2 id="lab-gke-hypercluster-llm">Lab: 在 GKE Hypercluster 上部署生产级机密 LLM 服务<a class="headerlink" href="#lab-gke-hypercluster-llm" title="Permanent link">&para;</a></h2>
+<p><strong>目标：</strong> 在 GKE Hypercluster 机密 GPU 节点池上，使用 LeaderWorkerSet (LWS) 与 vLLM 部署前沿大模型（如 70B 参数模型），完成基于外部 KMS 的证明密钥释放与 Pod 内 RA-TLS 验证。</p>
+<h3 id="1-gke-hypercluster">第 1 步 —— 创建带机密加速节点池的 GKE Hypercluster<a class="headerlink" href="#1-gke-hypercluster" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 创建具备加固控制面的 GKE 集群</span>
+gcloud<span class="w"> </span>container<span class="w"> </span>clusters<span class="w"> </span>create-auto<span class="w"> </span>cc-hypercluster<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>us-central1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--release-channel<span class="o">=</span>rapid
+
+<span class="c1"># 创建机密 GPU 节点池（Intel TDX + NVIDIA H100/B200）</span>
+gcloud<span class="w"> </span>container<span class="w"> </span>node-pools<span class="w"> </span>create<span class="w"> </span>cc-gpu-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cluster<span class="o">=</span>cc-hypercluster<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>us-central1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--node-locations<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>a3-highgpu-1g<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-node-type<span class="o">=</span>tdx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--accelerator<span class="o">=</span><span class="nv">type</span><span class="o">=</span>nvidia-h100-80gb,count<span class="o">=</span><span class="m">1</span>,gpu-driver-version<span class="o">=</span>latest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--enable-gvnic<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--num-nodes<span class="o">=</span><span class="m">2</span>
+</code></pre></div>
+<h3 id="2-gcs-fuse">第 2 步 —— 配置加密存储与 GCS FUSE<a class="headerlink" href="#2-gcs-fuse" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 生成随机 DEK，加密模型权重并封装</span>
 openssl<span class="w"> </span>rand<span class="w"> </span>-out<span class="w"> </span>dek.bin<span class="w"> </span><span class="m">32</span>
 tar<span class="w"> </span>cf<span class="w"> </span>-<span class="w"> </span>./model-70b<span class="w"> </span><span class="p">|</span><span class="w"> </span>openssl<span class="w"> </span>enc<span class="w"> </span>-aes-256-gcm<span class="w"> </span>-kfile<span class="w"> </span>dek.bin<span class="w"> </span>&gt;<span class="w"> </span>model.enc
-gcloud<span class="w"> </span>kms<span class="w"> </span>encrypt<span class="w"> </span>--key<span class="o">=</span>weights-kek<span class="w"> </span>--keyring<span class="o">=</span>cc-lab<span class="w"> </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
+gcloud<span class="w"> </span>kms<span class="w"> </span>encrypt<span class="w"> </span>--key<span class="o">=</span>weights-kek<span class="w"> </span>--keyring<span class="o">=</span>cc-ring<span class="w"> </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--plaintext-file<span class="o">=</span>dek.bin<span class="w"> </span>--ciphertext-file<span class="o">=</span>dek.wrapped
-gsutil<span class="w"> </span>-m<span class="w"> </span>cp<span class="w"> </span>model.enc<span class="w"> </span>dek.wrapped<span class="w"> </span>gs://YOUR_BUCKET/
-shred<span class="w"> </span>-u<span class="w"> </span>dek.bin<span class="w">   </span><span class="c1"># 明文 DEK 绝不能在这一步之后继续存在</span>
+gsutil<span class="w"> </span>cp<span class="w"> </span>model.enc<span class="w"> </span>dek.wrapped<span class="w"> </span>gs://cc-model-store/
+shred<span class="w"> </span>-u<span class="w"> </span>dek.bin
 </code></pre></div>
-<p>记下加密并上传 140 GB 的实际耗时。那个数字就是你的模型发布流水线，而各个团队往往要到第一次赶着 deadline 发模型更新时，才第一次发现它。</p>
-<h3 id="2_1">第 2 步 —— 构建推理镜像<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
-<p>容器应当依次：从 launcher socket 请求证明 token；把原始证据交给模块 3 E 部分里<strong>你自己的验证方</strong>而不是 Google 的；解包 DEK；把模型拉取并解密进 <code>tmpfs</code>；以 <code>tensor_parallel_size=8</code> 启动 vLLM；并暴露一个会返回自身证明 token 的端点，供客户端验证。</p>
-<p>用 cosign 给镜像签名并记录 digest。</p>
-<h3 id="3_1">第 3 步 —— 写出复合释放策略<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>create-oidc<span class="w"> </span>cc-infer-provider<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--issuer-uri<span class="o">=</span><span class="s2">&quot;https://confidentialcomputing.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--allowed-audiences<span class="o">=</span><span class="s2">&quot;https://sts.googleapis.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--attribute-mapping<span class="o">=</span><span class="s2">&quot;google.subject=assertion.sub&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;</span>
-<span class="s2">    assertion.swname == &#39;CONFIDENTIAL_SPACE&#39;</span>
-<span class="s2">    &amp;&amp; assertion.dbgstat == &#39;disabled-since-boot&#39;</span>
-<span class="s2">    &amp;&amp; &#39;sha256:YOUR_DIGEST&#39; in assertion.submods.container.image_digest</span>
-<span class="s2">    &amp;&amp; assertion.submods.nvidia_gpu.cc_mode == &#39;ON&#39;</span>
-<span class="s2">  &quot;</span>
+<h3 id="3-leaderworkerset">第 3 步 —— 部署带证明代理的 LeaderWorkerSet<a class="headerlink" href="#3-leaderworkerset" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leaderworkerset.x-k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LeaderWorkerSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vllm-confidential-70b</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">leaderWorkerTemplate</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">leaderTemplate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">leader</span>
+<span class="w">      </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vllm-leader</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-docker.pkg.dev/PROJECT/REPO/vllm-cc:v1@sha256:APPROVED_DIGEST</span>
+<span class="w">          </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">capabilities</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">drop</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;ALL&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">          </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MODEL_BUCKET</span>
+<span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gs://cc-model-store&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EKM_ENDPOINT</span>
+<span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://kms.provider.com/unwrap&quot;</span>
+<span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcs-fuse-csi</span>
+<span class="w">            </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data</span>
+<span class="w">        </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcs-fuse-csi</span>
+<span class="w">          </span><span class="nt">csi</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcsfuse.csi.storage.gke.io</span>
+<span class="w">            </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">workerTemplate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vllm-worker</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-docker.pkg.dev/PROJECT/REPO/vllm-cc:v1@sha256:APPROVED_DIGEST</span>
 </code></pre></div>
-<p>然后在你自己的验证方里、基于原始证据断言同样这几条，并让<em>那一条</em>成为真正闸控密钥的判定。Google 侧的策略就此降格为纵深防御，而不再是那个保证本身。</p>
-<h3 id="4_1">第 4 步 —— 部署，并给每一个阶段计时<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h3>
-<p>给容器加埋点，在 §4.1 的每个冷启动里程碑记一个时间戳：启动完成、内存接受完成（它的量级你在模块 1 第 6 步已经测过）、证明完成、密钥释放、权重拉取、权重解密并加载进受保护 HBM、首 token 送出。<strong>产出你这套配置的实际预算表。</strong> 这份产物比本实验其余部分加起来都更有价值——它是每一场容量与定价对话都会要的那个数字。</p>
-<p>至少跑五遍。这条路径上的冷启动有很长的尾巴，单次采样会让你对"真正决定热池规模的那个 p99"产生误判。</p>
-<h3 id="5">第 5 步 —— 先把入口的失败演出来，再修好它<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
-<p>§5.1 把"在 TEE 前面放一个托管 L7 负载均衡器"称为这套设计中最常见的静默失败。故意先建错，然后把它证明出来：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># §5.2 的方案 A —— 由 Google 终结 TLS 并持有私钥</span>
-gcloud<span class="w"> </span>compute<span class="w"> </span>backend-services<span class="w"> </span>create<span class="w"> </span>infer-l7<span class="w"> </span>--global<span class="w"> </span>--protocol<span class="o">=</span>HTTPS
-gcloud<span class="w"> </span>compute<span class="w"> </span>ssl-certificates<span class="w"> </span>create<span class="w"> </span>infer-cert<span class="w"> </span>--domains<span class="o">=</span>YOUR_DOMAIN
-</code></pre></div>
-<p>从它送一个 prompt 进去，然后从负载均衡器自己的请求日志里把这个 prompt 读回来。<strong>prompt 以明文形态存在于 Google 运营的基础设施里，而下游每一个机密机制都完好无损、且毫不相干。</strong> 把那行日志截下来放进你的设计评审材料；它结束争论的速度比那张图快得多。</p>
-<p>现在切到方案 B——L4 直通负载均衡器，RA-TLS 在 TEE 内部终结，公钥绑进 <code>REPORT_DATA</code>——确认同一个请求在进入 enclave 之前的任何一跳上都读不出任何东西。</p>
-<h3 id="6">第 6 步 —— 从客户端一侧验证<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
-<p>写一个客户端，在发送任何 prompt 之前：</p>
+<h3 id="4">第 4 步 —— 验证端到端证明与密钥释放<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
 <ol>
-<li>取回服务端的证明 token 与原始证据。</li>
-<li>对照你自己的验证方核验签名与各项 claim——包括 <code>cc_mode</code>、TCB 下界与镜像 digest。</li>
-<li>确认 RA-TLS 公钥哈希出现在 <code>REPORT_DATA</code> 里，从而确保它在跟<em>那个</em> enclave 说话，而不是一个中继。</li>
-<li><strong>任何一项检查失败就拒绝发送任何东西。</strong></li>
+<li>Leader Pod 生成包含 TDX + H100 CC 模式的复合硬件证据。</li>
+<li>Pod 将证据与 nonce 提交给模型提供方的外部 KMS (EKM)。</li>
+<li>策略评估通过后，解封的 DEK 通过 TLS 直传回 Pod 内存。</li>
+<li>Pod 从 GCS FUSE 流式拉取 <code>model.enc</code>，在内存中解密并载入受保护 HBM。</li>
+<li>客户端 SDK 请求 Pod 的证明报告，校验绑定的 RA-TLS 临时密钥，发起端到端加密推理请求。</li>
 </ol>
-<p>然后用三种方式打破它：部署一个 digest 不在白名单里的镜像；在中间放一个代理，转发一份来自另一台机器的合法证明；把 TCB 下界抬到整个机群之上。客户端应当三次都拒绝。这个拒绝就是 P3 在起作用，而第 3 条正是让它能扛住中继攻击的原因。</p>
-<h3 id="7_1">第 7 步 —— 把前缀缓存预言机认真测出来<a class="headerlink" href="#7_1" title="Permanent link">&para;</a></h3>
-<p>在前缀缓存开启且跨租户共享的前提下，这是一次测量，而不是一次演示——所以就按测量的方式来做：</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># 受害&quot;租户&quot;先用一段有特征的长前缀把缓存暖上。</span>
-<span class="c1"># 攻击者租户随后对猜测的前缀与一个对照分别测 TTFT。</span>
-<span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
-    <span class="n">ttft_hit</span>  <span class="o">=</span> <span class="n">time_ttft</span><span class="p">(</span><span class="n">shared_prefix</span> <span class="o">+</span> <span class="n">attacker_suffix</span><span class="p">)</span>
-    <span class="n">ttft_miss</span> <span class="o">=</span> <span class="n">time_ttft</span><span class="p">(</span><span class="n">random_prefix</span>  <span class="o">+</span> <span class="n">attacker_suffix</span><span class="p">)</span>
-</code></pre></div>
-<p>把两个分布画出来。前缀足够长时，它们会清晰分离——意味着攻击者能以很高的置信度区分"别的租户发过这段文字"与"没人发过"，而全程没有读取任何一个内存字节。用准确率来报告它：单次计时采样分类正确的比例是多少？</p>
-<p>然后把前缀缓存改为按租户隔离，重复实验，直到两个分布重叠为止。<strong>你自己数字里的那个差异就是 §6.2</strong>，也是全书中最有说服力的一次演示：一次机密性失败，完全可以不涉及读取任何内存。</p>
-<h3 id="8_1">第 8 步 —— 对着运行中的系统做一次对抗性评审<a class="headerlink" href="#8_1" title="Permanent link">&para;</a></h3>
-<p>§9 列出了一个拥有主机 root 的内部人员仍然能做的事。在系统运行着的状态下，逐条去真做一遍：终止实例、拒绝给它 collateral、从外部观察请求的时序与大小、把 GPU 功耗与负载做关联、在它脚下滚动更换平台镜像。每一条都记录：你是否检测到了，以及客户端是否本可以检测到。</p>
-<p>产出是一份你亲自验证过的残余风险清单，而不是从威胁模型模板里继承来的。模型提供方的安全团队真正会向你索要的，就是这份清单。</p>
-<h3 id="9_1">第 9 步 —— 清理<a class="headerlink" href="#9_1" title="Permanent link">&para;</a></h3>
-<p>删掉实例与节点池、存储桶内容、KMS 密钥版本，以及负载均衡器。把冷启动预算表和前缀缓存那张分布图留着——这两份产物才是这个实验值得跑一趟的原因。</p>
 <hr />
-<h2 id="_1">总结: 设计检查清单<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h2 id="gke">总结：GKE 机密推理设计核对清单<a class="headerlink" href="#gke" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">决策</th>
-<th style="text-align: left;">建议</th>
-<th style="text-align: left;">另一选项的后果</th>
+<th style="text-align: left;">决策点</th>
+<th style="text-align: left;">生产推荐方案</th>
+<th style="text-align: left;">妥协的后果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">机密运行时</td>
-<td style="text-align: left;">Confidential Space，由普通 GKE 编排</td>
-<td style="text-align: left;">Confidential GKE Nodes 把 Google 控制面留在边界之内</td>
+<td style="text-align: left;"><strong>机密基础设施</strong></td>
+<td style="text-align: left;">GKE Hypercluster（TDX + H100/B200 CC 节点池）</td>
+<td style="text-align: left;">普通节点将内存直接暴露给 Hypervisor 与云内部人员</td>
 </tr>
 <tr>
-<td style="text-align: left;">CPU TEE</td>
-<td style="text-align: left;">TDX</td>
-<td style="text-align: left;">SEV-SNP 缺原生运行时度量，且不是 GPU 路径</td>
+<td style="text-align: left;"><strong>工作负载编排</strong></td>
+<td style="text-align: left;">LeaderWorkerSet (LWS) + Dynamic Workload Scheduler flex-start</td>
+<td style="text-align: left;">无法在证明约束下高效协同多节点张量并行</td>
 </tr>
 <tr>
-<td style="text-align: left;">GPU</td>
-<td style="text-align: left;">CC 模式 H100，断言 <code>cc_mode == ON</code></td>
-<td style="text-align: left;">权重进明文 HBM</td>
+<td style="text-align: left;"><strong>密钥释放门控</strong></td>
+<td style="text-align: left;">提供方自主运营的外部 KMS (Cloud EKM) 评估原始硬件证据</td>
+<td style="text-align: left;">Cloud KMS 将安全保证降级为一条云端 IAM 策略</td>
 </tr>
 <tr>
-<td style="text-align: left;">验证方</td>
-<td style="text-align: left;">提供方运营，评估原始证据</td>
-<td style="text-align: left;">P3 变成 Google 的一句承诺</td>
+<td style="text-align: left;"><strong>TLS 与入口</strong></td>
+<td style="text-align: left;">L4 透传（Gateway API）+ Pod 内 RA-TLS / 客户端 HPKE</td>
+<td style="text-align: left;">托管 L7 LB 会终结 TLS 并在云端内存中持有明文 Prompt</td>
 </tr>
 <tr>
-<td style="text-align: left;">密钥管理器</td>
-<td style="text-align: left;">提供方运营的外部 KMS</td>
-<td style="text-align: left;">保证退化为一条 Google IAM 策略</td>
+<td style="text-align: left;"><strong>权重传输</strong></td>
+<td style="text-align: left;">Cloud Storage FUSE + 内存解密直接流式写入受保护 HBM</td>
+<td style="text-align: left;">磁盘上的明文权重文件可被云平台随意读取</td>
 </tr>
 <tr>
-<td style="text-align: left;">TLS 终结</td>
-<td style="text-align: left;">客户端载荷加密，外加 L4 透传</td>
-<td style="text-align: left;">托管 L7 LB 持有明文 prompt</td>
+<td style="text-align: left;"><strong>冷启动策略</strong></td>
+<td style="text-align: left;">DWS flex-start + FUSE 本地缓存 + 预热池</td>
+<td style="text-align: left;">分钟级冷启动将在流量尖峰时导致严重的请求超时</td>
 </tr>
 <tr>
-<td style="text-align: left;">权重分发</td>
-<td style="text-align: left;">信封加密；只解密到内存</td>
-<td style="text-align: left;">磁盘上的明文权重平台读得到</td>
+<td style="text-align: left;"><strong>Prefix Caching</strong></td>
+<td style="text-align: left;">严格按租户隔离，绝对禁止跨租户共享</td>
+<td style="text-align: left;">共享缓存成为时序预言机，泄露其他租户的 Prompt 内容</td>
 </tr>
 <tr>
-<td style="text-align: left;">冷启动</td>
-<td style="text-align: left;">预热池；取回与证明重叠；绝不用 VM 快照</td>
-<td style="text-align: left;">分钟级冷启动下被动式扩缩容不管用</td>
+<td style="text-align: left;"><strong>解耦服务</strong></td>
+<td style="text-align: left;">双向 RA-TLS 互信 + 跨节点加密传输 Fabric</td>
+<td style="text-align: left;">明文 KV 激活值在网络中裸传</td>
 </tr>
 <tr>
-<td style="text-align: left;">Prefix caching</td>
-<td style="text-align: left;">仅按租户，绝不跨租户共享</td>
-<td style="text-align: left;">一台针对其他租户 prompt 内容的时序预言机</td>
+<td style="text-align: left;"><strong>遥测与可观测性</strong></td>
+<td style="text-align: left;">严格字段白名单；脱敏状态码；零 Prompt 文本记录</td>
+<td style="text-align: left;">未捕获的异常堆栈将用户 Prompt 泄露至 Cloud Logging</td>
 </tr>
 <tr>
-<td style="text-align: left;">分离式推理</td>
-<td style="text-align: left;">v1 不做；若采用，节点间上 RA-TLS</td>
-<td style="text-align: left;">KV cache——即 prompt 内容——以明文跨网络</td>
-</tr>
-<tr>
-<td style="text-align: left;">多租户</td>
-<td style="text-align: left;">按模型批处理，并披露软件隔离那条注意事项</td>
-<td style="text-align: left;">客户以为租户之间是硬件隔离，而他们错了</td>
-</tr>
-<tr>
-<td style="text-align: left;">可观测性</td>
-<td style="text-align: left;">字段白名单；永不含内容；不输出堆栈跟踪</td>
-<td style="text-align: left;">一条异常消息经由未被评审的路径泄露一个 prompt</td>
-</tr>
-<tr>
-<td style="text-align: left;">安全监控</td>
-<td style="text-align: left;">TEE 内分类器 + 经证明的同意遥测；披露缺口</td>
-<td style="text-align: left;">要么是一次无声的机密性泄露，要么是一片无人监控的滥用面</td>
+<td style="text-align: left;"><strong>安全监控</strong></td>
+<td style="text-align: left;">TEE 内置分类器模型发出违规判定信号</td>
+<td style="text-align: left;">陷入完全无法监控安全或彻底侵犯用户隐私的两难</td>
 </tr>
 </tbody>
 </table>
-<p>设计完成了。剩下的是证明它跑得够快、在没有你惯用工具的情况下运营它，以及能够在一个成熟的对手方面前为它的论断辩护——包括诚实地把它和 AWS、Azure、Apple 已公开的方案做比较。那就是<strong>模块 7: 性能、运维与评估 (<code>07_performance_operations_and_evaluation.md</code>)</strong>。</p>
+<p>设计已经完整且立得住。接下来要做的是衡量其性能开销、在缺乏传统调试手段时完成生产运维，并理解证明约束下的机群生命周期。这就是 <strong><a href="../07_performance_operations_and_evaluation/">模块 7: 性能、运维与评估</a></strong>。</p>
 
 
 

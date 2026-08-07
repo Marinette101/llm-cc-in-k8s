@@ -1149,18 +1149,18 @@
 <h3 id="module-5-the-google-cloud-confidential-surface"><a href="05_google_cloud_confidential_surface/">Module 5: The Google Cloud Confidential Surface</a><a class="headerlink" href="#module-5-the-google-cloud-confidential-surface" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Confidential VM</strong> — SEV, SEV-SNP, and TDX by machine family; feature gaps; regional and capacity reality; Confidential Hyperdisk and CMEK.</li>
-<li><strong>Confidential GKE Nodes</strong> — enabling it, the node-pool constraints, and the critical point that the control plane sits <em>outside</em> your TEE.</li>
+<li><strong>Confidential GKE Nodes &amp; GKE Hypercluster</strong> — enabling it, AI Hypercomputer orchestration (LeaderWorkerSet, Kueue, DWS flex-start, GCS FUSE), node-pool constraints, and mitigating control plane risks outside your TEE.</li>
 <li><strong>Confidential Space</strong> — the hardened image and launcher; the workload-author / operator / data-collaborator separation; DEBUG vs PROD images; the logging escape hatches and exactly how much they cost you.</li>
 <li><strong>Attestation on GCP</strong> — the attestation token and its claims; the vTPM path; Workload Identity Federation attribute conditions as policy language; Cloud KMS, Cloud HSM, and EKM key hierarchies.</li>
 <li><strong>The Supporting Cast</strong> — Binary Authorization and Sigstore signing; Workload Identity vs Secret Manager; gVisor as an <em>orthogonal</em> threat model, not a weaker TEE.</li>
-<li><strong>Confidential Space vs Confidential GKE for Inference</strong> — a head-to-head decision table, and why the right answer is not the obvious one.</li>
+<li><strong>Architectural Spectrum for Inference</strong> — Native GKE Hypercluster vs Confidential Space vs Split-Plane Hybrid: a head-to-head decision table and trade-off analysis.</li>
 </ol>
 <h3 id="module-6-designing-confidential-llm-serving-on-gke"><a href="06_designing_confidential_llm_serving_on_gke/">Module 6: Designing Confidential LLM Serving on GKE</a><a class="headerlink" href="#module-6-designing-confidential-llm-serving-on-gke" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Requirements Decomposition</strong> — the four properties, stated formally, each against a named adversary.</li>
-<li><strong>The Reference Architecture</strong> — Confidential GKE node + confidential GPU + vLLM + attestation agent + attested key release + in-TEE TLS termination, component by component.</li>
-<li><strong>The Encrypted Weight Pipeline</strong> — provider-side encryption through attested decryption into protected GPU memory; key rotation and revocation.</li>
-<li><strong>The Cold-Start Problem</strong> — a latency budget for TEE boot + attestation + multi-gigabyte decrypt + GPU load, and the mitigations that don't break attestation.</li>
+<li><strong>The Reference Architecture on GKE Hypercluster</strong> — GKE Hypercluster confidential accelerated node pool + NVIDIA CC mode + LeaderWorkerSet (LWS) + in-pod attestation agent + external KMS key release + L4 passthrough / HPKE payload encryption.</li>
+<li><strong>The Encrypted Weight Pipeline</strong> — provider-side encryption through GCS FUSE parallel streaming and multi-node tensor-parallel weight delivery into protected GPU HBM; key rotation and revocation.</li>
+<li><strong>The Cold-Start Problem &amp; Hypercluster Optimizations</strong> — a latency budget for TEE boot + attestation + multi-gigabyte decrypt + GPU load, and mitigations (Dynamic Workload Scheduler flex-start, FUSE local caching, Kueue warm pools).</li>
 <li><strong>Where TLS Terminates</strong> — the attested-ingress problem, and why a managed L7 load balancer silently voids the guarantee.</li>
 <li><strong>KV Cache, Prefix Caching, and Disaggregation</strong> — why cross-tenant prefix cache reuse is a plaintext-equivalent leak, and what disaggregated serving does to your trust boundary.</li>
 <li><strong>Multi-Tenancy</strong> — per-tenant TEE vs shared TEE with cross-tenant continuous batching.</li>
