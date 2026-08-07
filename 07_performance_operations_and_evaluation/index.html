@@ -832,15 +832,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" class="md-nav__link">
+  <a href="#lab-build-the-benchmark-harness-and-run-the-failure-drills" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: Build the Benchmark Harness and Run a Rotation Drill
+        Lab: Build the Benchmark Harness and Run the Failure Drills
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run a Rotation Drill">
+    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run the Failure Drills">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -881,6 +881,17 @@
     <span class="md-ellipsis">
       
         Part D — The TCB advance simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-e-kill-the-dependencies-you-do-not-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part E — Kill the dependencies you do not control
       
     </span>
   </a>
@@ -1314,15 +1325,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" class="md-nav__link">
+  <a href="#lab-build-the-benchmark-harness-and-run-the-failure-drills" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: Build the Benchmark Harness and Run a Rotation Drill
+        Lab: Build the Benchmark Harness and Run the Failure Drills
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run a Rotation Drill">
+    <nav class="md-nav" aria-label="Lab: Build the Benchmark Harness and Run the Failure Drills">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1363,6 +1374,17 @@
     <span class="md-ellipsis">
       
         Part D — The TCB advance simulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-e-kill-the-dependencies-you-do-not-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part E — Kill the dependencies you do not control
       
     </span>
   </a>
@@ -1842,9 +1864,9 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 </ol>
 <p>The gap between a defensible design and Apple's bar is items 4, 5, and 6 — and none of them is a hardware limitation. They are all product and engineering investment decisions.</p>
 <hr />
-<h2 id="lab-build-the-benchmark-harness-and-run-a-rotation-drill">Lab: Build the Benchmark Harness and Run a Rotation Drill<a class="headerlink" href="#lab-build-the-benchmark-harness-and-run-a-rotation-drill" title="Permanent link">&para;</a></h2>
-<p><strong>Goal:</strong> produce the overhead table your organization will actually cite, and rehearse the operation most likely to cause an outage.</p>
-<p><strong>Cost:</strong> ⚠️ Two A3 instances if you want a true A/B. Budget accordingly, or accept a within-instance comparison by toggling GPU CC mode. <strong>Status:</strong> a methodology exercise; the specific commands depend on your serving stack.</p>
+<h2 id="lab-build-the-benchmark-harness-and-run-the-failure-drills">Lab: Build the Benchmark Harness and Run the Failure Drills<a class="headerlink" href="#lab-build-the-benchmark-harness-and-run-the-failure-drills" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> produce the overhead table your organization will actually cite, and rehearse the three operations most likely to cause an outage.</p>
+<p><strong>Scope:</strong> stand up configurations 1, 2, and 3 as three separate live environments and run them concurrently. The within-instance CC toggle is a fallback, not the exercise — flipping <code>cc_mode</code> on one node cannot measure the CPU-TEE delta at all (config 1 vs 2 differs in the <em>VM</em>, not the GPU), and it forces you to serialize runs that should be interleaved. Serialized runs drift: driver state, cache warmth, and neighbour noise all move under you between config 1 and config 3, and the drift is the same order of magnitude as the effect you are trying to measure. Provision three. <strong>Status:</strong> a methodology exercise; the specific commands depend on your serving stack.</p>
 <h3 id="part-a-the-four-configuration-matrix">Part A — The four-configuration matrix<a class="headerlink" href="#part-a-the-four-configuration-matrix" title="Permanent link">&para;</a></h3>
 <p>Run an identical workload across the configurations from §1.1 and fill in this table. <strong>This artifact is the deliverable.</strong></p>
 <table>
@@ -1885,7 +1907,9 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 </tr>
 </tbody>
 </table>
+<p>Interleave the runs across all three environments rather than completing one column at a time — round-robin at the trial level, so any drift lands as noise in every column instead of as a systematic bias in the last one.</p>
 <p>Then sweep batch size <span class="arithmatex">\(\in \{1, 4, 16, 64\}\)</span> and input length <span class="arithmatex">\(\in \{128, 1024, 8192\}\)</span> for configurations 1 and 3, and plot overhead percentage against each. <strong>You are looking for the downward slope predicted by Module 4, §5.2.</strong> If you do not see it, your benchmark is transfer-bound in a way the model does not predict, and finding out why is more valuable than the numbers.</p>
+<p>Run the sweep on the 8×B200 confidential node as well as the single H100. Tensor parallelism moves activations over encrypted NVLink on every forward pass, which is a cost the single-GPU model does not contain at all — and it is the configuration a frontier-scale deployment will actually run.</p>
 <h3 id="part-b-decompose-the-cold-start">Part B — Decompose the cold start<a class="headerlink" href="#part-b-decompose-the-cold-start" title="Permanent link">&para;</a></h3>
 <p>Instrument every milestone from Module 6, §4.1 and produce:</p>
 <table>
@@ -1940,6 +1964,7 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 </tbody>
 </table>
 <p>Run it twice — once with a warm collateral cache and once cold — and note the difference. That delta is your exposure to an AMD KDS or Intel PCS outage on the critical path.</p>
+<p>Then run it twenty times and report the distribution rather than the mean. Warm-pool sizing is a p99 question, and the p99 of this path is not close to its median.</p>
 <h3 id="part-c-the-key-rotation-drill">Part C — The key rotation drill<a class="headerlink" href="#part-c-the-key-rotation-drill" title="Permanent link">&para;</a></h3>
 <p>This rehearses the operation most likely to cause a self-inflicted outage.</p>
 <ol>
@@ -1958,6 +1983,19 @@ C_{\text{token}} = \frac{C_{\text{instance-hour}} \times (1 + \alpha_{\text{prem
 <li>How would you have rolled back?</li>
 </ol>
 <p>Write the runbook from what you learn. Doing this deliberately on a Tuesday is much cheaper than discovering it the day a firmware advisory lands.</p>
+<h3 id="part-e-kill-the-dependencies-you-do-not-control">Part E — Kill the dependencies you do not control<a class="headerlink" href="#part-e-kill-the-dependencies-you-do-not-control" title="Permanent link">&para;</a></h3>
+<p>Modules 2 and 3 put AMD's KDS and Intel's PCS on the critical path of key release. You have never seen what happens when they are unavailable. Find out on purpose:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># On the confidential node, blackhole the vendor collateral endpoints</span>
+sudo<span class="w"> </span>iptables<span class="w"> </span>-A<span class="w"> </span>OUTPUT<span class="w"> </span>-d<span class="w"> </span>kdsintf.amd.com<span class="w"> </span>-j<span class="w"> </span>REJECT
+sudo<span class="w"> </span>iptables<span class="w"> </span>-A<span class="w"> </span>OUTPUT<span class="w"> </span>-d<span class="w"> </span>api.trustedservices.intel.com<span class="w"> </span>-j<span class="w"> </span>REJECT
+</code></pre></div>
+<p>Then answer, with evidence rather than intent:</p>
+<ol>
+<li>Does a <strong>running</strong> instance keep serving? It should — collateral matters at attestation time, not per request. Confirm it, because a naive implementation that re-verifies per request will fail here and you want to know now.</li>
+<li>Can a <strong>new</strong> instance start? If your collateral cache is cold, probably not — and your autoscaler is now unable to add capacity during someone else's outage.</li>
+<li>Did you fail <strong>closed or open</strong>? §3 said to decide this explicitly. This is where you find out what you actually shipped, which is not always what you decided.</li>
+</ol>
+<p>Repeat with the verifier and the external key manager blackholed. The output is a dependency table with a blast radius and a fail mode for each entry — the artifact an SRE review will ask for and that almost nobody has.</p>
 <hr />
 <h2 id="summary-operating-a-confidential-inference-fleet">Summary: Operating a Confidential Inference Fleet<a class="headerlink" href="#summary-operating-a-confidential-inference-fleet" title="Permanent link">&para;</a></h2>
 <table>

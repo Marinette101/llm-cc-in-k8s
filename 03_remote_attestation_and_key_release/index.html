@@ -824,15 +824,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab-from-evidence-to-a-released-key" class="md-nav__link">
+  <a href="#lab-from-evidence-to-a-released-key-both-ways" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: From Evidence to a Released Key
+        Lab: From Evidence to a Released Key — Both Ways
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key">
+    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key — Both Ways">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -858,10 +858,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#part-c-bind-a-kms-key-to-the-attestation" class="md-nav__link">
+  <a href="#part-c-bind-a-kms-key-to-the-attestation-the-convenient-way" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Part C — Bind a KMS key to the attestation
+        Part C — Bind a KMS key to the attestation, the convenient way
       
     </span>
   </a>
@@ -880,10 +880,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#part-e-the-question-to-sit-with" class="md-nav__link">
+  <a href="#part-e-now-be-your-own-verifier" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Part E — The question to sit with
+        Part E — Now be your own verifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-f-attack-both-designs-as-a-malicious-administrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part F — Attack both designs as a malicious administrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-g-the-question-to-sit-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part G — The question to sit with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-h-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part H — Clean up
       
     </span>
   </a>
@@ -1514,15 +1547,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lab-from-evidence-to-a-released-key" class="md-nav__link">
+  <a href="#lab-from-evidence-to-a-released-key-both-ways" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lab: From Evidence to a Released Key
+        Lab: From Evidence to a Released Key — Both Ways
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key">
+    <nav class="md-nav" aria-label="Lab: From Evidence to a Released Key — Both Ways">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1548,10 +1581,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#part-c-bind-a-kms-key-to-the-attestation" class="md-nav__link">
+  <a href="#part-c-bind-a-kms-key-to-the-attestation-the-convenient-way" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Part C — Bind a KMS key to the attestation
+        Part C — Bind a KMS key to the attestation, the convenient way
       
     </span>
   </a>
@@ -1570,10 +1603,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#part-e-the-question-to-sit-with" class="md-nav__link">
+  <a href="#part-e-now-be-your-own-verifier" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Part E — The question to sit with
+        Part E — Now be your own verifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-f-attack-both-designs-as-a-malicious-administrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part F — Attack both designs as a malicious administrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-g-the-question-to-sit-with" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part G — The question to sit with
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-h-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part H — Clean up
       
     </span>
   </a>
@@ -2181,9 +2247,9 @@
 <li><strong>Be explicit about the residual trust.</strong> Write the sentence: "the customer trusts that image digest X behaves as documented, on the basis of [signature | reproducible build | audit]." If you cannot complete that sentence, P3 does not hold.</li>
 </ol>
 <hr />
-<h2 id="lab-from-evidence-to-a-released-key">Lab: From Evidence to a Released Key<a class="headerlink" href="#lab-from-evidence-to-a-released-key" title="Permanent link">&para;</a></h2>
-<p><strong>Goal:</strong> perform a complete attested key release — obtain a Confidential Space attestation token, inspect its claims, bind a Cloud KMS key to a policy over those claims, and then break the policy and watch the release fail. The final step is the one that teaches; a policy you have never seen deny anything is a policy you do not know is enforced.</p>
-<p><strong>Cost:</strong> one small confidential VM plus KMS operations — well under a dollar. <strong>Status:</strong> structure and claim names verified against Google Cloud documentation; exact <code>gcloud</code> syntax varies by CLI version — verify with <code>--help</code> and consult the Confidential Space documentation as you go.</p>
+<h2 id="lab-from-evidence-to-a-released-key-both-ways">Lab: From Evidence to a Released Key — Both Ways<a class="headerlink" href="#lab-from-evidence-to-a-released-key-both-ways" title="Permanent link">&para;</a></h2>
+<p><strong>Goal:</strong> perform a complete attested key release twice. First the convenient way, with Google's verifier and Google's KMS. Then the way §1.3 actually recommends: your own verifier appraising raw hardware evidence, and a key manager the workload's own project cannot touch. Then attack both, as a malicious project administrator, and observe that only one of them survives.</p>
+<p><strong>Scope:</strong> two Google Cloud projects — an <em>operator</em> project that runs the workload and a <em>provider</em> project that runs the verifier and holds the key. Use separate projects with separate IAM. This is the whole point of the exercise: the second half of this lab cannot demonstrate anything if the same administrator controls both halves, and simulating that separation with two projects is the cheapest honest version of it. <strong>Status:</strong> structure and claim names verified against Google Cloud documentation; exact <code>gcloud</code> syntax varies by CLI version — verify with <code>--help</code> and consult the Confidential Space documentation as you go.</p>
 <h3 id="part-a-get-a-token-and-read-it">Part A — Get a token and read it<a class="headerlink" href="#part-a-get-a-token-and-read-it" title="Permanent link">&para;</a></h3>
 <p>Build a trivial workload that reads the attestation token and prints it. Inside a Confidential Space workload the token is available from the launcher's socket:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Inside the workload container</span>
@@ -2208,8 +2274,8 @@ cut<span class="w"> </span>-d.<span class="w"> </span>-f2<span class="w"> </span
 <li><code>exp</code> − <code>iat</code> — compute the token lifetime, and note that this is your replay window if you do not use a nonce</li>
 </ul>
 <p><strong>Exercise:</strong> run the same workload on a DEBUG Confidential Space image and diff the two tokens. Watch <code>dbgstat</code> flip to <code>enabled</code> and <code>support_attributes</code> change. Then answer: which single claim, if unchecked by a relying party, makes the entire deployment non-confidential?</p>
-<h3 id="part-c-bind-a-kms-key-to-the-attestation">Part C — Bind a KMS key to the attestation<a class="headerlink" href="#part-c-bind-a-kms-key-to-the-attestation" title="Permanent link">&para;</a></h3>
-<p>Create a workload identity pool with a provider whose attribute condition requires the claims you care about:</p>
+<h3 id="part-c-bind-a-kms-key-to-the-attestation-the-convenient-way">Part C — Bind a KMS key to the attestation, the convenient way<a class="headerlink" href="#part-c-bind-a-kms-key-to-the-attestation-the-convenient-way" title="Permanent link">&para;</a></h3>
+<p>In the <strong>operator</strong> project, create a workload identity pool with a provider whose attribute condition requires the claims you care about:</p>
 <div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>create<span class="w"> </span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--display-name<span class="o">=</span><span class="s2">&quot;Confidential Space lab pool&quot;</span>
@@ -2232,8 +2298,40 @@ gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools
 <li><strong>Use a DEBUG image.</strong> <code>dbgstat</code> becomes <code>enabled</code>, the condition fails. Now remove the <code>dbgstat</code> clause from the attribute condition and observe that the release <em>succeeds</em> — on an image where the operator can inspect memory. This is the single most instructive failure in the lab.</li>
 <li><strong>Replay a token.</strong> Capture a token, wait past <code>exp</code>, and try again. Then reason about what an attacker could have done inside that window.</li>
 </ol>
-<h3 id="part-e-the-question-to-sit-with">Part E — The question to sit with<a class="headerlink" href="#part-e-the-question-to-sit-with" title="Permanent link">&para;</a></h3>
-<p>You have now released a key to an attested environment. Ask: <strong>who decided that this image digest was acceptable, and who could change that decision?</strong> If the answer is "an IAM policy in the same Google Cloud project the workload runs in," then a Google Cloud project administrator can add their own image digest to the allowlist — and the guarantee reduces to IAM. That observation is §1.3 arriving in concrete form, and it is what motivates external key management in Module 6.</p>
+<h3 id="part-e-now-be-your-own-verifier">Part E — Now be your own verifier<a class="headerlink" href="#part-e-now-be-your-own-verifier" title="Permanent link">&para;</a></h3>
+<p>Everything above put Google in the middle of a claim about whether Google's infrastructure was trustworthy. §1.3 called that a promise rather than evidence. Build the alternative.</p>
+<p>In the <strong>provider</strong> project, stand up a verifier service that never trusts a Google-issued token. It should accept raw evidence, appraise it itself, and release a key only on its own verdict:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># verifier service, provider project — sketch, not a library</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">release_key</span><span class="p">(</span><span class="n">evidence</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">nonce</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">tls_pubkey_hash</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">report</span> <span class="o">=</span> <span class="n">parse_snp_report</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span>                       <span class="c1"># or TDX quote</span>
+    <span class="n">verify_signature_chain</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">ark</span><span class="o">=</span><span class="n">PINNED_AMD_ROOT</span><span class="p">)</span>       <span class="c1"># trust AMD, not GCP</span>
+    <span class="k">assert</span> <span class="n">report</span><span class="o">.</span><span class="n">report_data</span> <span class="o">==</span> <span class="n">sha512</span><span class="p">(</span><span class="n">nonce</span> <span class="o">+</span> <span class="n">tls_pubkey_hash</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">report</span><span class="o">.</span><span class="n">measurement</span> <span class="ow">in</span> <span class="n">APPROVED_MEASUREMENTS</span>        <span class="c1"># yours, from Module 2 §9</span>
+    <span class="k">assert</span> <span class="n">report</span><span class="o">.</span><span class="n">tcb_version</span> <span class="o">&gt;=</span> <span class="n">TCB_FLOOR</span>                    <span class="c1"># a floor, never equality</span>
+    <span class="k">assert</span> <span class="n">report</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">debug</span> <span class="ow">is</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">unwrap_kek</span><span class="p">()</span>                                       <span class="c1"># key lives here, not in the operator project</span>
+</code></pre></div>
+<p>Two properties matter, and both are structural rather than cryptographic:</p>
+<ul>
+<li><strong>The AMD root is pinned by you.</strong> The chain runs evidence → VCEK → ASK → ARK, and terminates at a certificate you shipped. Google appears nowhere in it.</li>
+<li><strong>The key never enters the operator project.</strong> The workload receives a released key over an attested channel; nobody with IAM in the operator project can ask for it.</li>
+</ul>
+<p>Have the workload send raw evidence — from <code>/dev/sev-guest</code> or the configfs interface in Module 2, §7 — rather than the launcher's JWT, with <code>REPORT_DATA</code> bound to its own TLS public key so the release is bound to the channel (§6).</p>
+<h3 id="part-f-attack-both-designs-as-a-malicious-administrator">Part F — Attack both designs as a malicious administrator<a class="headerlink" href="#part-f-attack-both-designs-as-a-malicious-administrator" title="Permanent link">&para;</a></h3>
+<p>Now the experiment that makes the difference concrete. Grant yourself full <code>roles/owner</code> on the <strong>operator</strong> project — which is exactly what an insider, a compromised CI account, or a coerced employee would have — and try to steal the secret both ways.</p>
+<p><strong>Against Part C:</strong> add your own image digest to the attribute condition, deploy a container that simply prints the decrypted secret, and run it.</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>iam<span class="w"> </span>workload-identity-pools<span class="w"> </span>providers<span class="w"> </span>update-oidc<span class="w"> </span>cc-lab-provider<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="o">=</span>global<span class="w"> </span>--workload-identity-pool<span class="o">=</span>cc-lab-pool<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-condition<span class="o">=</span><span class="s2">&quot;assertion.swname == &#39;CONFIDENTIAL_SPACE&#39; \</span>
+<span class="s2">    &amp;&amp; &#39;sha256:MY_EXFILTRATION_IMAGE&#39; in assertion.submods.container.image_digest&quot;</span>
+</code></pre></div>
+<p>It works. You now hold the plaintext. <strong>Nothing was broken and no hardware guarantee failed</strong> — the policy was a mutable IAM object inside the blast radius of the very administrator the design was supposed to exclude.</p>
+<p><strong>Against Part E:</strong> try the same thing. You can change the workload, the instance, the project, and the entire IAM policy — and you cannot change <code>APPROVED_MEASUREMENTS</code>, because it lives in a project whose IAM you do not hold. The release fails on a measurement mismatch and the key stays where it is.</p>
+<p>Write down the delta in one sentence. That sentence is the argument you will make to a model provider's security team, and it is the reason Module 6 puts the key manager outside Google entirely.</p>
+<h3 id="part-g-the-question-to-sit-with">Part G — The question to sit with<a class="headerlink" href="#part-g-the-question-to-sit-with" title="Permanent link">&para;</a></h3>
+<p>Part F still has a soft spot. Ask: <strong>who decided that the measurements in <code>APPROVED_MEASUREMENTS</code> were acceptable, and how would a customer know?</strong> If the answer is "the provider, and they would not," you have moved the trust rather than eliminated it — from the cloud to yourself. That is a real improvement when you are the party with the asset at risk, and it is not a guarantee to a third party. Closing that last gap requires reproducible builds and a transparency log (§7.3), which is where Apple PCC ends up in Module 7, §6.4.</p>
+<h3 id="part-h-clean-up">Part H — Clean up<a class="headerlink" href="#part-h-clean-up" title="Permanent link">&para;</a></h3>
+<p>Delete the workload instances and the survey resources. Keep the verifier service and the two projects — Module 5 deploys against this same split, and Module 6 builds the production version of it.</p>
 <hr />
 <h2 id="summary-the-attestation-checklist">Summary: The Attestation Checklist<a class="headerlink" href="#summary-the-attestation-checklist" title="Permanent link">&para;</a></h2>
 <table>

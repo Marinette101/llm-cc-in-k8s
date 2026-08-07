@@ -781,10 +781,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-guest" class="md-nav__link">
+  <a href="#4-intel-tdx-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 步 —— 问每个 guest：你是什么
+        第 4 步 —— 启动一台 Intel TDX 机密 VM
       
     </span>
   </a>
@@ -792,10 +792,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
+  <a href="#5-guest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 5 步 —— 确认那个否定结果
+        第 5 步 —— 问每个 guest：你是什么
       
     </span>
   </a>
@@ -806,7 +806,29 @@
   <a href="#6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 6 步 —— 清理
+        第 6 步 —— 实测机密内存在启动阶段的代价
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 步 —— 确认那个否定结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 步 —— 清理
       
     </span>
   </a>
@@ -1502,10 +1524,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-guest" class="md-nav__link">
+  <a href="#4-intel-tdx-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 4 步 —— 问每个 guest：你是什么
+        第 4 步 —— 启动一台 Intel TDX 机密 VM
       
     </span>
   </a>
@@ -1513,10 +1535,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
+  <a href="#5-guest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 5 步 —— 确认那个否定结果
+        第 5 步 —— 问每个 guest：你是什么
       
     </span>
   </a>
@@ -1527,7 +1549,29 @@
   <a href="#6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第 6 步 —— 清理
+        第 6 步 —— 实测机密内存在启动阶段的代价
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 步 —— 确认那个否定结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 步 —— 清理
       
     </span>
   </a>
@@ -2099,8 +2143,8 @@ K_{seal} = \text{KDF}\left(K_{RoT},\ \text{measurement},\ \text{context}\right)
 <p>最后这个依赖无法回避，值得直说：<strong>证明把"信任提供方的意图"降级成了"信任提供方发布的镜像"，但它不能把这件事降到零。</strong> 要闭合剩下的缺口，需要硬件之外的透明性机制——可复现构建、公开源码、二进制透明日志、第三方审计。Apple 的 Private Cloud Compute 是这方面最完整的公开尝试，模块 7 第 6 部分会考察它做了哪些一份直白的 GKE 设计没做的事。</p>
 <hr />
 <h2 id="lab-tee">Lab: 让 TEE 自己现形<a class="headerlink" href="#lab-tee" title="Permanent link">&para;</a></h2>
-<p><strong>目标</strong>：并排启动一台普通 VM 和一台机密 VM，从 guest 内部找出差别。要点在于确立"TEE 是可观测的，而不是一个只体现在账单上的抽象"。</p>
-<p><strong>成本</strong>：两台小 VM 跑几分钟——几分钱。<strong>状态</strong>：命令转录自 Google Cloud 文档；请用你本地 <code>gcloud compute instances create --help</code> 核对 flag 名称。</p>
+<p><strong>目标</strong>：并排启动一台基线 VM、一台 AMD SEV-SNP VM 和一台 Intel TDX VM，从每个 guest 内部找出差别，然后实测机密内存在启动阶段到底要付出多少代价。要点在于确立"TEE 是可观测的，而不是一个只体现在账单上的抽象"，并且它的开销是可测量的，而不是口口相传的传说。</p>
+<p><strong>规模</strong>：四台实例全部同时开出来，包括那台大内存的。两家厂商并排跑才是重点——只启动 SEV-SNP 的实验教给你的是 AMD，而不是机密计算。<strong>状态</strong>：命令转录自 Google Cloud 文档；请用你本地 <code>gcloud compute instances create --help</code> 核对 flag 名称。</p>
 <h3 id="1_2">第 1 步 —— 看清你的项目实际能跑什么<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># 哪些 zone 提供支持 SEV-SNP 与 TDX 的机型族</span>
 gcloud<span class="w"> </span>compute<span class="w"> </span>machine-types<span class="w"> </span>list<span class="w"> </span>--filter<span class="o">=</span><span class="s2">&quot;name~&#39;^n2d-standard&#39; OR name~&#39;^c3-standard&#39;&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2127,8 +2171,18 @@ gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span clas
 <span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
 </code></pre></div>
 <p>注意 <code>--maintenance-policy=TERMINATE</code>。SEV-SNP 实例无法热迁移，因此主机维护会停掉实例而不是迁走它。这不是 CLI 的怪癖——这是该架构的第一个具体运维后果，模块 2 第 4 部分会解释为什么完整性保护与热迁移在根本上相互冲突。</p>
-<h3 id="4-guest">第 4 步 —— 问每个 guest：你是什么<a class="headerlink" href="#4-guest" title="Permanent link">&para;</a></h3>
-<p>在两台机器上都执行：</p>
+<h3 id="4-intel-tdx-vm">第 4 步 —— 启动一台 Intel TDX 机密 VM<a class="headerlink" href="#4-intel-tdx-vm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-tdx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>TDX<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>c3-standard-4<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
+</code></pre></div>
+<p>两家厂商同时在你自己的项目里跑着。模块 2 里几乎每一处对比，你现在都可以直接核验，而不必照单全收——而且那些差异并不是表面功夫。把这两台留着别删，模块 2 的实验会分别从它们身上拉一份证明报告。</p>
+<h3 id="5-guest">第 5 步 —— 问每个 guest：你是什么<a class="headerlink" href="#5-guest" title="Permanent link">&para;</a></h3>
+<p>在三台机器上都执行：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># 内核在启动时会记录内存加密状态</span>
 sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;sev|tdx|memory encryption|ccp&#39;</span>
 
@@ -2138,13 +2192,36 @@ lscpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>gre
 <span class="c1"># 是否存在 guest 证明设备？</span>
 ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest<span class="w"> </span>/dev/tdx_guest<span class="w"> </span><span class="m">2</span>&gt;/dev/null
 </code></pre></div>
-<p><strong>预期差异</strong>：在基线 VM 上，<code>dmesg</code> 那条 grep 是空的，<code>/dev/sev-guest</code> 不存在。在 SEV-SNP VM 上，你应当看到一行报告内存加密已激活（通常形如 <code>Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP</code>），并且字符设备 <code>/dev/sev-guest</code> 存在。</p>
-<p>这个设备就是整个模块 3 浓缩成的一个节点：它是 guest 请求 PSP 产出签名证明报告的<strong>唯一</strong>通道。</p>
-<h3 id="5">第 5 步 —— 确认那个否定结果<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
-<p>本实验最有意思的部分是你<strong>看不到</strong>什么。从机密 guest 内部，没有任何 API 能揭示内存加密密钥；从 host 侧，也没有受支持的路径能读到 guest 明文。试着用一句话说清楚：你刚刚排除掉了 §2.1 中的哪一个攻击者——以及还有哪四个没排除。</p>
-<h3 id="6">第 6 步 —— 清理<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-lab-baseline<span class="w"> </span>cc-lab-snp<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+<p><strong>预期差异</strong>：在基线 VM 上，<code>dmesg</code> 那条 grep 是空的，两个设备节点都不存在。在 SEV-SNP VM 上，你应当看到一行报告内存加密已激活（通常形如 <code>Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP</code>），以及字符设备 <code>/dev/sev-guest</code>。在 TDX VM 上，你看到的则应是一行点名 Intel TDX 的日志，以及设备 <code>/dev/tdx_guest</code>。</p>
+<p>两家不同的厂商，两个不同的设备名，两条不同的内核日志——以及一个完全相同的架构思想。写下那句对两个 guest 都成立、而对基线不成立的话。整门课就建立在那句定义之上。</p>
+<p>这些设备节点用一个文件概括了模块 3 的全部主题：它们是 guest 向硬件索取一份签名证明报告的唯一通道。</p>
+<h3 id="6">第 6 步 —— 实测机密内存在启动阶段的代价<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p>第 3.3 节说过，私有内存必须由 guest 显式接受后才能使用；模块 2 第 4 节则会断言这项开销与内存大小成正比。这个断言通常是被复述的，而不是被测量的。去测它。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 一台大内存 SEV-SNP VM —— 要接受几百 GB 的内存</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-snp-large<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-224<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
 </code></pre></div>
+<p>在小的和大的机密 VM 上，分别对比启动时间花在了哪里：</p>
+<div class="highlight"><pre><span></span><code>systemd-analyze<span class="w">                    </span><span class="c1"># firmware / loader / kernel / userspace 的拆分</span>
+systemd-analyze<span class="w"> </span>blame<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20<span class="w">   </span><span class="c1"># 哪些 unit 占大头（如果有的话）</span>
+
+<span class="c1"># 早期启动阶段的内存工作会出现在这里，那时 userspace 还不存在</span>
+sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;memory|accept|pvalidate|e820&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-30
+</code></pre></div>
+<p><strong>要记录什么</strong>：8 GB 与 896 GB 两台机密 guest 之间，firmware 阶段与 kernel 阶段的差值；以及同样两种规格的非机密机器上的同一差值，作为对照组。对照组才是让这个数字有意义的东西：大 VM 本来就启动得更慢，你要的是机密计算特有的那一部分，而不是两者之和。</p>
+<p>把这个数字带走。它会作为一个条目重新出现在模块 6 的冷启动预算里，在那里它与数 GB 权重解密争夺同一个延迟额度——在那里，把它估错两倍就会改变整个自动扩缩容的设计。</p>
+<h3 id="7">第 7 步 —— 确认那个否定结果<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<p>这个实验有意思的部分在于你<em>看不到</em>什么。从任一机密 guest 内部，都没有任何 API 能吐出内存加密密钥；从主机侧，也没有受支持的路径能读到 guest 明文。试着用一句话说清楚：你刚刚排除掉的是 §2.1 中的哪一类攻击者——以及还有哪四类没有排除。</p>
+<h3 id="8">第 8 步 —— 清理<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-lab-baseline<span class="w"> </span>cc-lab-snp-large<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+</code></pre></div>
+<p>留着 <code>cc-lab-snp</code> 和 <code>cc-lab-tdx</code>——模块 2 的实验会分别从它们身上拉一份真实的证明报告，而搭建成本你已经付过了。</p>
 <hr />
 <h2 id="_1">总结: 基础概念清单<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <table>

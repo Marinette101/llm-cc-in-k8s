@@ -781,10 +781,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-ask-each-guest-what-it-is" class="md-nav__link">
+  <a href="#step-4-boot-an-intel-tdx-confidential-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 — Ask each guest what it is
+        Step 4 — Boot an Intel TDX Confidential VM
       
     </span>
   </a>
@@ -792,10 +792,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-5-confirm-the-negative-result" class="md-nav__link">
+  <a href="#step-5-ask-each-guest-what-it-is" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 5 — Confirm the negative result
+        Step 5 — Ask each guest what it is
       
     </span>
   </a>
@@ -803,10 +803,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-6-clean-up" class="md-nav__link">
+  <a href="#step-6-measure-what-confidential-memory-costs-at-boot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 6 — Clean up
+        Step 6 — Measure what confidential memory costs at boot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-confirm-the-negative-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Confirm the negative result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Clean up
       
     </span>
   </a>
@@ -1502,10 +1524,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-ask-each-guest-what-it-is" class="md-nav__link">
+  <a href="#step-4-boot-an-intel-tdx-confidential-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 — Ask each guest what it is
+        Step 4 — Boot an Intel TDX Confidential VM
       
     </span>
   </a>
@@ -1513,10 +1535,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-5-confirm-the-negative-result" class="md-nav__link">
+  <a href="#step-5-ask-each-guest-what-it-is" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 5 — Confirm the negative result
+        Step 5 — Ask each guest what it is
       
     </span>
   </a>
@@ -1524,10 +1546,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-6-clean-up" class="md-nav__link">
+  <a href="#step-6-measure-what-confidential-memory-costs-at-boot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 6 — Clean up
+        Step 6 — Measure what confidential memory costs at boot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-confirm-the-negative-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Confirm the negative result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Clean up
       
     </span>
   </a>
@@ -2099,8 +2143,8 @@ K_{seal} = \text{KDF}\left(K_{RoT},\ \text{measurement},\ \text{context}\right)
 <p>That last dependency is unavoidable and worth stating plainly: <strong>attestation reduces "trust the provider's intentions" to "trust the provider's published image," but it cannot reduce it to nothing.</strong> Closing the remaining gap requires transparency mechanisms outside the hardware — reproducible builds, published source, binary transparency logs, third-party audit. Apple's Private Cloud Compute is the most complete published attempt at this, and Module 7, Part 6 examines what it does that a straightforward GKE design does not.</p>
 <hr />
 <h2 id="lab-making-the-tee-announce-itself">Lab: Making the TEE Announce Itself<a class="headerlink" href="#lab-making-the-tee-announce-itself" title="Permanent link">&para;</a></h2>
-<p><strong>Goal:</strong> boot an ordinary VM and a Confidential VM side by side and find the difference from inside the guest. The point is to establish that the TEE is observable and not a billing-only abstraction.</p>
-<p><strong>Cost:</strong> two small VMs for a few minutes — cents. <strong>Status:</strong> commands transcribed from Google Cloud documentation; verify flag names against <code>gcloud compute instances create --help</code> for your CLI version.</p>
+<p><strong>Goal:</strong> boot a baseline VM, an AMD SEV-SNP VM, and an Intel TDX VM side by side, find the difference from inside each guest, and then measure what confidential memory actually costs at boot. The point is to establish that the TEE is observable rather than a billing-only abstraction, and that its costs are measurable rather than folklore.</p>
+<p><strong>Scope:</strong> provision all four instances concurrently, including the large-memory one. Running both vendors side by side is the point — a lab that boots only SEV-SNP teaches you AMD, not confidential computing. <strong>Status:</strong> commands transcribed from Google Cloud documentation; verify flag names against <code>gcloud compute instances create --help</code> for your CLI version.</p>
 <h3 id="step-1-find-what-your-project-can-actually-run">Step 1 — Find what your project can actually run<a class="headerlink" href="#step-1-find-what-your-project-can-actually-run" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Which zones offer SEV-SNP and TDX-capable machine families</span>
 gcloud<span class="w"> </span>compute<span class="w"> </span>machine-types<span class="w"> </span>list<span class="w"> </span>--filter<span class="o">=</span><span class="s2">&quot;name~&#39;^n2d-standard&#39; OR name~&#39;^c3-standard&#39;&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2127,8 +2171,18 @@ gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span clas
 <span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
 </code></pre></div>
 <p>Note <code>--maintenance-policy=TERMINATE</code>. SEV-SNP instances cannot be live-migrated, so host maintenance stops the instance rather than moving it. This is not a CLI quirk — it is the first concrete operational consequence of the architecture, and Module 2, Part 4 explains why integrity protection and live migration are fundamentally in tension.</p>
-<h3 id="step-4-ask-each-guest-what-it-is">Step 4 — Ask each guest what it is<a class="headerlink" href="#step-4-ask-each-guest-what-it-is" title="Permanent link">&para;</a></h3>
-<p>On both machines:</p>
+<h3 id="step-4-boot-an-intel-tdx-confidential-vm">Step 4 — Boot an Intel TDX Confidential VM<a class="headerlink" href="#step-4-boot-an-intel-tdx-confidential-vm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-tdx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>TDX<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>c3-standard-4<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
+</code></pre></div>
+<p>Both vendors, running at once, on your own project. Nearly every comparison in Module 2 is one you can now check directly instead of taking on faith — and the differences are not cosmetic. Keep both alive until you finish Module 2's lab, which pulls an attestation report from each.</p>
+<h3 id="step-5-ask-each-guest-what-it-is">Step 5 — Ask each guest what it is<a class="headerlink" href="#step-5-ask-each-guest-what-it-is" title="Permanent link">&para;</a></h3>
+<p>On all three machines:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># The kernel logs the memory-encryption state at boot</span>
 sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;sev|tdx|memory encryption|ccp&#39;</span>
 
@@ -2138,13 +2192,36 @@ lscpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>gre
 <span class="c1"># Does a guest attestation device exist?</span>
 ls<span class="w"> </span>-l<span class="w"> </span>/dev/sev-guest<span class="w"> </span>/dev/tdx_guest<span class="w"> </span><span class="m">2</span>&gt;/dev/null
 </code></pre></div>
-<p><strong>Expected difference.</strong> On the baseline VM the <code>dmesg</code> grep is empty and <code>/dev/sev-guest</code> does not exist. On the SEV-SNP VM you should see a line reporting active memory encryption (typically of the form <code>Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP</code>) and the character device <code>/dev/sev-guest</code> should be present.</p>
-<p>That device is the entire subject of Module 3 in one node: it is the guest's only channel for asking the PSP to produce a signed attestation report.</p>
-<h3 id="step-5-confirm-the-negative-result">Step 5 — Confirm the negative result<a class="headerlink" href="#step-5-confirm-the-negative-result" title="Permanent link">&para;</a></h3>
-<p>The interesting part of this lab is what you <em>cannot</em> see. From inside the confidential guest, there is no API that reveals the memory encryption key, and from the host there is no supported path to read guest plaintext. Try to articulate, in one sentence, which adversary from §2.1 you have just excluded — and which four you have not.</p>
-<h3 id="step-6-clean-up">Step 6 — Clean up<a class="headerlink" href="#step-6-clean-up" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-lab-baseline<span class="w"> </span>cc-lab-snp<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+<p><strong>Expected difference.</strong> On the baseline VM the <code>dmesg</code> grep is empty and neither device node exists. On the SEV-SNP VM you should see a line reporting active memory encryption (typically of the form <code>Memory Encryption Features active: AMD SEV SEV-ES SEV-SNP</code>) and the character device <code>/dev/sev-guest</code>. On the TDX VM you should see a line naming Intel TDX and the device <code>/dev/tdx_guest</code> instead.</p>
+<p>Two different vendors, two different device names, two different kernel messages — and one identical architectural idea. Write down the one sentence that is true of both guests and false of the baseline. That sentence is the definition this whole course is built on.</p>
+<p>Those device nodes are the entire subject of Module 3 in one file: they are the guest's only channel for asking the hardware to produce a signed attestation report.</p>
+<h3 id="step-6-measure-what-confidential-memory-costs-at-boot">Step 6 — Measure what confidential memory costs at boot<a class="headerlink" href="#step-6-measure-what-confidential-memory-costs-at-boot" title="Permanent link">&para;</a></h3>
+<p>§3.3 said private memory must be accepted by the guest before use, and Module 2, §4 will claim this cost is proportional to memory size. That claim is usually repeated rather than measured. Measure it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># A large SEV-SNP VM — hundreds of gigabytes of memory to accept</span>
+gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span>cc-lab-snp-large<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--confidential-compute-type<span class="o">=</span>SEV_SNP<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>n2d-standard-224<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--min-cpu-platform<span class="o">=</span><span class="s2">&quot;AMD Milan&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--maintenance-policy<span class="o">=</span>TERMINATE<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2404-lts-amd64
 </code></pre></div>
+<p>On the small and the large confidential VM, compare where the boot time went:</p>
+<div class="highlight"><pre><span></span><code>systemd-analyze<span class="w">                    </span><span class="c1"># firmware / loader / kernel / userspace split</span>
+systemd-analyze<span class="w"> </span>blame<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20<span class="w">   </span><span class="c1"># which units dominate, if any</span>
+
+<span class="c1"># Early-boot memory work shows up here, before userspace exists</span>
+sudo<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;memory|accept|pvalidate|e820&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-30
+</code></pre></div>
+<p><strong>What to record.</strong> The delta in the firmware and kernel phases between a 8 GB and a 896 GB confidential guest, and the same delta on non-confidential machines of the same two sizes as a control. The control is what makes the number mean anything: large VMs boot more slowly regardless, and you want the confidential-specific component, not the sum.</p>
+<p>Carry that number forward. It reappears as a line item in Module 6's cold-start budget, where it competes directly with multi-gigabyte weight decryption for the same latency envelope — and where being wrong about it by a factor of two changes the autoscaling design.</p>
+<h3 id="step-7-confirm-the-negative-result">Step 7 — Confirm the negative result<a class="headerlink" href="#step-7-confirm-the-negative-result" title="Permanent link">&para;</a></h3>
+<p>The interesting part of this lab is what you <em>cannot</em> see. From inside either confidential guest, there is no API that reveals the memory encryption key, and from the host there is no supported path to read guest plaintext. Try to articulate, in one sentence, which adversary from §2.1 you have just excluded — and which four you have not.</p>
+<h3 id="step-8-clean-up">Step 8 — Clean up<a class="headerlink" href="#step-8-clean-up" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>delete<span class="w"> </span>cc-lab-baseline<span class="w"> </span>cc-lab-snp-large<span class="w"> </span>--zone<span class="o">=</span>us-central1-a<span class="w"> </span>--quiet
+</code></pre></div>
+<p>Keep <code>cc-lab-snp</code> and <code>cc-lab-tdx</code> — Module 2's lab pulls a real attestation report from each of them, and you have already paid the setup cost.</p>
 <hr />
 <h2 id="summary-foundations-checklist">Summary: Foundations Checklist<a class="headerlink" href="#summary-foundations-checklist" title="Permanent link">&para;</a></h2>
 <table>

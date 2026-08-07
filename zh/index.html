@@ -1187,8 +1187,8 @@
 <li><strong><code>## Lab:</code></strong> —— 一个可运行的练习。机密计算不会因为读字段表而变直观；它变直观的时刻，是你第一次真的拉出一份证明报告、把它解出来、翻转镜像里的一个字节、然后眼看着密钥释放失败。</li>
 </ol>
 <div class="admonition warning">
-<p class="admonition-title">关于实验与费用</p>
-<p>这些实验会真实创建 Confidential VM、Confidential GKE 与 A3 GPU 资源，均按量计费，且其中数项受地域容量限制。每个实验都会标注大致成本，并说明其命令是在真实项目上执行过的，还是从厂商文档转录、标记为<strong>未验证</strong>的。</p>
+<p class="admonition-title">关于实验与规模</p>
+<p>这些实验会真实创建 Confidential VM、Confidential GKE、A3 与 A4 GPU 资源，其中数个还会刻意同时跑多套配置。这不是铺张：本课程中几乎每一个论断都是两种环境之间的<em>差值</em>——机密与非机密、Hopper 与 Blackwell、这个验证方与那个验证方——而差值是无法用一个实例测出来的。凡是实验要求配对照组的地方，就把对照组开出来；用玩具规模跑出来的数字不是"不够精确"，而是朝着好看的方向错的。每个实验都会标注其规模，并说明其命令是在真实项目上执行过的，还是从厂商文档转录、标记为<strong>未验证</strong>的。真正的约束是容量而非费用——机密 GPU 机型受地域限制，安排实验前请先确认可用性。</p>
 </div>
 <p>从 <a href="01_confidential_computing_foundations/">模块 1: 机密计算基础</a> 开始。</p>
 

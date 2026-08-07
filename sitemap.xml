@@ -2,140 +2,140 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/01_confidential_computing_foundations/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/01_confidential_computing_foundations/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/01_confidential_computing_foundations/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/02_hardware_tee_architectures/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/02_hardware_tee_architectures/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/02_hardware_tee_architectures/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/03_remote_attestation_and_key_release/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/03_remote_attestation_and_key_release/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/03_remote_attestation_and_key_release/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/04_confidential_gpus_and_accelerators/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/04_confidential_gpus_and_accelerators/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/04_confidential_gpus_and_accelerators/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/05_google_cloud_confidential_surface/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/05_google_cloud_confidential_surface/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/05_google_cloud_confidential_surface/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/06_designing_confidential_llm_serving_on_gke/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/06_designing_confidential_llm_serving_on_gke/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/06_designing_confidential_llm_serving_on_gke/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/07_performance_operations_and_evaluation/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/07_performance_operations_and_evaluation/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/07_performance_operations_and_evaluation/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/appendix_glossary_and_terminology/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/appendix_glossary_and_terminology/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_glossary_and_terminology/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/appendix_reading_list/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/appendix_reading_list/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_reading_list/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/01_confidential_computing_foundations/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/01_confidential_computing_foundations/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/01_confidential_computing_foundations/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/02_hardware_tee_architectures/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/02_hardware_tee_architectures/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/02_hardware_tee_architectures/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/03_remote_attestation_and_key_release/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/03_remote_attestation_and_key_release/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/03_remote_attestation_and_key_release/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/04_confidential_gpus_and_accelerators/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/04_confidential_gpus_and_accelerators/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/04_confidential_gpus_and_accelerators/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/05_google_cloud_confidential_surface/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/05_google_cloud_confidential_surface/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/05_google_cloud_confidential_surface/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/06_designing_confidential_llm_serving_on_gke/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/06_designing_confidential_llm_serving_on_gke/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/06_designing_confidential_llm_serving_on_gke/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/07_performance_operations_and_evaluation/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/07_performance_operations_and_evaluation/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/07_performance_operations_and_evaluation/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_glossary_and_terminology/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_glossary_and_terminology/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/appendix_glossary_and_terminology/"/>
     </url>
     <url>
         <loc>https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_reading_list/</loc>
-        <lastmod>2026-08-01</lastmod>
+        <lastmod>2026-08-07</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://marinette101.github.io/llm-cc-in-k8s/zh/appendix_reading_list/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://marinette101.github.io/llm-cc-in-k8s/appendix_reading_list/"/>
