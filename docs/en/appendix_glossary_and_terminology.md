@@ -313,11 +313,20 @@ The hardware gate that refuses compute until attestation has succeeded (`nvidia-
 
 ## 8. Google Cloud
 
+### GKE Hypercluster
+Google Cloud's purpose-built supercomputing-scale Kubernetes architecture designed for massive AI training and confidential LLM serving. Integrates confidential GPU node pools, high-throughput storage (GCS FUSE / Hyperdisk ML), and AI orchestration engines. → Module 5, §2 & Module 6, §2
+
+### AI Hypercomputer
+Google Cloud's holistic AI supercomputing architecture combining performance-optimized hardware, open software frameworks (LeaderWorkerSet, Kueue, JobSet), and storage systems. → Module 5, §2
+
 ### Confidential VM
 The base product. `--confidential-compute-type=SEV | SEV_SNP | TDX`. **Plain SEV lacks memory integrity.** → Module 5, §1
 
 ### Confidential GKE Nodes
 Node pools whose VMs are Confidential VMs. `--confidential-node-type=sev|sev_snp|tdx`. **Does not cover the Google-operated control plane.** → Module 5, §2
+
+### Confidential Containers (CoCo)
+An upstream Kubernetes architecture running pods in isolated hardware microVM TEEs (e.g. Kata Containers on TDX/SEV-SNP), keeping the node Kubelet and host OS outside the pod's TCB. → Module 5, §6 & Module 6, §2.1
 
 ### Confidential Space
 A hardened, measured image running exactly one container and emitting an attestation token. Separates workload author, workload operator, and data collaborators — the operator has full project admin and still cannot read the data. → Module 5, §3
@@ -363,7 +372,16 @@ Perimeter controls on data egress — one of the few places a control *outside* 
 
 ---
 
-## 9. LLM Serving Intersection
+## 9. LLM Serving & AI Orchestration Intersection
+
+### `LeaderWorkerSet` (`LWS`)
+An open-source Kubernetes API controller for distributed multi-node AI workloads. Coordinates 1 Leader Pod and N Worker Pods as a unified group, handling mutual attestation and tensor parallel weight distribution. → Module 6, §2 & §3.2
+
+### `Dynamic Workload Scheduler` (`DWS`) / `flex-start`
+Google Cloud scheduling mechanism for accelerator infrastructure. `flex-start` allows gang-scheduling multi-node GPU capacity with deterministic execution windows, mitigating cold-start provisioning jitter. → Module 5, §2 & Module 6, §4.2
+
+### `Kueue`
+A Kubernetes-native queue manager that orchestrates batch and inference capacity, fair-sharing, and priority preemption across multi-tenant GPU pools. → Module 6, §4.2 & Module 7, §4.3
 
 ### `KV cache` (Key-Value cache)
 Cached attention keys and values. **A high-fidelity encoding of everything the model has been told** — treat it with the sensitivity of the prompt itself. → Module 6, §6.1

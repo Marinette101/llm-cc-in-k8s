@@ -138,18 +138,18 @@ The load-bearing word is **independently**. The architecture is only interesting
 ### [Module 5: The Google Cloud Confidential Surface](05_google_cloud_confidential_surface.md)
 
 1. **Confidential VM** — SEV, SEV-SNP, and TDX by machine family; feature gaps; regional and capacity reality; Confidential Hyperdisk and CMEK.
-2. **Confidential GKE Nodes** — enabling it, the node-pool constraints, and the critical point that the control plane sits *outside* your TEE.
+2. **Confidential GKE Nodes & GKE Hypercluster** — enabling it, AI Hypercomputer orchestration (LeaderWorkerSet, Kueue, DWS flex-start, GCS FUSE), node-pool constraints, and mitigating control plane risks outside your TEE.
 3. **Confidential Space** — the hardened image and launcher; the workload-author / operator / data-collaborator separation; DEBUG vs PROD images; the logging escape hatches and exactly how much they cost you.
 4. **Attestation on GCP** — the attestation token and its claims; the vTPM path; Workload Identity Federation attribute conditions as policy language; Cloud KMS, Cloud HSM, and EKM key hierarchies.
 5. **The Supporting Cast** — Binary Authorization and Sigstore signing; Workload Identity vs Secret Manager; gVisor as an *orthogonal* threat model, not a weaker TEE.
-6. **Confidential Space vs Confidential GKE for Inference** — a head-to-head decision table, and why the right answer is not the obvious one.
+6. **Architectural Spectrum for Inference** — Native GKE Hypercluster vs Confidential Space vs Split-Plane Hybrid: a head-to-head decision table and trade-off analysis.
 
 ### [Module 6: Designing Confidential LLM Serving on GKE](06_designing_confidential_llm_serving_on_gke.md)
 
 1. **Requirements Decomposition** — the four properties, stated formally, each against a named adversary.
-2. **The Reference Architecture** — Confidential GKE node + confidential GPU + vLLM + attestation agent + attested key release + in-TEE TLS termination, component by component.
-3. **The Encrypted Weight Pipeline** — provider-side encryption through attested decryption into protected GPU memory; key rotation and revocation.
-4. **The Cold-Start Problem** — a latency budget for TEE boot + attestation + multi-gigabyte decrypt + GPU load, and the mitigations that don't break attestation.
+2. **The Reference Architecture on GKE Hypercluster** — GKE Hypercluster confidential accelerated node pool + NVIDIA CC mode + LeaderWorkerSet (LWS) + in-pod attestation agent + external KMS key release + L4 passthrough / HPKE payload encryption.
+3. **The Encrypted Weight Pipeline** — provider-side encryption through GCS FUSE parallel streaming and multi-node tensor-parallel weight delivery into protected GPU HBM; key rotation and revocation.
+4. **The Cold-Start Problem & Hypercluster Optimizations** — a latency budget for TEE boot + attestation + multi-gigabyte decrypt + GPU load, and mitigations (Dynamic Workload Scheduler flex-start, FUSE local caching, Kueue warm pools).
 5. **Where TLS Terminates** — the attested-ingress problem, and why a managed L7 load balancer silently voids the guarantee.
 6. **KV Cache, Prefix Caching, and Disaggregation** — why cross-tenant prefix cache reuse is a plaintext-equivalent leak, and what disaggregated serving does to your trust boundary.
 7. **Multi-Tenancy** — per-tenant TEE vs shared TEE with cross-tenant continuous batching.

@@ -313,11 +313,20 @@ AMD 的可信设备指派，把 Instinct 加速器与 SEV-SNP 配对。→ 模�
 
 ## 8. Google Cloud
 
+### GKE Hypercluster
+Google Cloud 专为大规模 AI 训练与机密 LLM 推理构建的超算级 Kubernetes 架构。深度整合机密 GPU 加速节点池、高吞吐存储（GCS FUSE / Hyperdisk ML）与 AI 编排引擎。→ 模块 5 §2 与 模块 6 §2
+
+### AI Hypercomputer
+Google Cloud 的一体化 AI 超算架构，结合了针对性能优化的硬件体系、开源软件框架（LeaderWorkerSet、Kueue、JobSet）与高吞吐存储系统。→ 模块 5 §2
+
 ### Confidential VM
 基础产品。`--confidential-compute-type=SEV | SEV_SNP | TDX`。**纯 SEV 没有内存完整性。** → 模块 5 §1
 
 ### Confidential GKE Nodes
 其 VM 为 Confidential VM 的节点池。`--confidential-node-type=sev|sev_snp|tdx`。**不覆盖 Google 运营的控制面。** → 模块 5 §2
+
+### Confidential Containers（CoCo，机密容器）
+上游 Kubernetes 架构，将 Pod 运行在独立的硬件 MicroVM TEE 中（如基于 TDX/SEV-SNP 的 Kata Containers），将节点 Kubelet 与宿主机操作系统排除在 Pod 的 TCB 之外。→ 模块 5 §6 与 模块 6 §2.1
 
 ### Confidential Space
 一个加固的、被度量的镜像，只跑一个容器并产出证明令牌。分离工作负载作者、工作负载运营方与数据协作方——**运营方拥有完整项目管理员权限，却仍然读不到数据。** → 模块 5 §3
@@ -363,7 +372,16 @@ GCP 的验证方，签发 OIDC JWT 证明令牌。注意：对一个包含 Googl
 
 ---
 
-## 9. 与 LLM 服务的交叉
+## 9. 与 LLM 服务及 AI 编排的交叉
+
+### `LeaderWorkerSet` (`LWS`)
+用于分布式多节点 AI 工作负载的开源 Kubernetes API 控制器。将 1 个 Leader Pod 与 N 个 Worker Pod 协同为一个统一拓扑工作组，支持双向证明与张量并行权重分发。→ 模块 6 §2 与 §3.2
+
+### `Dynamic Workload Scheduler` (`DWS`) / `flex-start`
+Google Cloud 加速器算力调度机制。`flex-start` 模式支持以确定性的执行时间窗口对多节点 GPU 算力进行群调度与容量锁定，消除冷启动排队抖动。→ 模块 5 §2 与 模块 6 §4.2
+
+### `Kueue`
+云原生 Kubernetes 作业队列管理器，管理多租户 GPU 节点池上的批量与推理作业流、公平共享与优先级抢占。→ 模块 6 §4.2 与 模块 7 §4.3
 
 ### `KV cache`（键值缓存）
 缓存的 attention key 与 value。**是模型被告知的一切的高保真编码**——请以对待 prompt 本身的敏感度对待它。→ 模块 6 §6.1

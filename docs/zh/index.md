@@ -138,22 +138,22 @@ flowchart TD
 ### [模块 5: Google Cloud 机密计算产品面](05_google_cloud_confidential_surface.md)
 
 1. **Confidential VM** —— 按机型族区分的 SEV、SEV-SNP 与 TDX；功能差异；地域与容量的现实；Confidential Hyperdisk 与 CMEK。
-2. **Confidential GKE Nodes** —— 如何启用、节点池约束，以及那个关键事实：控制面在你的 TEE **之外**。
+2. **Confidential GKE Nodes 与 GKE Hypercluster** —— 如何启用、AI Hypercomputer 编排原语（LeaderWorkerSet、Kueue、DWS flex-start、GCS FUSE）、节点池约束，以及缓解控制面置于 TEE 之外的风险。
 3. **Confidential Space** —— 加固镜像与 launcher；workload author / operator / data collaborator 的三方分离；DEBUG vs PROD 镜像；日志逃生口，以及它们究竟让你付出多少代价。
 4. **GCP 上的证明** —— 证明令牌及其声明；vTPM 路径；作为策略语言的 Workload Identity Federation 属性条件；Cloud KMS、Cloud HSM 与 EKM 密钥层级。
 5. **配角阵容** —— Binary Authorization 与 Sigstore 签名；Workload Identity vs Secret Manager；gVisor 是**正交**的威胁模型，而不是"弱一点的 TEE"。
-6. **推理场景下 Confidential Space vs Confidential GKE** —— 正面对比决策表，以及为什么正确答案不是那个显而易见的答案。
+6. **推理架构范式光谱** —— 原生 GKE Hypercluster vs Confidential Space vs 分离平面混合架构：正面对比决策表与权衡分析。
 
 ### [模块 6: 在 GKE 上设计机密 LLM 服务](06_designing_confidential_llm_serving_on_gke.md)
 
 1. **需求拆解** —— 四条性质的形式化陈述，每条都指名对抗哪一方。
-2. **参考架构** —— Confidential GKE 节点 + 机密 GPU + vLLM + 证明代理 + 基于证明的密钥释放 + TEE 内 TLS 终结，逐组件拆解。
-3. **加密权重管线** —— 从提供方侧加密到在受保护 GPU 显存中完成证明后解密；密钥轮转与吊销。
-4. **冷启动问题** —— TEE 启动 + 证明 + 数 GB 解密 + GPU 加载的延迟预算，以及那些不会破坏证明的缓解手段。
+2. **GKE Hypercluster 上的参考架构** —— GKE Hypercluster 机密加速节点池 + NVIDIA CC 模式 + LeaderWorkerSet (LWS) + Pod 内部证明代理 + 外部 KMS 密钥释放 + L4 透传 / HPKE 载荷加密。
+3. **加密权重管线** —— 从提供方侧加密到 GCS FUSE 并行流式传输，再到多节点张量并行受保护 GPU 显存加载；密钥轮转与吊销。
+4. **冷启动问题与 Hypercluster 优化** —— TEE 启动 + 证明 + 数十 GB 解密 + GPU 加载的延迟预算，以及 Dynamic Workload Scheduler flex-start、FUSE 本地缓存等缓解方案。
 5. **TLS 在哪里终结** —— 已证明入口问题，以及托管 L7 负载均衡器为什么会悄无声息地作废整个保证。
-6. **KV cache、prefix cache 与分离式推理** —— 为什么跨租户复用 prefix cache 等价于明文泄露，以及分离式服务会把你的信任边界切成什么样。
-7. **多租户** —— 每租户独立 TEE vs 共享 TEE 内跨租户连续批处理。
-8. **可观测性与安全监控盲区** —— 机密性与滥用监控之间真实存在的冲突，以及三种架构应对方案。
+6. **KV cache、prefix cache 与解耦推理** —— 为什么跨租户复用 prefix cache 等价于明文泄露，以及解耦服务下的双向证明与加密 Fabric。
+7. **多租户** —— 每租户独立节点池 vs 机密容器 Pod TEE vs 共享 Pod 内连续批处理。
+8. **可观测性与安全监控盲区** —— 机密性与滥用监控之间真实存在的冲突，以及 TEE 内置分类器模型等架构应对方案。
 9. **对抗性复盘** —— 把成型设计重新拖回模块 1 的攻击者清单过一遍。
 
 ### [模块 7: 性能、运维与评估](07_performance_operations_and_evaluation.md)

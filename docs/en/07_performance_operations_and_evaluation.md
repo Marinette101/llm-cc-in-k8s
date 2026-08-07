@@ -191,14 +191,15 @@ The workable answer, which must exist as a written policy before the first advis
 - A **pre-committed deadline** at which the floor is raised regardless.
 - A **dashboard of TCB version distribution** across the fleet — you will need it the day the advisory lands, and building it under pressure is a bad time.
 
-### 4.3 Autoscaling Reconsidered
+### 4.3 Autoscaling & Fleet Orchestration with GKE Hypercluster
 
-Module 6, §4.3 established that reactive autoscaling does not work at multi-minute cold start. The operational shape that does:
+Module 6, §4.3 established that reactive autoscaling does not work at multi-minute cold start. On GKE Hypercluster, production fleet operations require advanced AI orchestration primitives:
 
-- **Predictive scaling** on forecasts, not instantaneous queue depth.
-- **Warm pool sized on the p99 of arrivals**, not the mean.
-- **Explicit backpressure** — queue and shed with a clear error, rather than timing out.
-- **Attestation health as a first-class signal.** An instance that has passed attestation and released its key is "ready"; one that has booted is not. Your readiness probe must check GPU CC mode and attestation state, not just that the HTTP port is open (Module 4, lab step 2).
+- **Predictive scaling & Calendar Reservations with Dynamic Workload Scheduler (DWS)**: Use DWS `flex-start` mode to gang-schedule and reserve multi-node GPU capacity ahead of scheduled demand peaks, avoiding runtime provisioning failures.
+- **Queue Management via Kueue**: Manage incoming inference job streams, priority tiers, and resource preemption across namespaces with Kueue, rather than letting raw HTTP requests slam unprepared backends.
+- **Warm pools sized on the p99 of arrivals**, maintaining pre-attested, pre-loaded Pods orchestrated via LeaderWorkerSet (LWS).
+- **Explicit backpressure and queue shedding**: Reject or queue requests with informative backpressure headers rather than letting client connections time out.
+- **Attestation health as a first-class Kubernetes readiness probe**: A Pod that has completed boot is *not* ready. The GKE readiness probe must verify that CPU TDX attestation passed, GPU CC mode is enabled (`cc_mode == ON`), the weight DEK is decrypted, and the model forward pass is warmed up.
 
 ---
 
@@ -208,14 +209,12 @@ Module 6, §4.3 established that reactive autoscaling does not work at multi-min
 
 | Claim | Holds? | Qualification |
 | :--- | :--- | :--- |
-| "The cloud operator cannot read data in use" | ✅ Yes | With SEV-SNP/TDX **and** GPU CC mode **and** in-TEE TLS termination |
-| "Data is protected from a compromised hypervisor" | ✅ Yes | This is the core, well-evidenced property |
-| "Only approved code can decrypt the data" | ✅ Yes | If the release policy is complete and the verifier is independent |
-| "The customer can verify this independently" | ✅ Yes | Only with an independent verifier; ❌ if the cloud operator is the verifier |
-| "Data never leaves the jurisdiction" | ⚠️ Partly | CC does not control placement; that is a separate, region-level control |
-| "This satisfies [regulation]" | ⚠️ Depends | CC is evidence toward a control objective, not a certification |
-| "The workload cannot exfiltrate data" | ❌ **No** | A TEE protects the workload from the platform, never the reverse |
-| "Data is safe from all attacks" | ❌ **No** | Side channels, traffic analysis, and availability remain (Module 2, §5.4) |
+| "Google cannot see prompt content" | ✅ Yes | Invariant P2a holds under L4 ingress and in-pod RA-TLS / HPKE payload encryption (Module 6, §5) |
+| "Google cannot see model weights" | ✅ Yes | Invariant P1 holds under provider-operated EKM and attested release (Module 6, §3) |
+| "Data never leaves the jurisdiction" | ⚠️ Partly | CC does not control physical placement; enforce via regional VPC-SC and GKE node pool locations |
+| "This satisfies [regulation]" | ⚠️ Depends | CC is technical evidence toward a control objective, not a regulatory certification |
+| "The workload cannot exfiltrate data" | ❌ **No** | A TEE protects the workload from the platform; P2b requires egress firewalls and audited images |
+| "Data is safe from all attacks" | ❌ **No** | Side channels, traffic analysis, and availability remain outside hardware scope (Module 2, §5.4) |
 
 ### 5.2 Where the Marketing Outruns the Mechanism
 
@@ -234,50 +233,48 @@ Being the person in the room who states these accurately is more valuable than b
 
 ### 6.1 The Field
 
-| | **AWS Nitro Enclaves** | **Azure Confidential Containers** | **Apple Private Cloud Compute** | **This design (GKE)** |
+| | **AWS Nitro Enclaves** | **Azure Confidential Containers** | **Apple Private Cloud Compute** | **This Design (GKE Hypercluster)** |
 | :--- | :--- | :--- | :--- | :--- |
-| Isolation unit | An enclave carved from a parent EC2 instance | A pod sandbox (Kata + SEV-SNP) | A whole purpose-built node | A Confidential Space instance |
-| Hardware basis | Nitro hypervisor and card | AMD SEV-SNP | Apple silicon, plus Intel TDX and NVIDIA CC in expanded deployments | Intel TDX + NVIDIA H100 CC |
-| Attestation model | Background-check — the enclave hands a document to KMS | JWT from Microsoft Azure Attestation | Client-enforced against a transparency log | Passport via Google Cloud Attestation, or provider-verified raw evidence |
-| Key release | KMS condition keys over attestation | Managed HSM secure key release | Apple-controlled, client-verified | Provider-operated external KMS |
-| No interactive access | Enclave has no persistent storage, no network, no shell | Sandbox boundary | **Explicitly designed out** — no remote shell, no interactive debugging | Confidential Space production image |
-| Reference values | Customer-managed PCRs | Policy over the container image | **Reproducible builds + published binaries + append-only log** | Signed golden values; digest allowlist |
-| GPU support | Limited | Emerging | Yes, NVIDIA CC | Yes, one H100 per instance |
+| **Isolation unit** | An enclave carved from parent EC2 instance | A pod sandbox (Kata MicroVM + SEV-SNP) | A whole purpose-built node | GKE Hypercluster Confidential Accelerated Node Pool / Pod |
+| **Hardware basis** | AWS Nitro hypervisor + card | AMD SEV-SNP / Intel TDX | Apple silicon + Intel TDX + NVIDIA CC in cloud expansions | Intel TDX + NVIDIA H100 / B200 CC mode |
+| **Attestation model** | Background-check — enclave hands document to KMS | JWT from Microsoft Azure Attestation | Client-enforced against transparency log | Provider-verified raw hardware evidence (or Google Cloud Attestation) |
+| **Key release** | AWS KMS condition keys over attestation | Azure Managed HSM secure key release | Apple-controlled, client-verified | Provider-operated external KMS (Cloud EKM) |
+| **No interactive access** | Enclave has no persistent storage, no network, no shell | Sandbox boundary | **Explicitly designed out** — no remote shell, no interactive debugging | Hardened GKE node pool + Binary Authorization + read-only rootfs |
+| **Reference values** | Customer-managed PCRs | Policy over container image | **Reproducible builds + published binaries + append-only log** | Signed golden measurements + container digest allowlist |
+| **GPU & AI Orchestration** | Limited GPU isolation | Emerging | Yes, NVIDIA CC on cloud clusters | **Full AI Hypercomputer stack** (LeaderWorkerSet, Kueue, DWS flex-start, GCS FUSE) |
 
 ### 6.2 What Each Gets Right
 
-**AWS Nitro Enclaves** has the cleanest key-release story: the KMS policy is expressed as condition keys over attestation measurements, and it is enforced by KMS itself. The mechanism is simple enough to explain to a customer in one diagram, which is a genuine engineering virtue. Its limitation is scope — an enclave has no persistent storage and no direct network, which is elegant for key operations and awkward for GPU-attached inference.
+**AWS Nitro Enclaves** has the cleanest key-release story: the KMS policy is expressed as condition keys over attestation measurements, and it is enforced by KMS itself. The mechanism is simple enough to explain to a customer in one diagram, which is a genuine engineering virtue. Its limitation is scope — an enclave has no persistent storage and no direct network, which is elegant for key operations and awkward for GPU-attached multi-node inference.
 
-**Azure Confidential Containers** gets the *unit of confidentiality* right. Running each pod in its own VM TEE (Kata plus SEV-SNP) means the kubelet and node agent stay outside the trust boundary — precisely the property Confidential GKE Nodes lacks (Module 5, §2.3). If GKE offered a pod-sandbox confidential runtime, the Module 6 architecture would be simpler, because you could keep Kubernetes and still exclude the control plane.
+**Azure Confidential Containers** gets the *unit of confidentiality* right for micro-workloads. Running each pod in its own VM TEE (Kata plus SEV-SNP/TDX) means the kubelet and node agent stay outside the trust boundary. On GKE Hypercluster, running Confidential Containers via Kata provides similar pod-level microVM encapsulation.
 
 **Apple Private Cloud Compute** is the most complete published treatment of the reference-value problem, and it is the design worth studying hardest. Its five stated requirements — stateless computation, enforceable guarantees, no privileged runtime access, non-targetability, and verifiable transparency — read as a direct answer to the gaps this book has catalogued. Two of them are the ones a GKE design most often fails to match:
 
 - **No privileged runtime access, designed out rather than configured off.** Apple states it deliberately omitted remote shell and interactive debugging from PCC nodes, because open-ended access is a broad attack surface. Compare this with Module 5, §2.3's `kubectl exec` demonstration.
 - **Verifiable transparency, enforced client-side.** Images are reproducibly built, binaries are published for inspection, measurements go into a cryptographically verifiable append-only ledger, and — the load-bearing part — client devices refuse to send data to a node whose image is not in that log. Publishing measurements achieves nothing unless clients enforce against them.
 
-### 6.3 The Development Worth Knowing About
+### 6.3 The Real-World Frontier: Scaled Hybrid Deployments
 
-Apple has extended Private Cloud Compute beyond its own data centers, running Apple Intelligence workloads on Google Cloud in collaboration with Google and NVIDIA. The published stack is **NVIDIA Confidential Computing on NVIDIA GPUs, Intel CPUs with TDX, and Google's Titan chip** — which is, component for component, the architecture Module 6 describes.
+Apple has extended Private Cloud Compute beyond its own data centers, running Apple Intelligence workloads on Google Cloud in collaboration with Google and NVIDIA. The published stack is **NVIDIA Confidential Computing on NVIDIA GPUs, Intel CPUs with TDX, and Google's Titan chip** — which is, component for component, the foundational architecture Module 6 describes on GKE Hypercluster.
 
-Two details from Apple's account are worth internalizing, because they are exactly the positions this book has argued for:
+Two details from Apple's architecture are worth internalizing, because they represent the exact technical posture this book advocates:
 
-1. **Apple retains complete control over the software.** Apple devices only trust PCC software cryptographically approved by Apple, and all binaries are published for public inspection. Google provides infrastructure; Google does not become the verifier. This is Module 3, §1.3's rule — *the verifier and key holder should be the party whose asset is at risk* — implemented at scale by a party with the leverage to insist on it.
-2. **Apple explicitly does not rely on confidential computing alone.** Their published position is that they do not rely solely on confidential computing to mitigate attacks leveraging privileged access outside the confidential VM, including side-channel attacks. That is Module 2, §5.4's honest summary, adopted as an engineering posture: layered defenses on the assumption that the TEE's guarantees have edges.
+1. **The model owner retains complete control over the software.** Client devices only trust PCC software cryptographically approved by Apple, and all binaries are published for public inspection. Google provides compute infrastructure; Google does not become the verifier. This is Module 3, §1.3's rule — *the verifier and key holder should be the party whose asset is at risk* — implemented at global scale.
+2. **Layered defense beyond hardware TEEs.** Apple explicitly does not rely on confidential computing alone. Their published position is that they do not rely solely on confidential computing to mitigate attacks leveraging privileged access outside the confidential VM, including side-channel attacks. That is Module 2, §5.4's honest summary: layered defenses on the premise that hardware TEE guarantees have boundaries.
 
-The practical significance for a Vertex 3P MaaS design is direct: **a sophisticated model provider running on Google Cloud infrastructure, with an independent verifier and its own software control, is not hypothetical.** It is a published, shipping arrangement, and it sets the expectation a comparable offering will be measured against.
+The practical significance for a Vertex 3P MaaS design is direct: **a sophisticated model provider running on Google Cloud infrastructure, with an independent verifier and its own software control, is not hypothetical.** It is a proven, shipping architecture, and it sets the benchmark against which enterprise confidential serving is evaluated.
 
-### 6.4 What a GKE Design Should Aim For
+### 6.4 What a Production GKE Hypercluster Design Should Aim For
 
 Ordered by ratio of value to effort:
 
-1. **Independent verification.** The model provider verifies raw hardware evidence itself. Highest value; entirely achievable today.
+1. **Independent verification.** The model provider verifies raw hardware evidence directly against Intel/NVIDIA silicon roots. Highest value; entirely achievable today.
 2. **External key management.** The weight KEK lives outside Google. Achievable with Cloud EKM.
-3. **No interactive access to production.** Confidential Space production images, and a policy that never accepts `dbgstat == enabled`. Free — it is a policy line.
-4. **Client-side attestation enforcement.** The client verifies before sending. Requires an SDK; this is the step most designs skip, and it is the one that makes the guarantee the customer's rather than the operator's.
-5. **Published reference values.** A signed, versioned manifest of acceptable measurements. Moderate effort, high credibility.
-6. **Reproducible builds.** Highest effort, highest strength. Aim for it; ship without it if you must, and say so.
-
-The gap between a defensible design and Apple's bar is items 4, 5, and 6 — and none of them is a hardware limitation. They are all product and engineering investment decisions.
+3. **Advanced AI Orchestration.** Leverage LeaderWorkerSet (LWS) for tensor parallel groups, DWS flex-start for capacity reservation, and GCS FUSE for parallel encrypted streaming.
+4. **No interactive access in production.** Disable SSH/node-level debug access, enforce Binary Authorization, and strip interactive debugging shells from production container images.
+5. **Client-side attestation enforcement.** The client verifies Pod evidence before transmitting prompts (In-Pod RA-TLS or HPKE).
+6. **Published reference values & Reproducible builds.** Maintain signed manifests of container and firmware digests in a verifiable log.
 
 ---
 

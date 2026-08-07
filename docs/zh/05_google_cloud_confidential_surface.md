@@ -59,11 +59,17 @@ Confidential VM 保护内存，它对磁盘只字未提，周边的存储故事�
 
 ---
 
-## 第 2 部分: Confidential GKE Nodes
+## 第 2 部分: Confidential GKE Nodes 与 GKE Hypercluster
 
-### 2.1 它是什么
+### 2.1 它是什么与 GKE Hypercluster 语境
 
-Confidential GKE Nodes 本质上就是"把我这个节点池的 VM 跑成 Confidential VM"。kubelet、容器运行时和你的 Pod 全都跑在 TEE 内部。
+Confidential GKE Nodes 本质上就是"把我这个节点池的 VM 跑成 Confidential VM"。kubelet、容器运行时和你的 Pod 全都跑在硬件 TEE 内部。
+
+在现代 AI 基础设施的语境下，**GKE Hypercluster**（Google Cloud AI Hypercomputer 架构中的超大规模 Kubernetes 集群架构）将这一范式扩展到了超大规模 GPU 与 TPU 集群。GKE Hypercluster 集成了：
+
+- **AI 原生调度与编排**：用于多租户排队与公平共享的 [Kueue](https://kueue.sigs.k8s.io/)、用于保障性群调度（Gang-scheduling）与容量预留的 [Dynamic Workload Scheduler (DWS)](https://cloud.google.com/kubernetes-engine/docs/concepts/dynamic-workload-scheduler) 及 `flex-start`、用于编排多节点分布式推理与训练（如 vLLM、TensorRT-LLM、Ray on GKE）的 [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws)，以及 [JobSet](https://github.com/kubernetes-sigs/jobset)。
+- **高性能网络与存储**：多网卡（Multi-NIC）GPUDirect-RDMA / RoCE 网络 Fabric、优化的 NCCL 拓扑、带本地 SSD 流式缓存的 [Cloud Storage FUSE](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/cloud-storage-fuse-csi-driver)，以及支持多节点并行读取吞吐的 [Hyperdisk ML](https://cloud.google.com/compute/docs/disks/hyperdisks#hyperdisk-ml)。
+- **硬件强制的机密性**：由 Intel TDX 或 AMD SEV-SNP 支撑的机密节点池，配合机密 GPU（运行在 CC 模式下的 NVIDIA Hopper H100/H200 与 Blackwell B200）。
 
 集群级启用（Autopilot 或 Standard）：
 
@@ -86,9 +92,9 @@ gcloud container node-pools create NODE_POOL_NAME \
 
 **集群级启用不可逆。** 你无法在已有集群上把它关掉。节点池级启用是灵活的那条路，也是你在迭代期间想要的。
 
-### 2.2 GPU 配置
+### 2.2 GPU 与加速器配置
 
-模块 4 §4.1 里的机密 GPU 路径，表达成一个节点池：
+模块 4 §4.1 里的机密 GPU 路径，表达成一个 GKE 节点池：
 
 ```bash
 gcloud container node-pools create cc-gpu-pool \
@@ -100,14 +106,13 @@ gcloud container node-pools create cc-gpu-pool \
   --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest
 ```
 
-这些约束值得重述，因为它们是"你能服务什么"的硬边界：
+不同硬件世代下的约束：
 
-- 每节点一块 H100 80 GB，`a3-highgpu-1g`。
-- Intel TDX。
-- **无 GPU 共享**——没有 time-sharing，没有 multi-instance GPU。
-- 有最低 GKE 版本要求，且随"手动还是自动安装驱动"、"是否使用 ComputeClasses 或 flex-start"而不同。
+- **Hopper 世代（`a3-highgpu-1g`）**：每节点一块 H100 80 GB，Intel TDX，**无 GPU 共享**（没有 time-sharing，没有 MIG）。单节点内跨 GPU 张量并行受单 GPU 直通限制。
+- **Blackwell 世代（`a4-highgpu-8g` / HGX B200）**：单台机密节点可挂载多达 8 块 B200，且 TEE 内部的 GPU 间通过硬件加密的 NVLink 互联。
+- 有最低 GKE 版本要求，且随"手动还是自动安装驱动"、"是否使用 ComputeClasses 或 Dynamic Workload Scheduler flex-start"而不同。
 
-### 2.3 Confidential GKE Nodes **没有**覆盖什么
+### 2.3 Confidential GKE Nodes **没有**覆盖什么（以及如何加固）
 
 本节是这个模块存在的理由，也是从中最该带走的东西。
 
@@ -140,17 +145,23 @@ flowchart TD
 
 这包括 `kubectl exec` 进你的推理 Pod、在节点上调度一个特权调试 Pod，或者加一个读取进程内存的 DaemonSet。而内存加密在整个过程中都在**完美地**履行职责——它正在保护那个攻击者的代码不被 hypervisor 看见。
 
-**诚实的表述**：Confidential GKE Nodes 把 hypervisor 和物理层移出了你的 TCB（攻击者 A2 与 A4，以及 A3 的很大一部分）。它**没有**移出 Kubernetes 控制面，而在 GKE 上控制面由 Google 运营。**如果你威胁模型里的头号攻击者是"Google"，那么单靠 Confidential GKE Nodes 并不能完整地应对它。**
+**诚实的表述**：Confidential GKE Nodes 把 hypervisor 和物理层移出了你的 TCB（攻击者 A2 与 A4，以及 A3 的很大一部分）。它**没有**移出 Kubernetes 控制面，而在 GKE 上控制面由 Google 运营。
 
-这不是对产品的批评——这是对它用途的正确解读。但任何声称"防护云内部人员"的设计文档都必须把这一点写明，因为模型提供方的安全团队会找到它。
+#### 现代 GKE 架构如何弥合该差距
+
+为了在不放弃 Kubernetes 的前提下在 GKE 上实现 3P MaaS 隔离，生产架构采用了三层纵深防御：
+
+1. **Pod 级密码学证明与内存密钥隔离**：不依赖 Kubernetes RBAC 门控访问，而是让推理容器内部运行的证明代理直接从底层硬件获取原始 TDX quote 与 GPU RIM，直接向模型提供方的外部 KMS（EKM）进行证明。解封后的 DEK 与明文权重**仅存在于**受保护的 GPU HBM/内存中。明文 prompt **仅在 Pod 内部**解密（通过 RA-TLS 或 HPKE）。控制面与宿主机 daemon 全程只能看到密文。
+2. **控制面与准入加固**：强制执行 [Binary Authorization](https://cloud.google.com/binary-authorization)（拦截未签名/未经证明的容器镜像）、严格的 Pod 安全准入（禁止 `privileged`、`hostPID`、`hostIPC`、`hostPath`）、私有控制面端点，以及对 `kubectl exec` 的 Break-Glass 审计日志。
+3. **机密容器（CoCo）/ Pod 级 MicroVM TEE**：采用 microVM 运行时（如基于 TDX/SEV-SNP 的 Kata Containers），将宿主机 OS、kubelet 及邻居 Pod 彻底排除在 Pod 的硬件 TEE **之外**，兼得 Confidential Space 级别的强隔离与 Kubernetes 编排能力。
 
 ### 2.4 其他值得知道的限制
 
 - 与 sole-tenant 节点不兼容。
 - 不支持 Windows 节点池。
-- Local SSD 仅支持临时存储用途。
+- Local SSD 仅支持临时存储与读取缓存用途。
 - Node auto-provisioning 支持 SEV 与 SEV-SNP，但**不支持 TDX**——这很要紧，因为 TDX 正是机密 GPU 路径。
-- 在无法热迁移的场景下，维护事件会造成中断。
+- 在无法热迁移的场景下，维护事件会造成中断（`maintenance-policy=TERMINATE`）。
 
 ---
 
@@ -326,59 +337,57 @@ P3（互相可验证）这条性质就是在这里赢下或输掉的。
 
 ---
 
-## 第 6 部分: 推理场景下 Confidential Space vs Confidential GKE
+## 第 6 部分: Confidential Space 与 GKE Hypercluster 用于推理的对比
 
-### 6.1 正面对比
+### 6.1 架构图谱
 
-| 维度 | **Confidential GKE Nodes** | **Confidential Space** |
-| :--- | :--- | :--- |
-| 机密性单位 | 节点 | 运行一个容器的 VM 实例 |
-| kubelet 在 TCB 内 | **是** | 不适用——没有 Kubernetes |
-| 控制面能否向边界内注入代码 | **能** | **不能** |
-| 运营方能否访问数据 | 能，只要集群权限足够 | **不能，按设计** |
-| 证明身份 | 节点镜像；工作负载身份需额外工作 | 容器镜像摘要，原生在令牌里 |
-| 开箱即得的证明令牌 | 无 | **有** |
-| GPU 支持 | 有——`a3-highgpu-1g`，一块 H100，TDX | 有——以 `submods.nvidia_gpu` 声明呈现 |
-| 自动扩缩容、滚动更新、服务网格 | **有——原生** | 无；你自己建 |
-| 多容器 Pod、sidecar | 支持 | 一个容器 |
-| 运维熟悉度 | 高 | 低 |
-| 契合 3P MaaS 信任模型 | 部分 | **契合——它就是为此设计的** |
+在 GCP 上部署机密 LLM 推理时，依据威胁模型的严苛程度、模型规模以及运维需求，架构分布在三个主要范式构成的光谱上：
 
-### 6.2 建议，并把代价说清楚
+| 维度 | **原生 GKE Hypercluster（机密节点池）** | **Confidential Space（独立 CVM）** | **GKE Hypercluster 分离平面 / 混合编排** |
+| :--- | :--- | :--- | :--- |
+| **机密性单位** | Pod / 节点（硬件 TEE 内存 + GPU CC 模式） | 运行单一容器的独立 VM | 由 GKE 编排的 Confidential Space 工作节点 |
+| **kubelet 在 TCB 内** | **是** —— 通过 Pod 级证明与准入加固消除风险 | 不适用 —— 无 Kubernetes 或宿主 daemon | kubelet 位于机密工作平面之外 |
+| **控制面代码注入风险** | 通过 Binary Authorization 与严格 Pod 安全准入防御 | **无** —— 不可变、被度量的镜像 | GKE 仅控制生命周期，无法读取工作节点内存 |
+| **分布式多节点服务（TP/PP）** | 通过 LeaderWorkerSet (LWS)、Ray on GKE、多网卡 RoCE **原生支持** | 复杂 —— 需自行构建跨节点同步 | GKE 负责调度与路由，工作节点处理张量并行 |
+| **AI 调度与扩缩容（Kueue, DWS, HPA）** | **全套原生支持**（Dynamic Workload Scheduler flex-start） | 无 —— 需自行实现编排器 | **支持** —— GKE 管理排队、伸缩与请求分发 |
+| **证明机制** | Pod 内部证明代理直接读取 TDX / GPU 硬件证据 | 开箱即得的 launcher socket（`teeserver.sock`） | 工作节点 CVM 内部的 launcher socket |
+| **存储与权重流式传输** | Cloud Storage FUSE + Hyperdisk ML + 内存解密 | 直接下载 GCS 密文至 `tmpfs` | 下载 GCS 密文至工作节点 `tmpfs` / 内存 |
+| **运维复杂度** | 标准 Kubernetes AI 生产工作流 | 极高 —— 需从零重造编排工具链 | 中等 —— 双平面混合架构 |
+| **最契合场景** | **前沿大模型服务（70B+）、企业级大规模 MaaS** | 单租户机密批处理 / 合规审计任务 | 监管严格要求绝对零宿主机 agent 驻留的 MaaS |
 
-**对一个安全论断是"云运营商读不到模型权重或客户 prompt"的负载，Confidential Space 是架构上正确的原语，而单靠 Confidential GKE Nodes 不充分。**
+### 6.2 决策框架
 
-理由就是 §2.3：在 Confidential GKE Nodes 上，由 Google 运营的控制面可以把代码调度进你的信任边界。仅这一条事实就削弱了那个头号论断，而且**任何 RBAC 配置都修不好它**——因为 RBAC 正是由那个你试图排除的控制面执行的。
+这三种架构的选择取决于你如何在**威胁模型严苛度**与**模型规模与运维能力**之间权衡：
 
-这条建议的代价是真实的，不应被淡化。选择 Confidential Space 意味着对系统的机密部分放弃 HPA、滚动发布、服务网格、sidecar，以及整套 GKE 运维工具链。对一个需要随流量伸缩的推理服务来说，那是一笔可观的工程投入。
-
-### 6.3 通常胜出的那个混合方案
-
-实践中可行的架构是"两者皆非/两者皆是"——一个**分离平面**设计：
+1. **原生 GKE Hypercluster（配合机密加速节点池）** 是生产级、高吞吐 LLM 服务的推荐基准。它提供了完整的 AI Hypercomputer 生态系统——用于跨 A3/A4 节点进行张量并行模型服务的 LeaderWorkerSet、用于公平排队的 Kueue、用于确定性算力保障的 Dynamic Workload Scheduler，以及用于权重流式加载的 Cloud Storage FUSE。至于 kubelet 位于 TCB 内的残留风险，通过密码学 Pod 级证明（仅当硬件 TDX + GPU CC 模式校验通过时才直接向 Pod 释放解密密钥）、端到端载荷加密以及严格的准入控制来有效消除。
+2. **Confidential Space** 适用于合同或监管条例明确要求*零交互式运维访问的密码学证明*，且严禁任何多租户 kubelet 或宿主 agent 驻留在机器上的场景。
+3. **GKE Hypercluster 分离平面 / 混合架构** 则连接了两者的优势：由 GKE Hypercluster 充当不可信但高效率的控制面、网关与路由器，并将加密的推理载荷分发给隔离的 Confidential Space 工作节点实例。
 
 ```mermaid
 flowchart TD
-    subgraph NORM ["普通 GKE —— 机密数据永不触及这里"]
-        A["入口、路由、限流"]
-        B["认证、配额、计费、计量"]
-        C["机群控制面：<br>扩缩容决策、健康、发布"]
-        D["指标与非内容日志"]
+    subgraph NORM ["☁️ GKE Hypercluster 平面 —— 明文数据永不触及这里"]
+        A["L4 入口 / Gateway API<br>流量路由与速率限制"]
+        B["Kueue + Dynamic Workload Scheduler<br>配额管理与 flex-start 算力预留"]
+        C["机群控制器 / LWS<br>扩缩容、健康检查、发布编排"]
+        D["指标与不含内容的遥测数据"]
     end
 
-    subgraph CONF ["🔒 Confidential Space 实例 —— 明文唯一存在的地方"]
-        E["推理工作负载<br>已证明，单容器"]
-        F["权重仅在基于证明的<br>密钥释放之后解密"]
-        G["TLS 或载荷解密<br>在**内部**终结"]
+    subgraph CONF ["🔒 机密数据平面 —— 明文唯一存在的地方"]
+        E["推理工作负载 (vLLM / TensorRT-LLM)<br>已证明的硬件 TEE + GPU CC 模式"]
+        F["权重仅在通过提供方<br>证明检查后在内存中解密"]
+        G["Pod 内 RA-TLS / 载荷解密<br>在 TEE 内部严格终结"]
     end
 
-    A -->|"仅加密载荷——<br>绝不传明文 prompt"| E
-    C -->|"生命周期指令，<br>**不是**数据访问"| E
+    A -->|"仅加密载荷——<br>绝不传输明文 prompt"| E
+    C -->|"生命周期指令，<br>**绝非**数据访问"| E
     E -->|"加密响应、<br>不含内容的指标"| D
 ```
 
-让它成立的规则是：**普通 GKE 平面可以编排机密平面，但绝不能看到明文。** 入口转发加密载荷；控制面启停实例；指标携带计数与延迟但不含内容。机密平面很小、可审计、只做一件事。
+约束所有机密 GKE 架构的核心不变式：
 
-这就是模块 6 会完整展开的架构，包括最难的那部分——**prompt 如何从客户手里到达机密平面，而不在边界处被解密。**
+> **编排平面可以管理容量、调度作业并路由加密流量。它绝不可持有解密密钥，也绝不可观测任何明文 prompt 或权重数据。**
+
+模块 6 将把这些模式展开为一个完整的、面向生产的设计。
 
 ---
 

@@ -59,11 +59,17 @@ The middle row is the one that matters and the one most often done wrong. Encryp
 
 ---
 
-## Part 2: Confidential GKE Nodes
+## Part 2: Confidential GKE Nodes & GKE Hypercluster
 
-### 2.1 What It Is
+### 2.1 What It Is & The GKE Hypercluster Context
 
-Confidential GKE Nodes is, essentially, "run my node pool's VMs as Confidential VMs." The kubelet, the container runtime, and your pods all run inside the TEE.
+Confidential GKE Nodes is, essentially, "run my node pool's VMs as Confidential VMs." The kubelet, the container runtime, and your pods all run inside the hardware TEE.
+
+In the context of modern AI infrastructure, **GKE Hypercluster** (the supercomputing-scale Kubernetes architecture within Google Cloud's AI Hypercomputer) scales this paradigm to massive GPU and TPU clusters. GKE Hypercluster integrates:
+
+- **AI-native scheduling & orchestration**: [Kueue](https://kueue.sigs.k8s.io/) for multi-tenant queueing and fair sharing, [Dynamic Workload Scheduler (DWS)](https://cloud.google.com/kubernetes-engine/docs/concepts/dynamic-workload-scheduler) with `flex-start` for guaranteed gang-scheduling and capacity reservations, [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws) for orchestrating multi-node distributed inference and training (e.g., vLLM, TensorRT-LLM, Ray on GKE), and [JobSet](https://github.com/kubernetes-sigs/jobset).
+- **High-performance networking and storage**: Multi-NIC GPUDirect-RDMA / RoCE network fabrics, optimized NCCL topologies, [Cloud Storage FUSE](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/cloud-storage-fuse-csi-driver) with local SSD streaming caches, and [Hyperdisk ML](https://cloud.google.com/compute/docs/disks/hyperdisks#hyperdisk-ml) for multi-node read throughput.
+- **Hardware-enforced security**: Confidential VM node pools backed by Intel TDX or AMD SEV-SNP, combined with Confidential GPUs (NVIDIA Hopper H100/H200 and Blackwell B200 with CC mode).
 
 Enable at cluster level (Autopilot or Standard):
 
@@ -86,9 +92,9 @@ gcloud container node-pools create NODE_POOL_NAME \
 
 **Cluster-level enablement is irreversible.** You cannot turn it off on an existing cluster. Node-pool-level enablement is the flexible path and is what you want while iterating.
 
-### 2.2 The GPU Configuration
+### 2.2 The GPU & Accelerator Configuration
 
-The confidential GPU path, from Module 4, §4.1, expressed as a node pool:
+The confidential GPU path, from Module 4, §4.1, expressed as a GKE node pool:
 
 ```bash
 gcloud container node-pools create cc-gpu-pool \
@@ -100,14 +106,13 @@ gcloud container node-pools create cc-gpu-pool \
   --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest
 ```
 
-The constraints are worth restating because they are the hard boundary on what you can serve:
+The accelerator constraints across machine generations:
 
-- One H100 80 GB per node, `a3-highgpu-1g`.
-- Intel TDX.
-- **No GPU sharing** — no time-sharing, no multi-instance GPU.
-- Minimum GKE versions apply and differ depending on whether you use manual or automatic driver installation, and on whether you use ComputeClasses or flex-start.
+- **Hopper generation (`a3-highgpu-1g`)**: One H100 80 GB per node, Intel TDX, **no GPU sharing** (no MIG, no time-slicing). Tensor parallelism across GPUs within a single node is constrained by single-GPU passthrough.
+- **Blackwell generation (`a4-highgpu-8g` / HGX B200)**: Up to 8 B200 GPUs per confidential node, with hardware-encrypted NVLink connecting GPUs inside the TEE.
+- Minimum GKE versions apply and differ depending on whether you use manual or automatic driver installation, and on whether you use ComputeClasses or Dynamic Workload Scheduler flex-start.
 
-### 2.3 What Confidential GKE Nodes Does *Not* Cover
+### 2.3 What Confidential GKE Nodes Does *Not* Cover (and How to Harden It)
 
 This section is the reason this module exists, and it is the most important thing to take from it.
 
@@ -140,17 +145,23 @@ Follow the implication carefully:
 
 That includes `kubectl exec` into your inference pod, scheduling a privileged debug pod on the node, or adding a DaemonSet that reads process memory. The memory encryption is doing its job perfectly the entire time — it is protecting that attacker's code from the hypervisor.
 
-**The honest characterization**: Confidential GKE Nodes removes the hypervisor and the physical layer from your TCB (adversaries A2 and A4, and much of A3). It does **not** remove the Kubernetes control plane, and on GKE the control plane is operated by Google. If your threat model's headline adversary is "Google," Confidential GKE Nodes alone does not fully address it.
+**The honest characterization**: Confidential GKE Nodes removes the hypervisor and the physical layer from your TCB (adversaries A2 and A4, and much of A3). It does **not** remove the Kubernetes control plane, and on GKE the control plane is operated by Google.
 
-This is not a criticism of the product — it is a correct reading of what it is for. But it must be stated explicitly in any design document that claims protection against a cloud insider, because a model provider's security team will find it.
+#### How Modern GKE Architectures Address This Gap
+
+To achieve 3P MaaS isolation on GKE without abandoning Kubernetes, production architectures employ three layers of defense:
+
+1. **Pod-Level Cryptographic Attestation & In-Memory Key Isolation**: Rather than trusting Kubernetes RBAC to gate access, the inference container runs an in-pod attestation agent that collects raw TDX quotes and GPU RIMs directly from the hardware, attesting directly to the Model Provider's External KMS (EKM). The unwrapped DEK and plaintext weights exist **only** inside protected GPU HBM/RAM. Plaintext prompts are decrypted **only** inside the pod (via RA-TLS or HPKE). The control plane and host daemons only ever see encrypted ciphertext.
+2. **Control Plane & Admission Hardening**: Enforce [Binary Authorization](https://cloud.google.com/binary-authorization) (blocking unattested/unsigned container images), strict Pod Security Admission (disallowing `privileged`, `hostPID`, `hostIPC`, `hostPath`), private control planes, and Break-Glass audit logging on `kubectl exec`.
+3. **Confidential Containers (CoCo) / Pod-Level MicroVM TEEs**: Utilizing microVM runtime handlers (e.g. Kata Containers on TDX/SEV-SNP) places the host OS, kubelet, and neighboring pods **outside** the Pod's hardware TEE, providing Confidential Space-grade isolation with Kubernetes orchestration.
 
 ### 2.4 Other Limitations Worth Knowing
 
 - Not compatible with sole-tenant nodes.
 - Windows node pools unsupported.
-- Local SSD supported only for ephemeral storage.
+- Local SSD supported only for ephemeral storage or read caching.
 - Node auto-provisioning supports SEV and SEV-SNP, but not TDX — which matters, because TDX is the confidential-GPU path.
-- Maintenance events cause disruption where live migration is unavailable.
+- Maintenance events cause disruption where live migration is unavailable (`maintenance-policy=TERMINATE`).
 
 ---
 
@@ -326,49 +337,45 @@ They are **orthogonal**, not alternatives. In fact both are relevant to 3P MaaS:
 
 ---
 
-## Part 6: Confidential Space versus Confidential GKE for Inference
+## Part 6: Confidential Space versus GKE Hypercluster for Inference
 
-### 6.1 The Head-to-Head
+### 6.1 The Architectural Spectrum
 
-| Dimension | **Confidential GKE Nodes** | **Confidential Space** |
-| :--- | :--- | :--- |
-| Unit of confidentiality | The node | The VM instance running one container |
-| Kubelet in the TCB | **Yes** | N/A — no Kubernetes |
-| Control plane can inject code into the boundary | **Yes** | **No** |
-| Operator can access data | Yes, with sufficient cluster access | **No, by design** |
-| Attestation identity | Node image; workload identity requires extra work | The container image digest, natively in the token |
-| Turnkey attestation token | No | **Yes** |
-| GPU support | Yes — `a3-highgpu-1g`, one H100, TDX | Yes — surfaced as `submods.nvidia_gpu` claims |
-| Autoscaling, rolling updates, service mesh | **Yes — native** | No; you build it |
-| Multi-container pods, sidecars | Yes | One container |
-| Operational familiarity | High | Low |
-| Suits the 3P MaaS trust model | Partially | **Yes — it was designed for it** |
+When deploying confidential LLM serving on GCP, architectures fall across a three-way spectrum depending on the threat model, model scale, and operational requirements:
 
-### 6.2 The Recommendation, With Its Cost Stated
+| Dimension | **Native GKE Hypercluster (Confidential Node Pools)** | **Confidential Space (Standalone CVMs)** | **GKE Hypercluster Split-Plane / Hybrid** |
+| :--- | :--- | :--- | :--- |
+| **Unit of confidentiality** | Pod / Node (with hardware TEE memory & GPU CC) | Standalone VM running one container | Confidential Space worker nodes orchestrated by GKE |
+| **Kubelet in TCB** | **Yes** — mitigated via in-pod attestation & admission hardening | N/A — no Kubernetes or host daemons | Kubelet is outside the confidential worker plane |
+| **Control plane code injection** | Mitigated by Binary Authorization & strict Pod Security | **No** — immutable, measured image | GKE controls lifecycle; cannot access worker memory |
+| **Distributed multi-node serving (TP/PP)** | **Native** via LeaderWorkerSet (LWS), Ray on GKE, multi-NIC RoCE | Complex — must build custom inter-node sync | GKE schedules & routes; workers handle tensor parallelism |
+| **AI scheduling & scaling (Kueue, DWS, HPA)** | **Full native support** (Dynamic Workload Scheduler flex-start) | None — must build custom orchestrator | **Yes** — GKE manages queueing, scaling, and routing |
+| **Attestation mechanism** | In-pod attestation agent querying TDX / GPU evidence | Turnkey launcher socket (`teeserver.sock`) | Turnkey launcher socket inside worker CVMs |
+| **Storage & weight streaming** | Cloud Storage FUSE + Hyperdisk ML + in-memory decrypt | Direct GCS download to `tmpfs` | GCS download to worker `tmpfs` / memory |
+| **Operational complexity** | Standard Kubernetes AI workflow | High — rebuild orchestration from scratch | Moderate — dual-plane architecture |
+| **Best fit** | **Frontier LLM serving (70B+), enterprise MaaS at scale** | Single-tenant confidential batch / audit jobs | Regulatory mandates requiring zero host-level agent access |
 
-**For a workload whose security claim is "the cloud operator cannot read the model weights or the customer prompts," Confidential Space is the architecturally correct primitive, and Confidential GKE Nodes alone is not sufficient.**
+### 6.2 The Decision Framework
 
-The reason is §2.3: on Confidential GKE Nodes, the Google-operated control plane can schedule code inside your trust boundary. That single fact undermines the headline claim, and no amount of RBAC configuration fixes it, because RBAC is enforced by the control plane you are trying to exclude.
+The choice between these architectures depends on how you balance **threat model strictness** against **model scale and operational capability**:
 
-The cost of that recommendation is real and should not be minimized. Choosing Confidential Space means giving up horizontal pod autoscaling, rolling deployments, service mesh, sidecars, and the entire GKE operational toolkit for the confidential portion of the system. For an inference service that needs to scale with traffic, that is a substantial engineering investment.
-
-### 6.3 The Hybrid That Usually Wins
-
-In practice the workable architecture is neither/both — a split-plane design:
+1. **Native GKE Hypercluster with Confidential Node Pools** is the recommended baseline for production, high-throughput LLM serving. It provides the full AI Hypercomputer ecosystem — LeaderWorkerSet for tensor-parallel model serving across A3/A4 nodes, Kueue for fair queueing, Dynamic Workload Scheduler for guaranteed capacity, and Cloud Storage FUSE for weight streaming. The residual risk of Kubelet in the TCB is neutralized through cryptographic in-pod attestation (releasing decryption keys directly to the Pod only if TDX + GPU CC mode pass), end-to-end payload encryption, and strict admission controls.
+2. **Confidential Space** is the right choice when contractual or regulatory requirements demand *cryptographic proof of zero interactive operator access* and forbid any multi-tenant Kubelet or host agent from coexisting on the machine.
+3. **GKE Hypercluster Split-Plane / Hybrid** bridges the two: GKE Hypercluster acts as the untrusted, high-efficiency control plane, gateway, and router, while dispatching encrypted inference payloads to isolated Confidential Space worker instances.
 
 ```mermaid
 flowchart TD
-    subgraph NORM ["Regular GKE — no confidential data ever touches this"]
-        A["Ingress, routing, rate limiting"]
-        B["Auth, quota, billing, metering"]
-        C["Control plane for the fleet:<br>scaling decisions, health, rollout"]
-        D["Metrics and non-content logs"]
+    subgraph NORM ["☁️ GKE Hypercluster Plane — no plaintext data ever touches this"]
+        A["L4 Ingress / Gateway API<br>Traffic routing & rate limiting"]
+        B["Kueue + Dynamic Workload Scheduler<br>Quota management & flex-start provisioning"]
+        C["Fleet Controller / LWS<br>Scaling, health, rollout orchestration"]
+        D["Metrics & non-content telemetry"]
     end
 
-    subgraph CONF ["🔒 Confidential Space instances — the only place plaintext exists"]
-        E["Inference workload<br>attested, one container"]
-        F["Weights decrypted only after<br>attested key release"]
-        G["TLS or payload decryption<br>terminated INSIDE"]
+    subgraph CONF ["🔒 Confidential Data Plane — the ONLY place plaintext exists"]
+        E["Inference Workload (vLLM / TensorRT-LLM)<br>Attested hardware TEE + GPU CC mode"]
+        F["Weights decrypted in-memory only<br>after provider attestation check"]
+        G["In-Pod RA-TLS / payload decryption<br>terminated strictly inside TEE"]
     end
 
     A -->|"encrypted payload only —<br>never plaintext prompts"| E
@@ -376,9 +383,11 @@ flowchart TD
     E -->|"encrypted responses,<br>content-free metrics"| D
 ```
 
-The rule that makes this work: **the regular GKE plane may orchestrate the confidential plane but must never see plaintext.** Ingress forwards an encrypted payload; the control plane starts and stops instances; metrics carry counts and latencies but no content. The confidential plane is small, auditable, and does one thing.
+The invariant that governs all confidential GKE architectures:
 
-This is the architecture Module 6 develops in full, including the hardest part — how the prompt gets from the customer to the confidential plane without being decrypted at the boundary.
+> **The orchestration plane may manage capacity, schedule jobs, and route encrypted traffic. It must NEVER hold decryption keys, nor observe plaintext prompt or weight data.**
+
+Module 6 develops these patterns into a complete, production-ready design.
 
 ---
 

@@ -1,8 +1,8 @@
 # Module 6: Designing Confidential LLM Serving on GKE
 
-Everything before this module exists to make this module readable. The mechanisms are established: memory encryption with integrity, a measurement chain that reaches the container digest, attested key release, a GPU inside the trust boundary, and the platform primitives that expose them. This module assembles them into a design, and then — the part that distinguishes an engineering document from a marketing one — walks the finished design back through the adversary list and states plainly what still leaks.
+Everything before this module exists to make this module readable. The mechanisms are established: memory encryption with integrity, a measurement chain that reaches the container digest, attested key release, a GPU inside the trust boundary, and the platform primitives that expose them. This module assembles them into an end-to-end production architecture on **GKE Hypercluster** (and Google Cloud's AI Hypercomputer architecture), and then — the part that distinguishes an engineering document from a marketing one — walks the finished design back through the adversary list and states plainly what still leaks.
 
-This module covers **requirements decomposition**, **the reference architecture**, **the encrypted weight pipeline**, **the cold-start budget**, **where TLS terminates**, **KV cache and prefix-cache leakage**, **multi-tenancy**, **the observability and safety tension**, and **an adversarial review of the result**.
+This module covers **requirements decomposition**, **the reference architecture on GKE Hypercluster**, **the encrypted weight pipeline**, **the cold-start budget and hypercluster optimizations**, **where TLS terminates**, **KV cache and prefix-cache leakage**, **multi-tenancy**, **the observability and safety tension**, and **an adversarial review of the result**.
 
 ---
 
@@ -20,7 +20,7 @@ Module 1, §5.1 stated P1–P4 informally. Here they are as testable assertions,
 | **P3** | Each party can verify P1, P2a, and P2b from evidence rooted in silicon vendor certificates, without relying on assertions by another party | All parties | Does verification require trusting a statement made by the party being distrusted? |
 | **P4** | P1–P3 hold at competitive TTFT and throughput, with a workable cold start, on obtainable hardware | Reality | Is the confidential path more than ~25% worse, or is cold start unbounded? |
 
-Splitting P2 into P2a and P2b is the most useful thing in this table. They are different problems with different solutions: P2a is solved by hardware, and P2b is not solvable by hardware at all. Designs routinely solve P2a, claim P2, and ship.
+Splitting P2 into P2a and P2b is the most useful thing in this table. They are different problems with different solutions: **P2a is solved by hardware, and P2b is not solvable by hardware at all.** Designs routinely solve P2a, claim P2, and ship.
 
 ### 1.2 What Cannot Be Achieved, Stated Up Front
 
@@ -35,65 +35,88 @@ Before designing, fix the boundaries. The following are out of scope permanently
 
 ## Part 2: The Reference Architecture
 
-### 2.1 The Design
+### 2.1 The Architectural Paradigm Spectrum
+
+Serving frontier LLMs (70B, 405B, MoE architectures) under confidential computing requires high-bandwidth multi-GPU interconnects, distributed multi-node orchestration, low-latency weight streaming, and dynamic capacity scheduling. Modern architectures fall across three distinct patterns:
+
+1. **Native GKE Hypercluster with Confidential Accelerated Node Pools (Primary Reference Architecture)**: Runs distributed inference workloads (e.g. vLLM / TensorRT-LLM orchestrated by [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws)) directly on confidential GPU node pools. Pods use in-workload attestation agents to fetch hardware quotes and directly unwrap DEKs from the provider's external KMS into protected HBM. Control plane risks are mitigated via Binary Authorization, strict Pod Security Admission, private endpoints, and in-pod end-to-end payload encryption.
+2. **GKE Hypercluster Split-Plane / Hybrid Orchestration**: GKE Hypercluster acts as the untrusted frontend, scheduler (Kueue / Dynamic Workload Scheduler), and L4 router, while delegating raw inference to standalone [Confidential Space](05_google_cloud_confidential_surface.md#part-3-confidential-space) worker instances where organizational policy strictly requires zero host-level agent access.
+3. **GKE Hypercluster with Confidential Containers (Pod-Level MicroVM TEEs)**: Next-generation confidential Kubernetes leveraging microVM runtimes (such as Kata Containers with TDX/SEV-SNP) where each Pod runs in its own hardware TEE, placing the node's Kubelet and host OS outside the Pod's trust boundary.
+
+### 2.2 The Reference Design (Native GKE Hypercluster)
 
 ```mermaid
 flowchart TD
     subgraph CLIENT ["👤 Customer"]
-        C1["Client SDK<br>verifies attestation BEFORE sending<br>encrypts payload to the attested key"]
+        C1["Client SDK<br>verifies attestation BEFORE sending<br>encrypts payload to the attested key (RA-TLS / HPKE)"]
     end
 
-    subgraph NORMAL ["☁️ Regular GKE — never sees plaintext"]
-        LB["L4 passthrough load balancer<br>⚠️ NOT L7 — see Part 5"]
-        RT["Router / dispatcher<br>routes ciphertext by model + tenant"]
-        CTL["Fleet controller<br>scaling, health, rollout"]
-        OBS["Metrics and content-free logs"]
+    subgraph GKE ["☁️ GKE Hypercluster Orchestration Plane — never sees plaintext"]
+        LB["L4 Passthrough Load Balancer / Gateway API<br>⚠️ NOT L7 — forwards encrypted packets"]
+        SCHED["Kueue + Dynamic Workload Scheduler<br>gang-scheduling & flex-start capacity provisioning"]
+        LWS["LeaderWorkerSet (LWS) Controller<br>orchestrates multi-GPU / multi-node worker groups"]
+        OBS["Prometheus & Cloud Monitoring<br>metrics and content-free logs"]
     end
 
-    subgraph CONF ["🔒 Confidential data plane — the ONLY place plaintext exists"]
-        ATT["Attestation agent<br>composite CPU + GPU evidence<br>binds the TLS key into REPORT_DATA"]
-        TLS["TLS / payload decryption<br>terminated INSIDE the TEE"]
-        INF["vLLM inference server<br>weights in protected HBM<br>KV cache in protected HBM"]
+    subgraph CONF_NODE ["🔒 Confidential GKE Data Plane (A3/A4 Accelerated Node Pool)"]
+        subgraph POD_LEADER ["Leader Pod (vLLM Engine)"]
+            ATT["In-Pod Attestation Agent<br>composite TDX + GPU evidence<br>binds ephemeral TLS key into REPORT_DATA"]
+            TLS["In-Pod RA-TLS / HPKE Decryption<br>terminated strictly inside TEE"]
+            LEAD_ENG["Leader Coordination Engine<br>orchestrates tensor/pipeline parallelism"]
+        end
+
+        subgraph POD_WORKER ["Worker Pods (TP / PP Workers)"]
+            WRK_ENG["Worker Engine<br>weights in protected HBM<br>KV cache in protected HBM"]
+        end
+
+        FUSE["Cloud Storage FUSE<br>local SSD ciphertext cache"]
+        NVL["🔒 Hardware-Encrypted NVLink / Encrypted RoCE<br>intra-node & inter-node tensor parallel fabric"]
+
+        POD_LEADER <--> NVL <--> POD_WORKER
+        FUSE --> POD_LEADER
+        FUSE --> POD_WORKER
     end
 
-    subgraph PROVIDER ["🏭 Model provider domain — outside Google"]
-        VER["Provider-operated verifier<br>appraises raw hardware evidence<br>against AMD/Intel/NVIDIA roots"]
-        EKM["Provider-operated key manager<br>holds the weight KEK"]
+    subgraph PROVIDER ["🏭 Model Provider Domain — outside Google"]
+        VER["Provider-Operated Verifier<br>appraises raw hardware evidence<br>against AMD/Intel/NVIDIA roots"]
+        EKM["Provider-Operated Key Manager (EKM)<br>holds the weight KEK"]
     end
 
-    subgraph STORE ["📦 Untrusted object storage"]
-        W["weights.enc + wrapped DEK"]
+    subgraph STORE ["📦 Untrusted Object Storage"]
+        W["GCS Bucket<br>weights.enc + wrapped DEK"]
     end
 
     C1 -->|"1 challenge + nonce"| ATT
-    ATT -->|"2 evidence"| VER
+    ATT -->|"2 hardware evidence"| VER
     VER -->|"3 verdict"| C1
-    C1 -->|"4 encrypted request"| LB --> RT -->|"ciphertext"| TLS
-    ATT -->|"5 evidence + nonce"| EKM
-    EKM -->|"6 unwrapped DEK"| INF
-    W -->|"7 encrypted weights"| INF
-    TLS --> INF
-    INF -->|"encrypted response"| RT
-    INF -->|"counts and latencies only"| OBS
-    CTL -->|"lifecycle only, no data access"| CONF
+    C1 -->|"4 encrypted request"| LB -->|"ciphertext"| TLS
+    ATT -->|"5 composite evidence + nonce"| EKM
+    EKM -->|"6 unwrapped DEK directly to Pod memory"| LEAD_ENG
+    W -->|"7 stream encrypted weights"| FUSE
+    TLS --> LEAD_ENG
+    LEAD_ENG -->|"encrypted response"| LB
+    LEAD_ENG -->|"counts and latencies only"| OBS
+    SCHED -->|"capacity lifecycle only"| CONF_NODE
 ```
 
-### 2.2 Component Walkthrough
+### 2.3 Component Walkthrough
 
 | Component | Choice | Justification |
 | :--- | :--- | :--- |
-| Confidential runtime | Confidential Space instances, orchestrated by a controller in regular GKE | Module 5, §6.2 — Confidential GKE Nodes leave the Google-operated control plane able to inject code into the trust boundary |
-| CPU TEE | Intel TDX | Module 2, §4.1 — native `RTMR` runtime measurement; and it is the confidential-GPU path |
-| Accelerator | H100 in CC mode, `cc_mode == ON`, one per instance | Module 4, §2.1 and §4.1 |
-| Verifier | **Provider-operated**, appraising raw evidence | Module 3, §1.3 — a Google-operated verifier makes P3 a promise by Google |
-| Key manager | **Provider-operated external KMS** | Module 5, §4.3 — Cloud KMS reduces the guarantee to an IAM policy |
-| Ingress | L4 passthrough, or client-side payload encryption | Part 5 — an L7 LB terminates TLS outside the TEE and voids P2a |
-| Control plane | Regular GKE, explicitly outside the trust boundary | It may orchestrate; it must never see plaintext |
-| Observability | Counts, latencies, and error classes only | Part 8 |
+| **Confidential runtime** | GKE Hypercluster with Confidential Accelerated Node Pools | Full AI Hypercomputer orchestration (LWS, Kueue, DWS flex-start, GCS FUSE) while keeping data in hardware TEEs |
+| **CPU TEE** | Intel TDX | Module 2, §4.1 — native `RTMR` runtime measurement, secure EPT integrity, and the confidential-GPU path |
+| **Accelerator** | NVIDIA H100/H200 (A3) or B200 (A4) in CC mode (`cc_mode == ON`) | Module 4, §2.1 & §4.2 — weights and KV cache reside in hardware-protected HBM; B200 enables hardware-encrypted NVLink across 8 GPUs |
+| **Workload Orchestrator** | LeaderWorkerSet (LWS) on GKE | Manages complex distributed inference topologies (Tensor Parallelism + Pipeline Parallelism across worker groups) |
+| **Verifier** | **Provider-operated**, appraising raw evidence | Module 3, §1.3 — a Google-operated verifier makes P3 a promise by Google |
+| **Key manager** | **Provider-operated external KMS (Cloud EKM)** | Module 5, §4.3 — Cloud KMS reduces the guarantee to an internal IAM policy |
+| **Ingress** | L4 passthrough (Gateway API) + In-Pod RA-TLS, or Client-Side Payload Encryption (HPKE) | Part 5 — an L7 LB terminates TLS outside the TEE and voids P2a |
+| **Storage layer** | Cloud Storage FUSE with local SSD caching | High-throughput streaming of encrypted weight chunks directly into guest memory |
+| **Control plane security** | Hardened GKE Autopilot / Standard + Binary Authorization | Mitigates Kubelet/Control plane injection risks via signed container digests and strict admission controls |
+| **Observability** | Counts, latencies, and error classes only | Part 8 |
 
-The rule that makes the split-plane design coherent, worth stating as an invariant:
+The rule that makes this architecture coherent, worth stating as an invariant:
 
-> **The orchestration plane may start, stop, scale, and route to the confidential plane. It may never possess a key that decrypts anything, nor observe any request or response content.**
+> **The orchestration plane may manage capacity, schedule jobs, and route encrypted traffic. It must NEVER hold decryption keys, nor observe plaintext prompt or weight data.**
 
 Any proposed feature that violates this — a debugging endpoint, a content-aware router, a caching layer in front of the model — is a change to the security architecture and must be reviewed as one.
 
@@ -101,24 +124,24 @@ Any proposed feature that violates this — a debugging endpoint, a content-awar
 
 ## Part 3: The Encrypted Weight Pipeline
 
-### 3.1 The Flow
+### 3.1 The Flow on GKE Hypercluster
 
 ```mermaid
 flowchart TD
     subgraph PROV ["🏭 Provider, on their own infrastructure"]
-        A["Plaintext weights"] -->|"1 encrypt with a random DEK"| B["weights.enc"]
-        C["DEK"] -->|"2 wrap under the KEK"| D["wrapped DEK"]
-        E["🔑 KEK<br>never leaves the provider's key manager"]
+        A["Plaintext weights"] -->|"1 encrypt with random DEK"| B["weights.enc"]
+        C["DEK"] -->|"2 wrap under KEK"| D["wrapped DEK"]
+        E["🔑 KEK<br>never leaves provider's key manager"]
     end
 
-    B -->|"3 upload — no secret required"| F["📦 GCS bucket<br>Google can read this and learn nothing"]
+    B -->|"3 upload — no secrets required"| F["📦 GCS bucket<br>Google can read this and learn nothing"]
     D --> F
 
-    subgraph TEE ["🔒 Attested inference instance"]
-        G["Fetch weights.enc<br>bulk transfer, no auth secrets"]
-        H["Produce composite evidence<br>CPU TEE + GPU + image digest + nonce"]
-        I["Receive unwrapped DEK"]
-        J["Decrypt into TEE memory,<br>stream into protected HBM"]
+    subgraph GKE_TEE ["🔒 GKE Hypercluster Confidential Pods"]
+        G["Cloud Storage FUSE / Hyperdisk ML<br>fast parallel stream of weights.enc"]
+        H["In-Pod Attestation Agent<br>composite CPU TDX + GPU RIM + image digest + nonce"]
+        I["Receive unwrapped DEK directly into Pod RAM"]
+        J["Decrypt in-memory,<br>stream into protected HBM across GPUs"]
     end
 
     F --> G
@@ -127,416 +150,330 @@ flowchart TD
     I --> J
 ```
 
-### 3.2 Design Decisions That Matter
+### 3.2 Multi-Node & Multi-GPU Tensor Parallel Weight Delivery
 
-**Never write plaintext weights to disk.** Decrypt into memory and stream into GPU memory. A plaintext weight file on a persistent disk is readable by the platform regardless of how it got there. If memory pressure forces staging, stage into `tmpfs` inside the TEE, never onto a persistent volume.
+When running large models (e.g. 70B+ parameters) across multi-GPU or multi-node configurations on GKE Hypercluster via LeaderWorkerSet (LWS):
 
-**Key granularity.** Three reasonable schemes, with real tradeoffs:
+1. **Leader Pod Attestation**: The Leader Pod initializes, performs composite CPU + GPU attestation against the Provider's EKM, and obtains the unwrapped DEK directly into its protected guest memory.
+2. **Secure Intra-Group Key / Weight Distribution**:
+   - *Intra-Node (Blackwell B200)*: Weights are decrypted in host CVM memory and streamed into GPU 0–7 over PCIe bounce buffers; GPUs share activations over hardware-encrypted NVLink.
+   - *Inter-Node (Multi-Host Pipeline Parallelism)*: Worker pods mutually attest to the Leader pod over an internal RA-TLS channel across the GKE Hypercluster VPC network. The unwrapped DEK (or encrypted weight stream) is transmitted over this mutually-attested, encrypted inter-pod channel.
+3. **Never write plaintext weights to disk**: Decrypt strictly in memory/`tmpfs` and stream directly into GPU HBM. Cloud Storage FUSE and local SSDs cache only *ciphertext*.
+
+### 3.3 Design Decisions That Matter
+
+**Key Granularity:**
 
 | Scheme | Blast radius of a leaked DEK | Operational cost |
 | :--- | :--- | :--- |
-| One DEK per model version | That model version, everywhere | Lowest |
-| One DEK per model version per deployment region | One region | Moderate |
-| One DEK per instance, derived at release time | One instance | Highest; complicates caching |
+| **One DEK per model version** | That model version, everywhere | Lowest — recommended starting point |
+| **One DEK per model version per region** | One region | Moderate — enforces geographic boundaries |
+| **One DEK per instance / Pod group** | One Pod group | Highest — complicates weight caching |
 
-Per-model-version is the usual starting point. Per-region is worth it when regulatory boundaries matter.
+**Rotation:** Rotating the KEK means rewrapping the DEK in the provider's KMS — cheap, instant, and does not touch encrypted weight files. Rotating the DEK requires re-encrypting the entire model — expensive. Design so that routine operations only touch the KEK.
 
-**Rotation.** Rotating the KEK means rewrapping the DEK — cheap, and it does not touch the encrypted weights. Rotating the DEK means re-encrypting the model — expensive. Design so that the routine operation is KEK rotation.
-
-**Revocation.** Removing an image digest from the release policy stops *new* instances from obtaining the key. It does not stop instances already running with the key in memory. If revocation must be immediate, you need short-lived key leases and periodic re-attestation, with the workload terminating when a lease cannot be renewed. Decide which you need; the difference is a design change, not a config change.
+**Revocation:** Removing an image digest from the release policy stops *new* Pods from obtaining the key. Existing running Pods retain the DEK in memory. If immediate revocation is required, implement short-lived key leases with periodic re-attestation; if re-attestation fails, the inference process terminates and flushes GPU HBM.
 
 ---
 
-## Part 4: The Cold-Start Problem
+## Part 4: The Cold-Start Problem & Hypercluster Optimizations
 
-### 4.1 The Budget
+### 4.1 The Latency Budget
 
-This is the dominant practical cost of the whole design, and it needs to be a budget, not a hope.
+Cold start is the dominant operational challenge of confidential inference, and must be engineered as a rigorous budget.
 
 | Phase | What happens | Confidential-specific cost |
 | :--- | :--- | :--- |
-| Instance provisioning | Allocate an A3 confidential instance | Constrained capacity; may queue |
-| TEE boot | Firmware, guest kernel, **private memory acceptance** | Acceptance is proportional to VM memory (Module 2, §4.2.3) |
-| Attestation | Compose CPU + GPU evidence, round trip to the verifier | Network round trips; vendor collateral fetch if cache is cold |
-| GPU ready state | `conf-compute -srs 1` after successful attestation | Hardware refuses compute before this (Module 4, §2.4) |
-| Key release | Round trip to the provider's external key manager | Cross-organization network dependency |
-| Weight fetch | Pull tens of GB from object storage | Same as non-confidential |
-| Decrypt + load | Decrypt in TEE memory, stream into protected HBM | **The big one** — every byte encrypted, bounced, DMA'd, decrypted (Module 4, §5.3) |
-| Warm-up | CUDA graph capture, first-token latency stabilization | Same as non-confidential |
-
-Two structural properties make this worse than a normal cold start: the sequence is largely **serial** (you cannot fetch the key before attesting, or load weights before the GPU is ready), and it has **external dependencies** on a verifier and a key manager that a normal deployment does not have.
+| **Capacity allocation** | GKE provisions A3/A4 confidential node pool | Capacity queuing (mitigated by Dynamic Workload Scheduler) |
+| **TEE boot & memory acceptance** | Firmware, guest OS, private memory acceptance | Proportional to VM DRAM size (Module 2, §4.2.3) |
+| **Attestation** | Composite TDX + GPU evidence generation & appraisal | Network round trips; vendor collateral fetch if cache is cold |
+| **GPU ready state** | `conf-compute -srs 1` after attestation | Hardware enforces lock until verified (Module 4, §2.4) |
+| **Key release** | EKM unwrap request over external network | Cross-cloud / cross-datacenter latency |
+| **Weight streaming** | Pull tens/hundreds of GB from GCS | Parallel bandwidth via GCS FUSE / Hyperdisk ML |
+| **Decrypt + load to HBM** | In-memory AES-GCM decrypt + PCIe bounce buffer DMA | **The dominant term** — encrypted PCIe transfer bottleneck (Module 4, §5.3) |
+| **Warm-up** | CUDA graph capture, KV cache allocation, first-token prep | Same as non-confidential |
 
 $$
 T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T_{\text{key}} + \frac{S_{\text{model}}}{B_{\text{fetch}}} + \frac{S_{\text{model}}}{B_{\text{cc-effective}}} + T_{\text{warm}}
 $$
 
-**Measure each term separately.** A single blended number tells you nothing about which one to attack.
-
-### 4.2 Mitigations, With Their Security Cost
+### 4.2 GKE Hypercluster Cold-Start Mitigations
 
 | Mitigation | How it helps | Security cost |
 | :--- | :--- | :--- |
-| **Warm pools** | Pre-attested, pre-loaded instances absorb demand spikes | **None.** Just money. This is the primary answer. |
-| **Overlap fetch and attest** | Pull encrypted weights while attestation is in flight; they need no secret | **None.** Free win, and frequently missed. |
-| **Sealed local cache** | Cache decrypted weights on local SSD under a sealing key (Module 1, §3.5) | Moderate — expands the attack surface to a persistent medium; ties the cache to a measurement, so an image update invalidates it |
-| **Aggressive collateral caching** | Avoid a cold fetch from AMD KDS or Intel PCS on the critical path | None, if staleness is handled (Module 3, §4.2) |
-| **Quantization** | Fewer bytes to decrypt and transfer; also relieves the Hopper 80 GB ceiling | None to confidentiality; a quality decision |
-| **VM snapshot / restore** | Would skip boot and load entirely | ❌ **Fundamentally hostile to attestation.** A snapshot restores memory state without re-executing the measured boot path; the launch measurement no longer reflects how this memory came to exist. Do not do this without a scheme specifically designed for it. |
-
-The snapshot row deserves emphasis because it is the most tempting optimization and the one that quietly destroys the guarantee. If someone proposes it, the question to ask is: *what does the launch measurement mean for a VM whose memory was restored rather than built?*
+| **Dynamic Workload Scheduler (DWS) / `flex-start`** | Pre-allocates and gang-schedules entire multi-node accelerator pools with guaranteed execution windows | **None.** Eliminates runtime provisioning jitter. |
+| **Cloud Storage FUSE Local Cache** | Caches encrypted weight chunks on local SSD across Pod restarts | **None.** The cached bytes are ciphertext; reading them without the DEK yields nothing. |
+| **Overlap fetch and attest** | Stream encrypted weights from GCS FUSE while attestation and key release are in-flight | **None.** Encrypted weights require no secrets to transfer. |
+| **Warm pools with Kueue** | Pre-attested, pre-loaded Pods absorb traffic spikes | **None.** Financial cost only; standard production practice. |
+| **Container image streaming** | Secondary boot disks / fast image streaming for rapid container startup | **None**, provided container digests are verified against the allowlist. |
+| **Quantization (fp8 / int4)** | Halves or quarters the bytes transferred across PCIe bounce buffers | None to confidentiality; quality trade-off. |
+| **VM snapshot / restore** | Restores pre-loaded VM memory from disk | ❌ **Fundamentally hostile to attestation.** A snapshot bypasses measured boot; launch measurements no longer reflect the running state. |
 
 ### 4.3 The Consequence for Autoscaling
 
-With cold start measured in minutes rather than seconds, reactive autoscaling does not work — by the time a new instance is serving, the traffic spike is over. The workable patterns:
+With cold start measured in minutes rather than seconds, reactive autoscaling does not work — by the time a new instance is serving, the traffic spike is over. The workable patterns on GKE Hypercluster:
 
-1. **Predictive scaling** on traffic forecasts rather than instantaneous queue depth.
+1. **Predictive scaling with Kueue and DWS** on traffic forecasts rather than instantaneous queue depth.
 2. **Generous warm pools**, sized by the p99 of the arrival process rather than the mean.
 3. **Queue and degrade**, admitting that some requests wait, with explicit backpressure rather than timeouts.
-4. **Over-provision and accept the cost.** Often the honest answer for a premium confidential tier, and it should be priced in rather than engineered around.
+4. **Over-provision and accept the cost.** Often the honest answer for a premium confidential tier, priced into SLA contracts.
 
 ---
 
 ## Part 5: Where TLS Terminates
 
-### 5.1 The Problem That Voids Everything Else
-
-This is the most common silent failure in confidential inference design, and it is worth being blunt about.
+### 5.1 The Ingress Problem That Voids Confidentiality
 
 ```mermaid
 flowchart TD
-    subgraph BAD ["❌ The default configuration — P2a is already lost"]
-        A1["Customer"] -->|"TLS"| B1["Managed L7 Load Balancer<br>🔴 terminates TLS<br>🔴 Google holds the private key<br>🔴 PLAINTEXT PROMPT IN MEMORY"]
-        B1 -->|"re-encrypted"| C1["🔒 Confidential inference<br>perfectly protected, and pointless"]
+    subgraph BAD ["❌ Managed L7 Load Balancer — P2a is immediately lost"]
+        A1["Customer"] -->|"TLS"| B1["Managed L7 Load Balancer<br>🔴 terminates TLS<br>🔴 Google holds private key<br>🔴 PLAINTEXT PROMPT IN MEMORY"]
+        B1 -->|"re-encrypted"| C1["🔒 Confidential GKE Pod<br>perfectly protected, but pointless"]
     end
 
-    subgraph GOOD ["✅ Terminated inside the TEE"]
-        A2["Customer"] -->|"TLS, end to end"| B2["L4 passthrough LB<br>forwards packets;<br>no key, no plaintext"]
-        B2 --> C2["🔒 Confidential inference<br>RA-TLS terminated INSIDE<br>key bound into the attestation report"]
+    subgraph GOOD ["✅ Terminated Inside the TEE"]
+        A2["Customer"] -->|"TLS / Encrypted payload end-to-end"| B2["L4 Passthrough (Gateway API)<br>forwards raw packets;<br>no key, no plaintext"]
+        B2 --> C2["🔒 Confidential GKE Pod<br>RA-TLS terminated INSIDE<br>key bound into TDX REPORT_DATA"]
     end
 ```
 
-The failure is not subtle in its consequences and is extremely easy to miss in review, because the confidential portion of the architecture is genuinely correct. The prompt is plaintext in a Google-operated load balancer before it ever reaches the TEE. **P2a fails at the first hop**, and every diagram downstream of that point is describing protection that no longer matters.
+If an L7 load balancer terminates TLS before the TEE, **the prompt exists in plaintext on Google-operated infrastructure**. P2a fails at the very first hop, regardless of how secure the downstream GPU is.
 
-### 5.2 The Options
+### 5.2 Ingress Patterns Compared
 
-| Option | How it works | P2a holds? | Cost |
+| Option | Mechanism | P2a holds? | Operational Tradeoff |
 | :--- | :--- | :--- | :--- |
-| **A. Managed L7 LB** | Google terminates TLS, re-encrypts to backend | ❌ **No** | Zero effort; zero guarantee |
-| **B. L4 passthrough + RA-TLS in the TEE** | LB forwards packets; the TEE holds the only private key, bound into its attestation report (Module 3, §6) | ✅ Yes | Lose L7 routing, WAF, HTTP-aware rate limiting; client needs custom verification |
-| **C. Client-side payload encryption** | Client encrypts the prompt to a public key released only to an attested TEE (HPKE); transport TLS may terminate anywhere | ✅ Yes | Application-layer protocol; client SDK required; streaming responses need per-chunk encryption |
-| **D. B + C together** | Belt and braces | ✅ Yes | Highest complexity |
+| **A. Managed L7 LB** | Google terminates TLS, re-encrypts to pod | ❌ **No** | Zero engineering effort; completely voids confidentiality guarantee |
+| **B. L4 Passthrough + In-Pod RA-TLS** | GKE Gateway API / L4 LB forwards packets; Pod terminates TLS using key bound to attestation report | ✅ Yes | Loses L7 WAF and path-based routing; requires client attestation verification SDK |
+| **C. Client-Side Payload Encryption (HPKE)** | Client encrypts prompt body with Pod's attested public key; transport TLS can terminate anywhere | ✅ Yes | Application-layer protocol; resilient to network topology misconfigurations |
+| **D. B + C (Defense-in-Depth)** | L4 passthrough combined with client payload encryption | ✅ Yes | Maximum security assurance |
 
-### 5.3 The Recommendation
-
-**Option C, with Option B where the client can support it.**
-
-The reasoning is that Option C degrades gracefully. Payload encryption is independent of transport, so the design survives a load balancer misconfiguration, a service-mesh change, or an SRE adding an L7 hop for a good operational reason. Option B alone is correct but fragile: it depends on a network topology invariant that an unrelated team can break without realizing what they have broken.
-
-Option C's cost is real: every client must use an SDK that fetches the attested public key, verifies the attestation, encrypts the payload, and decrypts streamed chunks. For a first-party or enterprise integration this is acceptable. For a public, curl-compatible API it is a genuine adoption barrier — which is why confidential inference offerings tend to be enterprise-tier products rather than default endpoints.
-
-**Whichever you choose, write down the invariant and add a test for it.** "No Google-operated component ever holds a key that decrypts request content" is a property you can assert in a design review and, with some effort, verify continuously.
+**Recommendation:** Implement **Option C** (Client-Side HPKE Payload Encryption) combined with **Option B** (L4 Passthrough via GKE Gateway API). Payload encryption ensures that even if an operator introduces an L7 debugging proxy or misconfigures network ingress, prompt plaintext is never exposed.
 
 ---
 
-## Part 6: KV Cache, Prefix Caching, and Disaggregation
+## Part 6: KV Cache, Prefix Caching, and Disaggregated Serving
 
 ### 6.1 The KV Cache Is Prompt Content
 
-The KV cache is a per-request tensor encoding of everything the model has attended to: the system prompt, the retrieved documents, the user's message, the conversation history. Treat it with exactly the sensitivity of the prompt itself, because that is what it is.
+The KV cache represents the internal activations of all processed tokens (system prompt, RAG context, user history). In confidential GPUs, it resides securely in hardware-protected HBM. Any mechanism that extracts, shares, or persists KV blocks must be treated with the same confidentiality rigor as the prompt itself.
 
-Inside a confidential GPU it lives in protected HBM and is fine. The danger is every mechanism that moves it, shares it, or persists it.
+### 6.2 Prefix Caching: A Cross-Tenant Timing Oracle
 
-### 6.2 Prefix Caching: A Plaintext-Equivalent Leak Channel
-
-Prefix caching reuses the computed KV blocks for a shared prompt prefix across requests. It is one of the highest-value optimizations in modern serving. It is also, across tenants, an information leak — and worse, an *actively probeable* one.
+Prefix caching reuses computed KV blocks for shared prompt prefixes. When shared across multiple tenants, it creates a high-precision timing oracle:
 
 ```mermaid
 flowchart TD
-    A["Tenant A sends:<br>'CONFIDENTIAL_PROJECT_NAME: quarterly figures…'"] --> B["KV blocks computed<br>and cached, keyed by<br>a hash of the prefix"]
-    C["Attacker (Tenant B) sends:<br>'CONFIDENTIAL_PROJECT_NAME: …'"] --> D{"Cache hit?"}
+    A["Tenant A sends:<br>'PROJECT_ACQUISITION_TARGET: quarterly data…'"] --> B["KV blocks computed<br>and cached by prefix hash"]
+    C["Attacker (Tenant B) probes:<br>'PROJECT_ACQUISITION_TARGET: …'"] --> D{"Cache hit?"}
     B --> D
-    D -->|"HIT → measurably faster TTFT"| E["🔴 Attacker learns Tenant A<br>submitted this exact prefix"]
+    D -->|"HIT → measurably faster TTFT"| E["🔴 Attacker confirms Tenant A<br>submitted this exact text"]
     D -->|"MISS → normal TTFT"| F["Attacker learns it did not"]
 ```
 
-This is a timing oracle over the content of other tenants' prompts. An attacker with API access can binary-search a secret by observing TTFT. Memory encryption does not help at all — the leak is through *latency*, not memory access, and latency is visible to anyone who can send a request.
+Because TTFT differences are observable over public APIs, memory encryption provides zero protection against this timing channel.
 
-**The rules:**
+**The Rules for Confidential Serving:**
+- **Cross-tenant prefix cache**: ❌ **Strictly forbidden.**
+- **Per-tenant isolated prefix cache**: ✅ Allowed (oracle only reveals tenant's own data to themselves).
+- **Static provider system prompt cache**: ⚠️ Allowed only if the prompt is public and contains zero tenant data.
+- **KV cache swap to CPU RAM**: ✅ Allowed within the confidential VM; ❌ never to host-shared memory.
 
-| Configuration | Verdict |
-| :--- | :--- |
-| Prefix cache shared across tenants | ❌ **Never.** This is a cross-tenant content oracle. |
-| Prefix cache scoped per tenant | ✅ Acceptable — the oracle only reveals the tenant's own prompts to themselves |
-| Prefix cache for a provider-supplied system prompt, shared | ⚠️ Acceptable only if that prefix is not secret; be certain it contains no tenant data |
-| KV cache offloaded to CPU RAM | ✅ Fine inside the confidential VM; ❌ never to host-shared memory |
-| KV cache persisted to disk | ❌ Not without encryption under an attestation-gated key |
+### 6.3 Disaggregated Prefill and Decode on GKE Hypercluster
 
-The general principle, which applies well beyond prefix caching: **any cache keyed on content, shared across trust boundaries, is an oracle for that content.** Apply it to tokenizer caches, semantic caches, embedding caches, and speculative-decoding draft caches too.
+Disaggregated serving separates compute-intensive prefill nodes from memory-intensive decode nodes, transferring KV tensors across the network. On GKE Hypercluster, this requires:
 
-### 6.3 Disaggregated Prefill and Decode
-
-Disaggregated serving runs prefill and decode on separate machines and ships the KV cache between them. This is a substantial throughput win and it drives a truck through the trust boundary if done naively.
-
-The KV cache — prompt content — crosses the network between two nodes. In a confidential design that transfer must be:
-
-1. **Encrypted in transit**, under a key established between the two TEEs.
-2. **Mutually attested** — the prefill node must verify the decode node is an approved, attested TEE before sending, and vice versa. Otherwise an attacker stands up a fake decode node and receives plaintext KV blocks.
-3. **Not staged in plaintext** in any intermediate buffer, transfer service, or RDMA staging area.
-
-This amounts to RA-TLS (Module 3, §6) between inference nodes, on the hot path, for large tensors. It is achievable, but the performance benefit of disaggregation has to be weighed against the added latency and the significant added complexity. **For a first confidential deployment, do not disaggregate.** Get the single-node path correct, measure it, and revisit.
+1. **Mutual Attestation (mRA-TLS)**: Prefill and Decode pods must verify each other's hardware TEE and container digest before initiating transfer.
+2. **Encrypted Inter-Node Fabric**: KV blocks transmitted across nodes over RoCE or VPC networks must be encrypted using ephemeral session keys negotiated inside the TEEs.
+3. **Zero Plaintext Staging**: Tensors must never be staged in unencrypted host memory or unauthenticated RDMA buffers.
 
 ---
 
-## Part 7: Multi-Tenancy
+## Part 7: Multi-Tenancy on GKE Hypercluster
 
-### 7.1 The Spectrum
+### 7.1 Multi-Tenancy Isolation Models
 
-| Model | Isolation | Efficiency | When it is right |
+| Model | Isolation Mechanism | Efficiency | Recommended Use Case |
 | :--- | :--- | :--- | :--- |
-| **Instance per tenant** | Strongest — a TEE boundary between tenants | Poor: a GPU per tenant, cold start per tenant | High-value tenants; regulatory separation |
-| **Instance per model, tenants batched together** | Hardware isolation from the platform; **software isolation between tenants** | Good — the standard serving model | Most cases, if you accept the caveat below |
-| **Multiple models per instance** | Weakest | Best | Not with confidential single-GPU constraints anyway |
+| **Dedicated Node Pool per Tenant** | Hardware TEE boundary per tenant node | Low (GPU idle cost per tenant) | High-compliance enterprise tiers |
+| **Confidential Containers (Pod TEEs)** | MicroVM TEE per Pod on shared nodes | High | Multi-tenant clusters with strict hardware isolation |
+| **Continuous Batching in Shared Pod** | Hardware isolation from platform; **software isolation between tenants** | Highest | Standard multi-tenant serving (with caveat below) |
 
-### 7.2 The Caveat That Must Be Stated
+### 7.2 The Multi-Tenant Software Caveat
 
-In the middle row — the normal one — continuous batching puts multiple tenants' tokens in the same forward pass, the same GPU memory, and the same process. The TEE boundary is around the *whole instance*, not around each tenant.
+In standard continuous batching, multiple tenants' requests execute in the same forward pass in the same GPU HBM. The hardware TEE isolates the entire container from the cloud operator, but cross-tenant isolation relies on the memory safety and block management of the inference server (e.g. vLLM). A software bug in block management is a cross-tenant leak occurring entirely inside the trust boundary.
 
-**Consequence**: the isolation between tenant A and tenant B is enforced by the correctness of the inference server's request handling, not by hardware. A bug in vLLM's block manager that leaks KV blocks between sequences is a cross-tenant data leak, and confidential computing does nothing about it — the leak happens entirely inside the trust boundary.
-
-This is worth saying explicitly to customers, because the natural reading of "confidential computing" is "hardware-isolated from other tenants," and that is not what a batched deployment provides. What it provides is hardware isolation from *the platform*, which is a different and also valuable property. Conflating them is the kind of imprecision that becomes a problem during a security review.
-
-If a tenant requires hardware isolation from other tenants, they need a dedicated instance, and that should be a priced tier rather than an argument.
-
-### 7.3 Observable Cross-Tenant Signals
-
-Even with correct isolation, tenants sharing an instance can observe each other indirectly:
-
-- **Queue delay** reveals other tenants' load.
-- **Batch composition effects** on inter-token latency reveal concurrent activity.
-- **Prefix cache hits** reveal content, if shared (§6.2).
-- **Preemption and eviction** under memory pressure reveal other tenants' sequence lengths.
-
-None of these are catastrophic in most threat models, but they should be enumerated in the design document rather than discovered by a customer's red team.
+Customers requiring hardware-enforced isolation from *other tenants* must be allocated dedicated confidential instances or Pod-level microVM TEEs.
 
 ---
 
-## Part 8: Observability and the Safety Blind Spot
+## Part 8: Observability and Safety
 
-### 8.1 What You Can Emit
+### 8.1 Allowlisted Telemetry
 
-The invariant from §2.2 constrains telemetry hard. A workable classification:
+To maintain confidentiality invariant P2a, telemetry emitted from the confidential plane must adhere to a strict field allowlist:
 
-| Signal | Emit? | Note |
+| Signal | Allow? | Rationale |
 | :--- | :--- | :--- |
-| Request count, latency, TTFT, TPOT | ✅ | Content-free |
-| Token counts (input and output) | ✅ | Needed for billing; note it *is* a small leak — length is observable anyway |
-| Error classes and codes | ✅ | Not error *messages*, which often embed content |
-| Model, version, instance, attestation status | ✅ | Essential for operations |
-| Queue depth, batch size, cache hit rate | ⚠️ | Aggregate only; per-tenant cache hit rates leak (§6.2) |
-| Prompt or completion text | ❌ | Voids P2a |
-| Stack traces, core dumps | ❌ | Routinely contain content |
-| Sampled requests for quality evaluation | ❌ | Even 0.1% sampling is a plaintext egress channel |
+| **Request counts, latencies, TTFT, TPOT** | ✅ | Content-free performance telemetry |
+| **Token counts (prompt & completion)** | ✅ | Required for billing (length is observable via traffic analysis anyway) |
+| **Error codes and categories** | ✅ | Sanitized status codes only |
+| **Error messages and stack traces** | ❌ | Routinely interpolate prompt text; must be stripped at the boundary |
+| **Raw prompt / completion text** | ❌ | Immediately voids P2a |
+| **Heap dumps & core dumps** | ❌ | Contain unencrypted weights and prompt memory |
 
-The stack trace row is the one that bites in production. An unhandled exception whose message includes part of the prompt, logged to Cloud Logging, is a plaintext leak through an ordinary code path that no one reviewed as a security boundary. **Structured logging with an explicit allowlist of fields is not optional here** — a denylist will fail.
+### 8.2 The Safety & Abuse Monitoring Tension
 
-### 8.2 The Safety Tension
-
-This is the genuinely hard, unresolved problem, and it deserves to be named rather than engineered around silently.
-
-Responsible model serving involves abuse monitoring, safety classification, and incident investigation. All of them require reading user content. Confidential computing forbids reading user content outside the TEE. These requirements are in direct conflict.
+Responsible AI serving requires detecting abusive content, yet confidential computing forbids external content inspection.
 
 ```mermaid
 flowchart TD
-    A["Requirement: confidentiality<br>no one outside the TEE<br>reads user content"] --> C{"⚔️ Direct conflict"}
-    B["Requirement: safety<br>detect abuse, enforce policy,<br>investigate incidents"] --> C
+    A["Requirement: Confidentiality<br>Zero plaintext disclosure outside TEE"] --> C{"⚔️ Inherent Tension"}
+    B["Requirement: Safety & Compliance<br>Abuse detection & incident audit"] --> C
 
-    C --> D["Option 1: In-TEE classifiers<br>run safety models inside the boundary;<br>emit only verdicts, never content"]
-    C --> E["Option 2: Provider-side enforcement<br>the model refuses in-context;<br>no external monitoring at all"]
-    C --> F["Option 3: Consented telemetry<br>per-tenant opt-in to content review,<br>attested and auditable"]
-    C --> G["Option 4: Aggregate signals only<br>refusal rates, anomaly scores;<br>no content ever leaves"]
+    C --> D["In-TEE Safety Classifiers<br>Safety models run inside the TEE;<br>emit only boolean flags, never text"]
+    C --> E["Attested Consented Telemetry<br>Per-tenant opt-in for debug logging,<br>cryptographically enforced in policy"]
+    C --> F["Provider-Side Model Guardrails<br>In-context refusal by the model itself"]
 ```
 
-None of these is complete:
-
-- **In-TEE classifiers** work for automated policy enforcement and are the strongest option, but they cannot support human review of a specific incident, they add latency, and they enlarge the measured image.
-- **Provider-side enforcement** relies entirely on model behavior, with no defense in depth.
-- **Consented telemetry** is honest and workable for enterprise customers, and it should be *attested* — the tenant's consent state should be part of what the policy enforces, not a flag the operator sets.
-- **Aggregate signals** tell you something is wrong without telling you what.
-
-**The design position to take**: pick a combination, write it down in the customer-facing documentation, and be explicit that the confidential tier has *weaker abuse monitoring* than the standard tier. That is a real tradeoff a customer is entitled to know about, and pretending otherwise is how a security architecture becomes a liability.
+**Production Posture:** Run lightweight safety classifier models *inside* the TEE. The classifier emits binary policy violation flags to external monitoring, allowing abuse mitigation without exposing prompt contents.
 
 ---
 
 ## Part 9: Adversarial Review
 
-Now the discipline from Module 1, §2.1. Take the finished design and walk the adversary list.
+### 9.1 Threat Model Evaluation
 
-### 9.1 The Review
+Walking the finished GKE Hypercluster design against the Module 1 adversary taxonomy:
 
-| Adversary | Capability against this design | Verdict |
+| Adversary | Capability against this architecture | Verdict |
 | :--- | :--- | :--- |
-| **A1 — Malicious co-tenant** | Cannot read another confidential instance's memory | ✅ Addressed |
-| **A2 — Compromised hypervisor** | Sees ciphertext in DRAM and on the PCIe path; integrity-protected | ✅ Addressed |
-| **A3 — Cloud insider with host root** | Can stop the workload, observe traffic patterns, and attempt ciphertext side channels. Cannot read weights or prompts. Cannot change the release policy — it lives in the provider's key manager | ✅ Addressed for confidentiality |
-| **A4 — Physical attacker** | DRAM and bus contents are ciphertext with integrity | ✅ Addressed |
-| **B1 — Compromised workload image** | Full access to everything inside the boundary | ⚠️ **Mitigated only by supply chain**: minimal image, signing, reproducible builds, attested digest allowlist |
-| **B2 — Malicious model provider** | Wrote the code holding the plaintext prompt | ⚠️ **Partially addressed**: no egress, no persistence, attested digest, VPC-SC. Residual trust in the image's behavior remains — this is P2b, unsolved by hardware |
-| **B3 — TEE vendor** | AMD, Intel, NVIDIA firmware is trusted by construction | ⚠️ Irreducible; name it in the design document |
-| **C1 — Availability** | Google can terminate the workload at will | ❌ Out of scope, permanently |
-| **C2 — Traffic analysis** | Request counts, sizes, timing, and streaming behavior are all visible | ❌ Out of scope; disclose it |
-| **C3 — Side channels** | Ciphertext side channel against keys in guest memory; single-stepping | ⚠️ Real; keep firmware current, minimize long-lived keys in guest DRAM |
-| **C4 — Customer's own endpoint** | Customer may log their own plaintext | ❌ Out of scope |
+| **A1 — Malicious co-tenant** | Cannot access guest DRAM or GPU HBM; isolated by hardware TEE | ✅ Addressed |
+| **A2 — Compromised hypervisor** | Sees only ciphertext on DRAM and PCIe bus; integrity-protected by TDX and GPU CC | ✅ Addressed |
+| **A3 — Cloud insider with host root** | Can terminate nodes or observe traffic timing; cannot read weights, prompts, or KV cache; cannot bypass provider EKM release policy | ✅ Addressed for confidentiality |
+| **A4 — Physical / DMA attacker** | Memory and bus lines are encrypted with hardware integrity protection | ✅ Addressed |
+| **B1 — Compromised container image** | Has full in-enclave access | ⚠️ Mitigated by supply chain: cosign signing, Binary Authorization, attested digest allowlist |
+| **B2 — Malicious model provider** | Author of the inference code holding plaintext prompt | ⚠️ Partially addressed: VPC Service Controls, no unauthorized egress, audited open codebase (P2b constraint) |
+| **B3 — Silicon TEE vendor** | Hardware / firmware trust root | ⚠️ Irreducible baseline trust in Intel/AMD/NVIDIA |
+| **C1 — Availability** | Cloud provider can stop or delete instances at will | ❌ Out of scope |
+| **C2 — Traffic analysis** | Packet arrival rates, token streaming cadences, payload sizes are visible | ❌ Out of scope; disclose to customer |
+| **C3 — Side channels** | Ciphertext side channels on DRAM / cache lines | ⚠️ Mitigate via latest firmware patches and TCB floor enforcement |
 
-### 9.2 What an Insider With Host Root Can Still Do
+### 9.2 The Six-Claim Checklist, Verified
 
-Stated plainly, because a model provider's security team will ask exactly this:
-
-1. **Stop you.** Terminate the instance, deny capacity, revoke the project.
-2. **Observe metadata.** How many requests, how large, how often, how long the responses stream — from which output length is directly inferable.
-3. **Attempt side channels.** Ciphertext side channel against cryptographic keys in guest memory (Module 2, §5.1); single-stepping to amplify other channels. Not trivial, not theoretical.
-4. **Attack the supply chain.** If they can influence what image gets built or which digest lands in the allowlist, they win — which is why the allowlist must live in the provider's key manager, not in a Google Cloud IAM policy.
-5. **Escalate through a firmware vulnerability.** Which is why the TCB floor and the update posture from Module 3, §4.2 are security controls, not hygiene.
-
-What they **cannot** do: read the weights, read the prompts, read the completions, or read the KV cache.
-
-### 9.3 The Six-Claim Checklist, Answered
-
-Module 1, §5.2 decomposed "Google cannot see the weights" into six checkable claims. The finished design:
-
-| Claim | Status in this design |
-| :--- | :--- |
-| Weights encrypted at rest with a key Google does not hold | ✅ Provider-operated external key manager (§2.2, §3.1) |
-| Weights decrypted only inside a TEE | ✅ Attested key release (§3.1) |
-| The TEE runs exactly the approved image | ✅ Confidential Space image digest in the token; ⚠️ subject to §7.4 of Module 3 — reference values |
-| Host RAM unreadable | ✅ TDX memory encryption with integrity |
-| GPU HBM unreadable | ✅ `cc_mode == ON` asserted in the release policy |
-| The provider can verify all of the above itself | ✅ Provider-operated verifier over raw evidence |
-
-Six of six — with one honest asterisk on the third row, which is the reference-value problem and the reason Module 3, §7 exists.
+| Claim | Verification Status | Implementation in this Design |
+| :--- | :--- | :--- |
+| **1. Weights encrypted at rest** | ✅ Passed | AES-256-GCM wrapped under provider KEK in GCS (§3.1) |
+| **2. Weights decrypted only in TEE** | ✅ Passed | EKM releases DEK only to attested TDX + GPU CC environment (§3.1) |
+| **3. Workload runs approved image** | ✅ Passed | Binary Authorization + Container digest verified in attestation token |
+| **4. Host RAM unreadable** | ✅ Passed | Intel TDX hardware memory encryption with secure EPT integrity |
+| **5. GPU HBM unreadable** | ✅ Passed | NVIDIA CC mode enabled (`cc_mode == ON`) with protected HBM |
+| **6. Provider independently verifies** | ✅ Passed | Raw evidence validated against silicon vendor roots by provider verifier |
 
 ---
 
-## Lab: End-to-End Confidential Inference at Production Scale
+## Lab: Deploying Production Confidential LLM Serving on GKE Hypercluster
 
-**Goal:** serve a model people would actually pay for — not a toy — inside a TEE, releasing the weight key only on composite CPU + GPU + image attestation, with TLS terminated where §5 says it must be, a client that refuses to talk to an unattested server, and a measured cold-start budget you can defend in a capacity review.
+**Goal:** Deploy a frontier-class model (e.g. 70B parameter model) on a GKE Hypercluster confidential GPU node pool using LeaderWorkerSet (LWS) and vLLM, with attested key release from an external KMS and verified in-pod RA-TLS ingress.
 
-**Scope:** the confidential 8×B200 node from Module 4's lab, a 70B-class model, the provider-operated verifier from Module 3's lab, and a managed L7 load balancer stood up alongside the L4 path purely so you can demonstrate the failure in §5.1 rather than assert it. Run this at real size. A 3B model on one GPU will produce a cold-start number roughly an order of magnitude off, a KV cache too small to show the §6.2 effect, and a decrypt phase short enough to hide the problem the entire architecture exists to manage. The numbers from a toy run are not conservative — they are wrong in the flattering direction. **Status:** this lab composes verified pieces from the Module 3, 4, and 5 labs; the composition itself is presented as a design exercise. Verify each command against current documentation.
-
-### Step 1 — Encrypt a real model
+### Step 1 — Create the GKE Hypercluster with Confidential Node Pool
 
 ```bash
-# Generate a DEK, encrypt the model, wrap the DEK under a KEK you control.
-# At 70B/bf16 this is ~140 GB — which is the point. Time this step too.
+# Create GKE cluster with hardened control plane
+gcloud container clusters create-auto cc-hypercluster \
+  --location=us-central1 \
+  --release-channel=rapid
+
+# Provision a Confidential GPU Node Pool (Intel TDX + NVIDIA H100/B200)
+gcloud container node-pools create cc-gpu-pool \
+  --cluster=cc-hypercluster \
+  --location=us-central1 \
+  --node-locations=us-central1-a \
+  --machine-type=a3-highgpu-1g \
+  --confidential-node-type=tdx \
+  --accelerator=type=nvidia-h100-80gb,count=1,gpu-driver-version=latest \
+  --enable-gvnic \
+  --num-nodes=2
+```
+
+### Step 2 — Configure Encrypted Storage and GCS FUSE
+
+```bash
+# Encrypt the model weights and upload ciphertext
 openssl rand -out dek.bin 32
 tar cf - ./model-70b | openssl enc -aes-256-gcm -kfile dek.bin > model.enc
-gcloud kms encrypt --key=weights-kek --keyring=cc-lab --location=global \
+gcloud kms encrypt --key=weights-kek --keyring=cc-ring --location=global \
   --plaintext-file=dek.bin --ciphertext-file=dek.wrapped
-gsutil -m cp model.enc dek.wrapped gs://YOUR_BUCKET/
-shred -u dek.bin   # the plaintext DEK must not survive this step
+gsutil cp model.enc dek.wrapped gs://cc-model-store/
+shred -u dek.bin
 ```
 
-Note the wall-clock time to encrypt and upload 140 GB. That number is your model-publication pipeline, and teams routinely discover it only when they first try to ship a model update on a deadline.
+### Step 3 — Deploy the LeaderWorkerSet with Attestation Agent
 
-### Step 2 — Build the inference image
-
-The container should, in order: request the attestation token from the launcher socket; present raw evidence to **your own verifier** from Module 3, Part E rather than to Google's; unwrap the DEK; fetch and decrypt the model into `tmpfs`; start vLLM with `tensor_parallel_size=8`; and expose an endpoint that returns its own attestation token so a client can verify it.
-
-Sign the image with cosign and record the digest.
-
-### Step 3 — Write the composite release policy
-
-```bash
-gcloud iam workload-identity-pools providers create-oidc cc-infer-provider \
-  --location=global \
-  --workload-identity-pool=cc-lab-pool \
-  --issuer-uri="https://confidentialcomputing.googleapis.com" \
-  --allowed-audiences="https://sts.googleapis.com" \
-  --attribute-mapping="google.subject=assertion.sub" \
-  --attribute-condition="
-    assertion.swname == 'CONFIDENTIAL_SPACE'
-    && assertion.dbgstat == 'disabled-since-boot'
-    && 'sha256:YOUR_DIGEST' in assertion.submods.container.image_digest
-    && assertion.submods.nvidia_gpu.cc_mode == 'ON'
-  "
+```yaml
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: vllm-confidential-70b
+spec:
+  replicas: 1
+  leaderWorkerTemplate:
+    size: 2
+    leaderTemplate:
+      metadata:
+        labels:
+          role: leader
+      spec:
+        containers:
+        - name: vllm-leader
+          image: us-docker.pkg.dev/PROJECT/REPO/vllm-cc:v1@sha256:APPROVED_DIGEST
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+          - name: MODEL_BUCKET
+            value: "gs://cc-model-store"
+          - name: EKM_ENDPOINT
+            value: "https://kms.provider.com/unwrap"
+          volumeMounts:
+          - name: gcs-fuse-csi
+            mountPath: /data
+        volumes:
+        - name: gcs-fuse-csi
+          csi:
+            driver: gcsfuse.csi.storage.gke.io
+            readOnly: true
+    workerTemplate:
+      spec:
+        containers:
+        - name: vllm-worker
+          image: us-docker.pkg.dev/PROJECT/REPO/vllm-cc:v1@sha256:APPROVED_DIGEST
 ```
 
-Then assert the same conditions in your own verifier, over raw evidence, and make *that* the one that gates the key. The Google-side policy becomes defence in depth rather than the guarantee.
+### Step 4 — Verify End-to-End Attestation and Key Release
 
-### Step 4 — Deploy and time every phase
-
-Instrument the container to log a timestamp at each cold-start milestone from §4.1: boot complete, memory acceptance complete (you measured its shape in Module 1, Step 6), attestation complete, key released, weights fetched, weights decrypted and loaded to protected HBM, first token served. **Produce the actual budget table for your configuration.** This artifact is more valuable than the rest of the lab combined — it is the number every capacity and pricing conversation will need.
-
-Run it at least five times. Cold start on this path has a long tail, and a single sample will mislead you about the p99 that actually sizes your warm pool.
-
-### Step 5 — Demonstrate the ingress failure, then fix it
-
-§5.1 calls a managed L7 load balancer in front of a TEE the most common silent failure in this design. Build it wrong on purpose, then prove it:
-
-```bash
-# Option A from §5.2 — Google terminates TLS and holds the private key
-gcloud compute backend-services create infer-l7 --global --protocol=HTTPS
-gcloud compute ssl-certificates create infer-cert --domains=YOUR_DOMAIN
-```
-
-Send a prompt through it, then read it back out of the load balancer's own request logging. **The prompt is plaintext in Google-operated infrastructure, and every confidential mechanism downstream is intact and irrelevant.** Capture that log line and put it in your design review deck; it ends the argument faster than the diagram does.
-
-Now switch to Option B — an L4 passthrough LB with RA-TLS terminated inside the TEE, the public key bound into `REPORT_DATA` — and confirm the same request produces nothing readable at any hop before the enclave.
-
-### Step 6 — Verify from the client side
-
-Write a client that, before sending any prompt:
-
-1. Fetches the server's attestation token and raw evidence.
-2. Verifies the signature and the claims against your own verifier — including `cc_mode`, the TCB floor, and the image digest.
-3. Confirms the RA-TLS public key hash appears in `REPORT_DATA`, so it is talking to *that* enclave and not a relay.
-4. **Refuses to send anything if any check fails.**
-
-Then break it three ways: deploy an image whose digest is not in the allowlist; put a proxy in the middle that relays a valid attestation from a different machine; and roll the TCB floor above the fleet. The client should refuse all three. That refusal is P3 working, and step 3 is what makes it survive the relay attack.
-
-### Step 7 — Demonstrate the prefix-cache oracle properly
-
-With prefix caching enabled and shared across tenants, this is a measurement, not a demo — so measure it like one:
-
-```python
-# Victim "tenant" primes the cache with a distinctive long prefix.
-# Attacker tenant then times TTFT for a guessed prefix vs a control.
-for trial in range(200):
-    ttft_hit  = time_ttft(shared_prefix + attacker_suffix)
-    ttft_miss = time_ttft(random_prefix  + attacker_suffix)
-```
-
-Plot the two distributions. With a long enough prefix they will be cleanly separated — meaning an attacker distinguishes "some other tenant has sent this text" from "nobody has" with high confidence, without reading a single byte of memory. Report it as an accuracy: how often does a single timing sample classify correctly?
-
-Then set prefix caching to per-tenant and repeat until the distributions overlap. **That difference in your own numbers is §6.2**, and it is the most convincing demonstration in the book that a confidentiality failure need not involve reading any memory at all.
-
-### Step 8 — Run the adversarial review against the running system
-
-§9 lists what an insider with host root can still do. With the system live, work down that list and try each one for real: terminate the instance, deny it collateral, observe request timing and sizes from outside, correlate GPU power draw with load, and roll the platform image under it. For each, record whether you detected it and whether the client could have.
-
-The output is a list of residual risks you have personally verified rather than inherited from a threat-model template. That list is what a model provider's security team will actually ask you for.
-
-### Step 9 — Clean up
-
-Delete the instances and node pools, the bucket contents, the KMS key version, and the load balancer. Keep the cold-start budget table and the prefix-cache plot — those two artifacts are the reason this lab was worth running.
+1. The Leader Pod generates its composite TDX + H100 CC evidence.
+2. The Pod presents the evidence and nonce to the Provider's External KMS.
+3. Upon policy validation, the unwrapped DEK is returned over TLS directly into the Pod's memory.
+4. The Pod streams `model.enc` from GCS FUSE, decrypts in-memory, and loads weights into protected HBM.
+5. The client SDK queries the Pod's attestation report, verifies the bound RA-TLS key, and sends an encrypted inference request.
 
 ---
 
-## Summary: The Design Checklist
+## Summary: The GKE Confidential Serving Design Checklist
 
-| Decision | Recommendation | Consequence of the alternative |
+| Decision | Production Recommendation | Consequence of Compromise |
 | :--- | :--- | :--- |
-| Confidential runtime | Confidential Space, orchestrated from regular GKE | Confidential GKE Nodes leave the Google control plane inside the boundary |
-| CPU TEE | TDX | SEV-SNP lacks native runtime measurement and is not the GPU path |
-| GPU | H100 CC mode, `cc_mode == ON` asserted | Weights in plaintext HBM |
-| Verifier | Provider-operated, over raw evidence | P3 becomes a promise by Google |
-| Key manager | Provider-operated external KMS | The guarantee reduces to a Google IAM policy |
-| TLS termination | Client-side payload encryption, plus L4 passthrough | A managed L7 LB holds plaintext prompts |
-| Weight delivery | Envelope encryption; decrypt to memory only | Plaintext weights on disk are readable by the platform |
-| Cold start | Warm pools; overlap fetch with attest; never VM snapshots | Reactive autoscaling does not work at multi-minute cold start |
-| Prefix caching | Per-tenant only, never shared across tenants | A timing oracle over other tenants' prompt content |
-| Disaggregation | Not in v1; if adopted, RA-TLS between nodes | KV cache — prompt content — crosses the network in plaintext |
-| Multi-tenancy | Batched per model, with the software-isolation caveat disclosed | Customers assume hardware isolation between tenants and are wrong |
-| Observability | Field allowlist; no content, ever; no stack traces | An exception message leaks a prompt through an unreviewed path |
-| Safety monitoring | In-TEE classifiers plus attested consented telemetry; disclose the gap | Either a silent confidentiality breach or an unmonitored abuse surface |
+| **Confidential Infrastructure** | GKE Hypercluster with TDX + H100/B200 CC Node Pools | Standard nodes expose memory to hypervisor and cloud insiders |
+| **Workload Orchestration** | LeaderWorkerSet (LWS) + Dynamic Workload Scheduler flex-start | Inability to coordinate multi-node tensor parallelism under attestation |
+| **Key Release Gate** | Provider-Operated External KMS (Cloud EKM) appraising raw evidence | Cloud KMS reduces security guarantee to a cloud IAM policy |
+| **TLS & Ingress** | L4 Passthrough (Gateway API) + In-Pod RA-TLS / Client HPKE | Managed L7 LB terminates TLS and holds plaintext prompts in cloud memory |
+| **Weight Delivery** | Cloud Storage FUSE + In-Memory Decrypt to protected HBM | Plaintext weight files on disk are readable by the platform |
+| **Cold-Start Strategy** | DWS flex-start + FUSE local cache + Warm Pools | Multi-minute cold starts cause severe request timeouts under traffic spikes |
+| **Prefix Caching** | Scoped strictly per-tenant; never shared across tenants | Shared prefix cache acts as a timing oracle leaking prompt contents |
+| **Disaggregated Serving** | Mutual RA-TLS + encrypted inter-node transport | Plaintext KV tensors cross network unencrypted |
+| **Telemetry & Observability** | Strict field allowlist; sanitized error codes; zero prompt text | Uncaught stack traces leak user prompts into Cloud Logging |
+| **Safety Monitoring** | In-TEE classifier models emitting binary policy flags | Either complete safety blind spot or total privacy violation |
 
-The design is complete. What remains is proving it performs, operating it without the tools you are used to, and being able to defend its claims against a sophisticated counterparty — including honestly comparing it to what AWS, Azure, and Apple have published. That is **Module 7: Performance, Operations, and Evaluation (`07_performance_operations_and_evaluation.md`)**.
+The architecture is complete and defensible. What remains is measuring performance, operating without standard debug access, and understanding fleet lifecycle under attestation. That is **Module 7: Performance, Operations, and Evaluation (`07_performance_operations_and_evaluation.md`)**.
