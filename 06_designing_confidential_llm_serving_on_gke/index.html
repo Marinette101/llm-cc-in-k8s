@@ -627,6 +627,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#34-what-you-actually-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 What You Actually Deploy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 What You Actually Deploy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-provider-plane-outside-the-cluster-operators-iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The provider plane — outside the cluster operator's IAM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-cluster-plane-kubernetes-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cluster plane — Kubernetes objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-and-what-it-is-actually-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC, and what it is actually for
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1209,6 +1259,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#34-what-you-actually-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 What You Actually Deploy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 What You Actually Deploy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-provider-plane-outside-the-cluster-operators-iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The provider plane — outside the cluster operator's IAM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-cluster-plane-kubernetes-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cluster plane — Kubernetes objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac-and-what-it-is-actually-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC, and what it is actually for
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1622,7 +1722,7 @@
 <h3 id="21-the-architectural-paradigm-spectrum">2.1 The Architectural Paradigm Spectrum<a class="headerlink" href="#21-the-architectural-paradigm-spectrum" title="Permanent link">&para;</a></h3>
 <p>Serving frontier LLMs (70B, 405B, MoE architectures) under confidential computing requires high-bandwidth multi-GPU interconnects, distributed multi-node orchestration, low-latency weight streaming, and dynamic capacity scheduling. Modern architectures fall across three distinct patterns:</p>
 <ol>
-<li><strong>Native GKE Hypercluster with Confidential Accelerated Node Pools (Primary Reference Architecture)</strong>: Runs distributed inference workloads (e.g. vLLM / TensorRT-LLM orchestrated by <a href="https://github.com/kubernetes-sigs/lws">LeaderWorkerSet (LWS)</a>) directly on confidential GPU node pools. Pods use in-workload attestation agents to fetch hardware quotes and directly unwrap DEKs from the provider's external KMS into protected HBM. Control plane risks are mitigated via Binary Authorization, strict Pod Security Admission, private endpoints, and in-pod end-to-end payload encryption.</li>
+<li><strong>Native GKE Hypercluster with Confidential Accelerated Node Pools (Primary Reference Architecture)</strong>: Runs distributed inference workloads (e.g. vLLM / TensorRT-LLM orchestrated by <a href="https://github.com/kubernetes-sigs/lws">LeaderWorkerSet (LWS)</a>) directly on confidential GPU node pools. Pods use in-workload attestation agents to fetch hardware quotes and directly unwrap DEKs from the provider's external KMS into protected HBM. Control plane risks are mitigated primarily by running the runners in <strong>sealed configuration</strong> (Module 5, §2.5), which disables SSH and shell access at the instance and enforces signed image digests there rather than in the control plane — with Binary Authorization, strict Pod Security Admission, private endpoints, and in-pod end-to-end payload encryption as defence in depth. <strong>In default configuration this pattern does not hold</strong>, because administrator SSH bypasses every one of those controls.</li>
 <li><strong>GKE Hypercluster Split-Plane / Hybrid Orchestration</strong>: GKE Hypercluster acts as the untrusted frontend, scheduler (Kueue / Dynamic Workload Scheduler), and L4 router, while delegating raw inference to standalone <a href="../05_google_cloud_confidential_surface/#part-3-confidential-space">Confidential Space</a> worker instances where organizational policy strictly requires zero host-level agent access.</li>
 <li><strong>GKE Hypercluster with Confidential Containers (Pod-Level MicroVM TEEs)</strong>: Next-generation confidential Kubernetes leveraging microVM runtimes (such as Kata Containers with TDX/SEV-SNP) where each Pod runs in its own hardware TEE, placing the node's Kubelet and host OS outside the Pod's trust boundary.</li>
 </ol>
@@ -1808,6 +1908,83 @@
 </table>
 <p><strong>Rotation:</strong> Rotating the KEK means rewrapping the DEK in the provider's KMS — cheap, instant, and does not touch encrypted weight files. Rotating the DEK requires re-encrypting the entire model — expensive. Design so that routine operations only touch the KEK.</p>
 <p><strong>Revocation:</strong> Removing an image digest from the release policy stops <em>new</em> Pods from obtaining the key. Existing running Pods retain the DEK in memory. If immediate revocation is required, implement short-lived key leases with periodic re-attestation; if re-attestation fails, the inference process terminates and flushes GPU HBM.</p>
+<h3 id="34-what-you-actually-deploy">3.4 What You Actually Deploy<a class="headerlink" href="#34-what-you-actually-deploy" title="Permanent link">&para;</a></h3>
+<p>The architecture above is a diagram. This is the object inventory, organized by the only question that matters: <strong>who can change it.</strong> Module 3's lab showed an attacker with project-owner rights stealing the key without touching the workload — by editing the release policy. Everything below is placed to make that attack fail.</p>
+<h4 id="the-provider-plane-outside-the-cluster-operators-iam">The provider plane — outside the cluster operator's IAM<a class="headerlink" href="#the-provider-plane-outside-the-cluster-operators-iam" title="Permanent link">&para;</a></h4>
+<p>These objects must live in a project whose IAM the cluster administrator does not hold. If they do not, the rest is decoration.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Object</th>
+<th style="text-align: left;">Why it lives here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>KEK</strong> in Cloud HSM or Cloud EKM</td>
+<td style="text-align: left;">The key itself. If it is in the operator's project, the guarantee reduces to that project's IAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Verifier service</strong> appraising raw evidence</td>
+<td style="text-align: left;">Module 3, §1.3's second row. Do not let the Google Cloud Attestation token be the only appraisal, even on sealed runners</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reference values</strong> — approved measurements, TCB floor, image digests, GPU RIMs</td>
+<td style="text-align: left;">The allowlist an attacker most wants to edit</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Binary Authorization attestor keys</strong></td>
+<td style="text-align: left;">Whoever holds the signing key decides what "approved" means</td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-cluster-plane-kubernetes-objects">The cluster plane — Kubernetes objects<a class="headerlink" href="#the-cluster-plane-kubernetes-objects" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># The workload identity binding: a K8s SA that can federate to the provider&#39;s KMS</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-sa</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">iam.gke.io/gcp-service-account</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">infer@OPERATOR_PROJECT.iam.gserviceaccount.com</span>
+<span class="nn">---</span>
+<span class="c1"># Egress allowlist: the pod talks to the verifier, the KMS, and the weight bucket.</span>
+<span class="c1"># Nothing else. This is what converts &quot;trust the image&quot; into &quot;constrain the image&quot;.</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-egress</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">inference</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Egress</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">egress</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> ipBlock</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cidr</span><span class="p">:</span><span class="w"> </span><span class="nv">PROVIDER_VERIFIER_CIDR</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> ipBlock</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cidr</span><span class="p">:</span><span class="w"> </span><span class="nv">PROVIDER_KMS_CIDR</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+</code></pre></div>
+<p>Alongside those: the <code>LeaderWorkerSet</code> carrying the attestation agent, a Binary Authorization policy with <code>requireAttestationsBy</code> pointing at the provider's attestor, <code>pod-security.kubernetes.io/enforce: restricted</code> on the namespace, and — on sealed runners — the instance-side workload policy pinning signed image digests.</p>
+<h4 id="rbac-and-what-it-is-actually-for">RBAC, and what it is actually for<a class="headerlink" href="#rbac-and-what-it-is-actually-for" title="Permanent link">&para;</a></h4>
+<p>The instinct is to treat RBAC as a confidentiality control. In this design it is not. Confidentiality comes from hardware; RBAC exists to close the <em>human</em> path that Module 5's lab walked in one command:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># There is no &quot;deny&quot; verb in RBAC — you close exec by never granting it.</span>
+<span class="c1"># Audit for any Role or ClusterRole that grants these four subresources.</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-operator</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;pods/log&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="c1"># Deliberately absent: pods/exec, pods/attach, pods/portforward,</span>
+<span class="w">  </span><span class="c1"># pods/ephemeralcontainers. Each is a shell into the trust boundary.</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaderworkerset.x-k8s.io&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaderworkersets&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;update&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>Audit the cluster for existing grants rather than only writing new ones — <code>kubectl auth can-i --list</code> per subject, and a sweep for <code>pods/exec</code> across every <code>ClusterRole</code>, including the built-in <code>cluster-admin</code> bindings your platform team already holds.</p>
+<p>Now the sentence that keeps this honest. <strong>RBAC is enforced by the API server, which is Google-operated and outside your TEE.</strong> It constrains your engineers; it does not constrain adversary A3, who does not need to pass through admission control at all. On a <em>sealed</em> runner that gap is closed by the instance itself — shell access is disabled in the image, not denied by policy. On a default runner nothing closes it. This is §2.5 of the previous module restated as a deployment consequence: RBAC is the right control for insider-by-accident, and the wrong control for insider-by-design.</p>
 <hr />
 <h2 id="part-4-the-cold-start-problem-hypercluster-optimizations">Part 4: The Cold-Start Problem &amp; Hypercluster Optimizations<a class="headerlink" href="#part-4-the-cold-start-problem-hypercluster-optimizations" title="Permanent link">&para;</a></h2>
 <h3 id="41-the-latency-budget">4.1 The Latency Budget<a class="headerlink" href="#41-the-latency-budget" title="Permanent link">&para;</a></h3>
@@ -2115,7 +2292,7 @@ T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T
 <tr>
 <td style="text-align: left;"><strong>A3 — Cloud insider with host root</strong></td>
 <td style="text-align: left;">Can terminate nodes or observe traffic timing; cannot read weights, prompts, or KV cache; cannot bypass provider EKM release policy</td>
-<td style="text-align: left;">✅ Addressed for confidentiality</td>
+<td style="text-align: left;">✅ Addressed for confidentiality — <strong>only on sealed runners.</strong> On a default-configuration Hypercluster instance, platform administrators and SREs retain SSH access and this row is ❌ (Module 5, §2.5)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>A4 — Physical / DMA attacker</strong></td>

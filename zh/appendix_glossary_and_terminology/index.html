@@ -1713,6 +1713,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sealed-configurationhypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        密封配置（Sealed configuration，Hypercluster）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#titanium-intelligence-enclave-tie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Titanium Intelligence Enclave (TIE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ai-hypercomputer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3291,6 +3313,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sealed-configurationhypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        密封配置（Sealed configuration，Hypercluster）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#titanium-intelligence-enclave-tie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Titanium Intelligence Enclave (TIE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ai-hypercomputer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3864,7 +3908,11 @@
 <hr />
 <h2 id="8-google-cloud">8. Google Cloud<a class="headerlink" href="#8-google-cloud" title="Permanent link">&para;</a></h2>
 <h3 id="gke-hypercluster">GKE Hypercluster<a class="headerlink" href="#gke-hypercluster" title="Permanent link">&para;</a></h3>
-<p>Google Cloud 专为大规模 AI 训练与机密 LLM 推理构建的超算级 Kubernetes 架构。深度整合机密 GPU 加速节点池、高吞吐存储（GCS FUSE / Hyperdisk ML）与 AI 编排引擎。→ 模块 5 §2 与 模块 6 §2</p>
+<p>Google Cloud 的超算级 Kubernetes 架构：单个符合一致性标准的控制面，以<strong>链接运行器（linked runners）</strong>的形式跨区域管理加速器算力——这些实例不注册为 <code>Node</code> 对象，也不带 Kubernetes agent。需资格准入。<strong>规模本身不是机密性属性</strong>；见"密封配置"。→ 模块 5 §2 与 §2.5、模块 6 §2</p>
+<h3 id="sealed-configurationhypercluster">密封配置（Sealed configuration，Hypercluster）<a class="headerlink" href="#sealed-configurationhypercluster" title="Permanent link">&para;</a></h3>
+<p>让 Hypercluster 真正具备机密性的那种运行器模式：最小化 OS 镜像、禁用 SSH 与容器 shell、运行一个上报固件与工作负载度量值的证明 agent、由实例侧强制签名镜像 digest 策略，并明确声明管理员与 Google 人员无法访问宿主。<strong>默认配置保留管理员与 SRE 的 SSH 访问权，不是一个机密部署。</strong> → 模块 5 §2.5</p>
+<h3 id="titanium-intelligence-enclave-tie">Titanium Intelligence Enclave (TIE)<a class="headerlink" href="#titanium-intelligence-enclave-tie" title="Permanent link">&para;</a></h3>
+<p>在 TPU 上支撑密封 Hypercluster 运行器的 TEE，属于 Google 的 Private AI Compute 平台。基于 GPU 的密封运行器则改用 NVIDIA Confidential Computing。→ 模块 5 §2.5</p>
 <h3 id="ai-hypercomputer">AI Hypercomputer<a class="headerlink" href="#ai-hypercomputer" title="Permanent link">&para;</a></h3>
 <p>Google Cloud 的一体化 AI 超算架构，结合了针对性能优化的硬件体系、开源软件框架（LeaderWorkerSet、Kueue、JobSet）与高吞吐存储系统。→ 模块 5 §2</p>
 <h3 id="confidential-vm">Confidential VM<a class="headerlink" href="#confidential-vm" title="Permanent link">&para;</a></h3>

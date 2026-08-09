@@ -627,6 +627,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 你实际要部署些什么
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 你实际要部署些什么">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        提供方平面 —— 位于集群运维方的 IAM 之外
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        集群平面 —— Kubernetes 对象
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC，以及它到底是干什么用的
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1209,6 +1259,56 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 你实际要部署些什么
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 你实际要部署些什么">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        提供方平面 —— 位于集群运维方的 IAM 之外
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        集群平面 —— Kubernetes 对象
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RBAC，以及它到底是干什么用的
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1622,7 +1722,7 @@
 <h3 id="21">2.1 架构范式光谱<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
 <p>在机密计算下提供前沿 LLM（70B、405B、MoE 架构）服务需要高带宽多 GPU 互联、分布式多节点编排、低延迟权重流式加载以及动态算力调度。现代生产架构分布在三种不同模式上：</p>
 <ol>
-<li><strong>原生 GKE Hypercluster（配合机密加速节点池，主要参考架构）</strong>：通过 <a href="https://github.com/kubernetes-sigs/lws">LeaderWorkerSet (LWS)</a> 直接在机密 GPU 节点池上运行分布式推理（如 vLLM / TensorRT-LLM）。Pod 内运行的证明代理直接获取底层硬件 quote，向模型提供方外部 KMS 解封 DEK 并流式加载到受保护 HBM 中。控制面风险通过 Binary Authorization 镜像签名准入、严格 Pod 安全策略、私有端点以及 Pod 内端到端载荷加密彻底化解。</li>
+<li><strong>原生 GKE Hypercluster（配合机密加速节点池，主要参考架构）</strong>：通过 <a href="https://github.com/kubernetes-sigs/lws">LeaderWorkerSet (LWS)</a> 直接在机密 GPU 节点池上运行分布式推理（如 vLLM / TensorRT-LLM）。Pod 内运行的证明代理直接获取底层硬件 quote，向模型提供方外部 KMS 解封 DEK 并流式加载到受保护 HBM 中。控制面风险主要靠让运行器跑在<strong>密封配置</strong>下来化解（模块 5 §2.5）——它在实例侧禁用 SSH 与 shell 访问，并把签名镜像 digest 的强制点放在实例上而非控制面；Binary Authorization 镜像签名准入、严格 Pod 安全策略、私有端点以及 Pod 内端到端载荷加密则作为纵深防御。<strong>在默认配置下这套模式不成立</strong>，因为管理员的 SSH 会绕过上述每一项控制。</li>
 <li><strong>GKE Hypercluster 分离平面 / 混合编排</strong>：由 GKE Hypercluster 充当不可信前端调度器（Kueue / Dynamic Workload Scheduler）与 L4 路由器，将实际计算分发给独立的 <a href="../05_google_cloud_confidential_surface/#part-3-confidential-space">Confidential Space</a> 工作节点（适用于合规政策绝对严禁任何宿主机 agent 驻留的场景）。</li>
 <li><strong>基于机密容器（CoCo）的 GKE Hypercluster</strong>：采用 microVM 运行时（如基于 TDX/SEV-SNP 的 Kata Containers），每个 Pod 独占独立的硬件 TEE，将宿主机 Kubelet 与操作系统彻底置于 Pod 的信任边界之外。</li>
 </ol>
@@ -1808,6 +1908,83 @@
 </table>
 <p><strong>轮转：</strong> 轮转 KEK 意味着在提供方 KMS 中重新封装 DEK——很便宜，毫秒级生效，且完全不触碰加密后的权重文件。轮转 DEK 意味着重新加密整个模型——很贵。<strong>将系统设计为"日常操作仅轮转 KEK"。</strong></p>
 <p><strong>吊销：</strong> 从释放策略里删掉一个镜像摘要，能阻止<strong>新</strong> Pod 拿到密钥。已在运行的 Pod 仍在内存中持有 DEK。如果吊销必须立即生效，需结合短期密钥租约与周期性重新证明机制；一旦租约续期失败，推理进程立即销毁并擦除 GPU 显存。</p>
+<h3 id="34">3.4 你实际要部署些什么<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<p>上面那套架构是一张图。下面这份是对象清单，而组织它的依据只有一个真正要紧的问题：<strong>谁能改动它。</strong> 模块 3 的实验展示过：一个握有 project-owner 权限的攻击者，压根不碰工作负载就偷走了密钥——他改的是释放策略。下面每一项的摆放位置，都是为了让那次攻击失败。</p>
+<h4 id="iam">提供方平面 —— 位于集群运维方的 IAM 之外<a class="headerlink" href="#iam" title="Permanent link">&para;</a></h4>
+<p>这些对象必须住在一个集群管理员并不持有其 IAM 的项目里。做不到这一点，其余的都是装饰。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">对象</th>
+<th style="text-align: left;">为什么它在这里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>KEK</strong>，位于 Cloud HSM 或 Cloud EKM</td>
+<td style="text-align: left;">密钥本身。如果它在运维方项目里，整个保证就退化成那个项目的 IAM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>验证服务</strong>，评估原始证据</td>
+<td style="text-align: left;">模块 3 §1.3 的第二行。即便在密封运行器上，也别让 Google Cloud Attestation 的 token 成为唯一的评估</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>参考值</strong> —— 批准的度量值、TCB 下界、镜像 digest、GPU RIM</td>
+<td style="text-align: left;">攻击者最想改的那份白名单</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Binary Authorization attestor 密钥</strong></td>
+<td style="text-align: left;">谁握着签名密钥，谁就定义了什么叫"已批准"</td>
+</tr>
+</tbody>
+</table>
+<h4 id="kubernetes">集群平面 —— Kubernetes 对象<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 工作负载身份绑定：一个能联合到提供方 KMS 的 K8s SA</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-sa</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">iam.gke.io/gcp-service-account</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">infer@OPERATOR_PROJECT.iam.gserviceaccount.com</span>
+<span class="nn">---</span>
+<span class="c1"># 出站白名单：Pod 只与验证方、KMS 和权重存储桶通信。</span>
+<span class="c1"># 别的都不行。正是它把&quot;信任这个镜像&quot;变成了&quot;约束这个镜像&quot;。</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-egress</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">inference</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Egress</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">egress</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> ipBlock</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cidr</span><span class="p">:</span><span class="w"> </span><span class="nv">PROVIDER_VERIFIER_CIDR</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> ipBlock</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cidr</span><span class="p">:</span><span class="w"> </span><span class="nv">PROVIDER_KMS_CIDR</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+</code></pre></div>
+<p>与之并列的还有：承载证明 agent 的 <code>LeaderWorkerSet</code>、一条 <code>requireAttestationsBy</code> 指向提供方 attestor 的 Binary Authorization 策略、给命名空间打上 <code>pod-security.kubernetes.io/enforce: restricted</code>，以及——在密封运行器上——由实例侧强制、把签名镜像 digest 钉死的工作负载策略。</p>
+<h4 id="rbac">RBAC，以及它到底是干什么用的<a class="headerlink" href="#rbac" title="Permanent link">&para;</a></h4>
+<p>人的直觉是把 RBAC 当成一种机密性控制。在这套设计里它不是。机密性来自硬件；RBAC 存在的意义，是堵住模块 5 实验里用一条命令走通的那条<strong>人的</strong>路径：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># RBAC 里没有 &quot;deny&quot; 动词 —— 你是靠从不授予来关掉 exec 的。</span>
+<span class="c1"># 请审计任何授予了下面这四个子资源的 Role 或 ClusterRole。</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inference-operator</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">confidential-serving</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;pods/log&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="c1"># 刻意不给的：pods/exec、pods/attach、pods/portforward、</span>
+<span class="w">  </span><span class="c1"># pods/ephemeralcontainers。每一个都是通往信任边界内部的一个 shell。</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaderworkerset.x-k8s.io&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;leaderworkersets&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;update&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>不要只顾着写新策略，更要去审计集群里<strong>已有的</strong>授权——对每个主体跑 <code>kubectl auth can-i --list</code>，并在所有 <code>ClusterRole</code> 里横扫一遍 <code>pods/exec</code>，包括你的平台团队早已持有的那些 <code>cluster-admin</code> 绑定。</p>
+<p>接下来这句话让整段话保持诚实。<strong>RBAC 由 API server 强制执行，而 API server 由 Google 运营、位于你的 TEE 之外。</strong> 它约束的是你的工程师；它约束不了 A3 攻击者，因为后者根本不需要经过准入控制。在<strong>密封</strong>运行器上，这个缺口由实例自己堵上——shell 访问是在镜像里被禁用的，而不是被策略拒绝的。在默认运行器上，没有任何东西堵它。这就是上一模块 §2.5 换成部署后果的说法：对付"无意的内部人"，RBAC 是对的控制；对付"设计上的内部人"，它是错的控制。</p>
 <hr />
 <h2 id="4-hypercluster">第 4 部分: 冷启动问题与 Hypercluster 优化<a class="headerlink" href="#4-hypercluster" title="Permanent link">&para;</a></h2>
 <h3 id="41">4.1 延迟预算<a class="headerlink" href="#41" title="Permanent link">&para;</a></h3>
@@ -2115,7 +2292,7 @@ T_{\text{cold}} = T_{\text{provision}} + T_{\text{boot}} + T_{\text{attest}} + T
 <tr>
 <td style="text-align: left;"><strong>A3 — 拥有 Host Root 的云内部人员</strong></td>
 <td style="text-align: left;">能停机或分析流量时序；无法读取权重、Prompt 或 KV Cache；无法绕过提供方 EKM 策略</td>
-<td style="text-align: left;">✅ 机密性已防御</td>
+<td style="text-align: left;">✅ 机密性已防御 —— <strong>仅在密封运行器上成立。</strong> 在默认配置的 Hypercluster 实例上，平台管理员与 SRE 保有 SSH 访问权，此行应为 ❌（模块 5 §2.5）</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>A4 — 物理 / DMA 攻击者</strong></td>

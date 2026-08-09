@@ -589,6 +589,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-hypercluster-default-versus-sealed-and-why-only-one-of-them-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Hypercluster: Default versus Sealed, and Why Only One of Them Counts
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1186,6 +1197,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-hypercluster-default-versus-sealed-and-why-only-one-of-them-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Hypercluster: Default versus Sealed, and Why Only One of Them Counts
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1722,6 +1744,63 @@
 <li>Node auto-provisioning supports SEV and SEV-SNP, but not TDX — which matters, because TDX is the confidential-GPU path.</li>
 <li>Maintenance events cause disruption where live migration is unavailable (<code>maintenance-policy=TERMINATE</code>).</li>
 </ul>
+<h3 id="25-hypercluster-default-versus-sealed-and-why-only-one-of-them-counts">2.5 Hypercluster: Default versus Sealed, and Why Only One of Them Counts<a class="headerlink" href="#25-hypercluster-default-versus-sealed-and-why-only-one-of-them-counts" title="Permanent link">&para;</a></h3>
+<p>Everything in §2.1 about Hypercluster describes scale and orchestration. None of it is a confidentiality property. The confidentiality property lives in a configuration choice that is easy to miss and that decides whether any of this module's argument applies.</p>
+<p>Hypercluster runs accelerator capacity as <strong>linked runners</strong> — instances that, in Google's words, "aren't registered as <code>Node</code> objects in the Kubernetes API server" and carry "no Kubernetes agents and a minimal set of GKE components." A small number of ordinary <strong>control nodes</strong> manage a very large number of these runners, across regions. That split is itself security-relevant: much of §2.3's attack surface exists because a full kubelet and the control plane's scheduling authority live inside the TEE with your workload. Runners shrink that surface considerably.</p>
+<p>But the runners come in two configurations, and they are not variants of each other:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Default configuration</strong></th>
+<th style="text-align: left;"><strong>Sealed configuration</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Host OS</td>
+<td style="text-align: left;">Container-Optimized OS</td>
+<td style="text-align: left;">Minimal COS image</td>
+</tr>
+<tr>
+<td style="text-align: left;">SSH to the instance</td>
+<td style="text-align: left;"><strong>Available</strong> to platform administrators and SREs</td>
+<td style="text-align: left;">Disabled</td>
+</tr>
+<tr>
+<td style="text-align: left;">Container shell access</td>
+<td style="text-align: left;">Available</td>
+<td style="text-align: left;">Disabled</td>
+</tr>
+<tr>
+<td style="text-align: left;">Google personnel access</td>
+<td style="text-align: left;">Available for troubleshooting</td>
+<td style="text-align: left;"><strong>"Administrators and Google personnel can't access host instances"</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">TEE</td>
+<td style="text-align: left;">Not the point of this mode</td>
+<td style="text-align: left;">Titanium Intelligence Enclave (TPU) / NVIDIA CC (GPU)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Attestation</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Agent sends firmware and workload measurements to Google Cloud Attestation</td>
+</tr>
+<tr>
+<td style="text-align: left;">Workload admission</td>
+<td style="text-align: left;">Ordinary Kubernetes</td>
+<td style="text-align: left;">Instance-enforced policy requiring signed container image digests</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The default configuration is not a confidential deployment.</strong> Platform administrators and emergency personnel can SSH to the instance. Against adversary A3 that is the §2.3 failure with a second door added, and no amount of Binary Authorization or Pod Security Admission changes it — those are control-plane policies, and the SSH path does not traverse the control plane. If you take one operational fact from this module, take this one: <strong>a Hypercluster is not confidential because it is a Hypercluster; it is confidential because it is sealed.</strong></p>
+<p>The sealed configuration is a genuinely different claim, and it is the one that matters for third-party model serving. Disabled shell access, an attestation agent covering firmware <em>and</em> workload, instance-side enforcement of signed image digests, and an explicit no-access statement covering Google's own personnel — that is the Confidential Space property set (§3), arriving this time with Kubernetes orchestration attached rather than instead of it. §6.2 recommends Confidential Space partly because Confidential GKE Nodes cannot make that claim. Sealed Hypercluster can, which is why §6 revisits the recommendation.</p>
+<p>Two qualifications belong next to that, and neither is a footnote:</p>
+<ol>
+<li><strong>The verifier is Google Cloud Attestation.</strong> The attestation agent reports measurements to a Google service and receives claims tokens back. Read Module 3, §1.3 again with that in mind: for a model provider whose threat model includes Google, a Google-issued token attesting to Google's infrastructure is the cloud-operated-verifier row, which is the weakest of the three. The sealed configuration removes Google's <em>operational</em> access; it does not by itself remove Google from the <em>appraisal</em> path. Getting the strong version still means doing what Module 3's lab does — verifying raw evidence yourself and holding the key outside the workload's project.</li>
+<li><strong>Eligibility and observability.</strong> Hypercluster is "available only to eligible GKE customers" and Google is direct that it is not intended for most production AI/ML workloads, with "increased operational friction" as an accepted tradeoff. GKE logging and monitoring agents are absent from linked infrastructure. Module 7's chapter on debugging without SSH is not a thought experiment here — it is the operating manual.</li>
+</ol>
 <hr />
 <h2 id="part-3-confidential-space">Part 3: Confidential Space<a class="headerlink" href="#part-3-confidential-space" title="Permanent link">&para;</a></h2>
 <h3 id="31-a-different-product-answering-a-different-question">3.1 A Different Product Answering a Different Question<a class="headerlink" href="#31-a-different-product-answering-a-different-question" title="Permanent link">&para;</a></h3>

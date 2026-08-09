@@ -589,6 +589,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Hypercluster：默认配置与密封配置，以及为什么只有一个算数
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1186,6 +1197,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Hypercluster：默认配置与密封配置，以及为什么只有一个算数
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1722,6 +1744,63 @@
 <li>Node auto-provisioning 支持 SEV 与 SEV-SNP，但<strong>不支持 TDX</strong>——这很要紧，因为 TDX 正是机密 GPU 路径。</li>
 <li>在无法热迁移的场景下，维护事件会造成中断（<code>maintenance-policy=TERMINATE</code>）。</li>
 </ul>
+<h3 id="25-hypercluster">2.5 Hypercluster：默认配置与密封配置，以及为什么只有一个算数<a class="headerlink" href="#25-hypercluster" title="Permanent link">&para;</a></h3>
+<p>§2.1 里关于 Hypercluster 的一切讲的都是规模与编排。那些都不是机密性属性。真正的机密性属性藏在一个很容易被略过的配置选择里，而它决定了本模块的论证是否适用。</p>
+<p>Hypercluster 以<strong>链接运行器（linked runners）</strong>的形式承载加速器算力——用 Google 自己的话说，这些实例"不会作为 <code>Node</code> 对象注册进 Kubernetes API server"，并且"没有 Kubernetes agent，只有一组最小化的 GKE 组件"。少量普通的<strong>控制节点（control nodes）</strong>跨区域管理着数量极大的这类运行器。这个拆分本身就与安全相关：§2.3 里那么大的攻击面，很大程度上正是因为一个完整的 kubelet 以及控制面的调度权，和你的工作负载一起待在 TEE 里面。运行器把这块面积削掉了相当一部分。</p>
+<p>但运行器有两种配置，而它们并不是彼此的变体：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>默认配置</strong></th>
+<th style="text-align: left;"><strong>密封配置（Sealed）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">宿主 OS</td>
+<td style="text-align: left;">Container-Optimized OS</td>
+<td style="text-align: left;">最小化 COS 镜像</td>
+</tr>
+<tr>
+<td style="text-align: left;">SSH 到实例</td>
+<td style="text-align: left;">平台管理员与 SRE <strong>可用</strong></td>
+<td style="text-align: left;">禁用</td>
+</tr>
+<tr>
+<td style="text-align: left;">容器 shell 访问</td>
+<td style="text-align: left;">可用</td>
+<td style="text-align: left;">禁用</td>
+</tr>
+<tr>
+<td style="text-align: left;">Google 人员访问</td>
+<td style="text-align: left;">可用于排障</td>
+<td style="text-align: left;"><strong>"管理员与 Google 人员无法访问宿主实例"</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">TEE</td>
+<td style="text-align: left;">这不是该模式的重点</td>
+<td style="text-align: left;">Titanium Intelligence Enclave（TPU）/ NVIDIA CC（GPU）</td>
+</tr>
+<tr>
+<td style="text-align: left;">证明</td>
+<td style="text-align: left;">——</td>
+<td style="text-align: left;">agent 将固件与工作负载度量值送往 Google Cloud Attestation</td>
+</tr>
+<tr>
+<td style="text-align: left;">工作负载准入</td>
+<td style="text-align: left;">普通 Kubernetes</td>
+<td style="text-align: left;">由实例侧强制的策略，要求容器镜像带签名 digest</td>
+</tr>
+</tbody>
+</table>
+<p><strong>默认配置不是一个机密部署。</strong> 平台管理员与应急人员可以 SSH 进实例。面对 A3 攻击者，这就是 §2.3 那个失败再加一道门，而且再多的 Binary Authorization 或 Pod 安全准入都改变不了——那些是控制面策略，而 SSH 这条路径根本不经过控制面。如果你只从本模块带走一条运维事实，就带走这条：<strong>一个 Hypercluster 之所以机密，不是因为它是 Hypercluster，而是因为它被密封了。</strong></p>
+<p>密封配置则是一个完全不同的论断，也正是第三方模型服务真正需要的那个。禁用 shell 访问、一个同时覆盖固件<em>与</em>工作负载的证明 agent、由实例侧强制的签名镜像 digest、以及一条明确覆盖 Google 自家人员的"无法访问"声明——这就是 Confidential Space（§3）的那套属性集合，只是这一次它是<strong>带着</strong> Kubernetes 编排一起来的，而不是以牺牲编排为代价。§6.2 之所以推荐 Confidential Space，部分原因正是 Confidential GKE Nodes 拿不出这个论断。密封 Hypercluster 拿得出，这也是 §6 会重新审视那条建议的原因。</p>
+<p>有两条限定必须紧挨着上面这段话，而且都不是脚注：</p>
+<ol>
+<li><strong>验证方是 Google Cloud Attestation。</strong> 证明 agent 把度量值报给一个 Google 服务，再拿回 claims token。请带着这一点重读模块 3 §1.3：对于一个威胁模型包含 Google 的模型提供方，一份由 Google 签发、用于证明 Google 自家基础设施的 token，落在"云厂商运营的验证方"那一行——三行里最弱的一行。密封配置消除的是 Google 的<em>运维</em>访问权；它本身并没有把 Google 从<em>评估</em>路径里移走。要拿到强版本，仍然得做模块 3 实验里做的那件事——自己验证原始证据，并把密钥握在工作负载所在项目之外。</li>
+<li><strong>资格门槛与可观测性。</strong> Hypercluster "仅对符合条件的 GKE 客户开放"，而且 Google 直言它并不面向大多数生产 AI/ML 工作负载，"运维摩擦增加"是被接受的代价。链接基础设施上没有 GKE 的日志与监控 agent。模块 7 里那章"没有 SSH 怎么调试"在这里不是思想实验——它就是操作手册。</li>
+</ol>
 <hr />
 <h2 id="3-confidential-space">第 3 部分: Confidential Space<a class="headerlink" href="#3-confidential-space" title="Permanent link">&para;</a></h2>
 <h3 id="31">3.1 一个回答不同问题的不同产品<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>

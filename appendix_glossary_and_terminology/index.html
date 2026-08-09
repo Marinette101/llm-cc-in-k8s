@@ -1713,6 +1713,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sealed-configuration-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealed configuration (Hypercluster)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#titanium-intelligence-enclave-tie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Titanium Intelligence Enclave (TIE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ai-hypercomputer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3291,6 +3313,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sealed-configuration-hypercluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealed configuration (Hypercluster)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#titanium-intelligence-enclave-tie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Titanium Intelligence Enclave (TIE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#ai-hypercomputer" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3864,7 +3908,11 @@
 <hr />
 <h2 id="8-google-cloud">8. Google Cloud<a class="headerlink" href="#8-google-cloud" title="Permanent link">&para;</a></h2>
 <h3 id="gke-hypercluster">GKE Hypercluster<a class="headerlink" href="#gke-hypercluster" title="Permanent link">&para;</a></h3>
-<p>Google Cloud's purpose-built supercomputing-scale Kubernetes architecture designed for massive AI training and confidential LLM serving. Integrates confidential GPU node pools, high-throughput storage (GCS FUSE / Hyperdisk ML), and AI orchestration engines. → Module 5, §2 &amp; Module 6, §2</p>
+<p>Google Cloud's supercomputing-scale Kubernetes architecture: a single conformant control plane managing accelerator capacity as <strong>linked runners</strong> — instances not registered as <code>Node</code> objects and carrying no Kubernetes agents — across regions. Eligibility-gated. <strong>Scale is not a confidentiality property</strong>; see Sealed configuration. → Module 5, §2 &amp; §2.5, Module 6, §2</p>
+<h3 id="sealed-configuration-hypercluster">Sealed configuration (Hypercluster)<a class="headerlink" href="#sealed-configuration-hypercluster" title="Permanent link">&para;</a></h3>
+<p>The runner mode that makes Hypercluster confidential: minimal OS image with SSH and container shell disabled, an attestation agent reporting firmware and workload measurements, instance-enforced signed-image-digest policy, and an explicit statement that administrators and Google personnel cannot access the host. <strong>The default configuration retains administrator and SRE SSH access and is not a confidential deployment.</strong> → Module 5, §2.5</p>
+<h3 id="titanium-intelligence-enclave-tie">Titanium Intelligence Enclave (TIE)<a class="headerlink" href="#titanium-intelligence-enclave-tie" title="Permanent link">&para;</a></h3>
+<p>The TEE backing sealed Hypercluster runners on TPUs, part of Google's Private AI Compute platform. GPU-based sealed runners use NVIDIA Confidential Computing instead. → Module 5, §2.5</p>
 <h3 id="ai-hypercomputer">AI Hypercomputer<a class="headerlink" href="#ai-hypercomputer" title="Permanent link">&para;</a></h3>
 <p>Google Cloud's holistic AI supercomputing architecture combining performance-optimized hardware, open software frameworks (LeaderWorkerSet, Kueue, JobSet), and storage systems. → Module 5, §2</p>
 <h3 id="confidential-vm">Confidential VM<a class="headerlink" href="#confidential-vm" title="Permanent link">&para;</a></h3>
