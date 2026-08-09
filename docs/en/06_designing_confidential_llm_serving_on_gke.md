@@ -39,7 +39,7 @@ Before designing, fix the boundaries. The following are out of scope permanently
 
 Serving frontier LLMs (70B, 405B, MoE architectures) under confidential computing requires high-bandwidth multi-GPU interconnects, distributed multi-node orchestration, low-latency weight streaming, and dynamic capacity scheduling. Modern architectures fall across three distinct patterns:
 
-1. **Native GKE Hypercluster with Confidential Accelerated Node Pools (Primary Reference Architecture)**: Runs distributed inference workloads (e.g. vLLM / TensorRT-LLM orchestrated by [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws)) directly on confidential GPU node pools. Pods use in-workload attestation agents to fetch hardware quotes and directly unwrap DEKs from the provider's external KMS into protected HBM. Control plane risks are mitigated via Binary Authorization, strict Pod Security Admission, private endpoints, and in-pod end-to-end payload encryption.
+1. **Native GKE Hypercluster with Confidential Accelerated Node Pools (Primary Reference Architecture)**: Runs distributed inference workloads (e.g. vLLM / TensorRT-LLM orchestrated by [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws)) directly on confidential GPU node pools. Pods use in-workload attestation agents to fetch hardware quotes and directly unwrap DEKs from the provider's external KMS into protected HBM. Control plane risks are mitigated primarily by running the runners in **sealed configuration** (Module 5, §2.5), which disables SSH and shell access at the instance and enforces signed image digests there rather than in the control plane — with Binary Authorization, strict Pod Security Admission, private endpoints, and in-pod end-to-end payload encryption as defence in depth. **In default configuration this pattern does not hold**, because administrator SSH bypasses every one of those controls.
 2. **GKE Hypercluster Split-Plane / Hybrid Orchestration**: GKE Hypercluster acts as the untrusted frontend, scheduler (Kueue / Dynamic Workload Scheduler), and L4 router, while delegating raw inference to standalone [Confidential Space](05_google_cloud_confidential_surface.md#part-3-confidential-space) worker instances where organizational policy strictly requires zero host-level agent access.
 3. **GKE Hypercluster with Confidential Containers (Pod-Level MicroVM TEEs)**: Next-generation confidential Kubernetes leveraging microVM runtimes (such as Kata Containers with TDX/SEV-SNP) where each Pod runs in its own hardware TEE, placing the node's Kubelet and host OS outside the Pod's trust boundary.
 
@@ -173,6 +173,78 @@ When running large models (e.g. 70B+ parameters) across multi-GPU or multi-node 
 **Rotation:** Rotating the KEK means rewrapping the DEK in the provider's KMS — cheap, instant, and does not touch encrypted weight files. Rotating the DEK requires re-encrypting the entire model — expensive. Design so that routine operations only touch the KEK.
 
 **Revocation:** Removing an image digest from the release policy stops *new* Pods from obtaining the key. Existing running Pods retain the DEK in memory. If immediate revocation is required, implement short-lived key leases with periodic re-attestation; if re-attestation fails, the inference process terminates and flushes GPU HBM.
+
+### 3.4 What You Actually Deploy
+
+The architecture above is a diagram. This is the object inventory, organized by the only question that matters: **who can change it.** Module 3's lab showed an attacker with project-owner rights stealing the key without touching the workload — by editing the release policy. Everything below is placed to make that attack fail.
+
+#### The provider plane — outside the cluster operator's IAM
+
+These objects must live in a project whose IAM the cluster administrator does not hold. If they do not, the rest is decoration.
+
+| Object | Why it lives here |
+| :--- | :--- |
+| **KEK** in Cloud HSM or Cloud EKM | The key itself. If it is in the operator's project, the guarantee reduces to that project's IAM |
+| **Verifier service** appraising raw evidence | Module 3, §1.3's second row. Do not let the Google Cloud Attestation token be the only appraisal, even on sealed runners |
+| **Reference values** — approved measurements, TCB floor, image digests, GPU RIMs | The allowlist an attacker most wants to edit |
+| **Binary Authorization attestor keys** | Whoever holds the signing key decides what "approved" means |
+
+#### The cluster plane — Kubernetes objects
+
+```yaml
+# The workload identity binding: a K8s SA that can federate to the provider's KMS
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: inference-sa
+  namespace: confidential-serving
+  annotations:
+    iam.gke.io/gcp-service-account: infer@OPERATOR_PROJECT.iam.gserviceaccount.com
+---
+# Egress allowlist: the pod talks to the verifier, the KMS, and the weight bucket.
+# Nothing else. This is what converts "trust the image" into "constrain the image".
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: inference-egress
+  namespace: confidential-serving
+spec:
+  podSelector:
+    matchLabels: { app: inference }
+  policyTypes: [Egress]
+  egress:
+    - to: [{ ipBlock: { cidr: PROVIDER_VERIFIER_CIDR } }]
+    - to: [{ ipBlock: { cidr: PROVIDER_KMS_CIDR } }]
+```
+
+Alongside those: the `LeaderWorkerSet` carrying the attestation agent, a Binary Authorization policy with `requireAttestationsBy` pointing at the provider's attestor, `pod-security.kubernetes.io/enforce: restricted` on the namespace, and — on sealed runners — the instance-side workload policy pinning signed image digests.
+
+#### RBAC, and what it is actually for
+
+The instinct is to treat RBAC as a confidentiality control. In this design it is not. Confidentiality comes from hardware; RBAC exists to close the *human* path that Module 5's lab walked in one command:
+
+```yaml
+# There is no "deny" verb in RBAC — you close exec by never granting it.
+# Audit for any Role or ClusterRole that grants these four subresources.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: inference-operator
+  namespace: confidential-serving
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  # Deliberately absent: pods/exec, pods/attach, pods/portforward,
+  # pods/ephemeralcontainers. Each is a shell into the trust boundary.
+  - apiGroups: ["leaderworkerset.x-k8s.io"]
+    resources: ["leaderworkersets"]
+    verbs: ["get", "list", "watch", "update"]
+```
+
+Audit the cluster for existing grants rather than only writing new ones — `kubectl auth can-i --list` per subject, and a sweep for `pods/exec` across every `ClusterRole`, including the built-in `cluster-admin` bindings your platform team already holds.
+
+Now the sentence that keeps this honest. **RBAC is enforced by the API server, which is Google-operated and outside your TEE.** It constrains your engineers; it does not constrain adversary A3, who does not need to pass through admission control at all. On a *sealed* runner that gap is closed by the instance itself — shell access is disabled in the image, not denied by policy. On a default runner nothing closes it. This is §2.5 of the previous module restated as a deployment consequence: RBAC is the right control for insider-by-accident, and the wrong control for insider-by-design.
 
 ---
 
@@ -350,7 +422,7 @@ Walking the finished GKE Hypercluster design against the Module 1 adversary taxo
 | :--- | :--- | :--- |
 | **A1 — Malicious co-tenant** | Cannot access guest DRAM or GPU HBM; isolated by hardware TEE | ✅ Addressed |
 | **A2 — Compromised hypervisor** | Sees only ciphertext on DRAM and PCIe bus; integrity-protected by TDX and GPU CC | ✅ Addressed |
-| **A3 — Cloud insider with host root** | Can terminate nodes or observe traffic timing; cannot read weights, prompts, or KV cache; cannot bypass provider EKM release policy | ✅ Addressed for confidentiality |
+| **A3 — Cloud insider with host root** | Can terminate nodes or observe traffic timing; cannot read weights, prompts, or KV cache; cannot bypass provider EKM release policy | ✅ Addressed for confidentiality — **only on sealed runners.** On a default-configuration Hypercluster instance, platform administrators and SREs retain SSH access and this row is ❌ (Module 5, §2.5) |
 | **A4 — Physical / DMA attacker** | Memory and bus lines are encrypted with hardware integrity protection | ✅ Addressed |
 | **B1 — Compromised container image** | Has full in-enclave access | ⚠️ Mitigated by supply chain: cosign signing, Binary Authorization, attested digest allowlist |
 | **B2 — Malicious model provider** | Author of the inference code holding plaintext prompt | ⚠️ Partially addressed: VPC Service Controls, no unauthorized egress, audited open codebase (P2b constraint) |

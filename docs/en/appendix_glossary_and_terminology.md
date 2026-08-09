@@ -314,7 +314,13 @@ The hardware gate that refuses compute until attestation has succeeded (`nvidia-
 ## 8. Google Cloud
 
 ### GKE Hypercluster
-Google Cloud's purpose-built supercomputing-scale Kubernetes architecture designed for massive AI training and confidential LLM serving. Integrates confidential GPU node pools, high-throughput storage (GCS FUSE / Hyperdisk ML), and AI orchestration engines. → Module 5, §2 & Module 6, §2
+Google Cloud's supercomputing-scale Kubernetes architecture: a single conformant control plane managing accelerator capacity as **linked runners** — instances not registered as `Node` objects and carrying no Kubernetes agents — across regions. Eligibility-gated. **Scale is not a confidentiality property**; see Sealed configuration. → Module 5, §2 & §2.5, Module 6, §2
+
+### Sealed configuration (Hypercluster)
+The runner mode that makes Hypercluster confidential: minimal OS image with SSH and container shell disabled, an attestation agent reporting firmware and workload measurements, instance-enforced signed-image-digest policy, and an explicit statement that administrators and Google personnel cannot access the host. **The default configuration retains administrator and SRE SSH access and is not a confidential deployment.** → Module 5, §2.5
+
+### Titanium Intelligence Enclave (TIE)
+The TEE backing sealed Hypercluster runners on TPUs, part of Google's Private AI Compute platform. GPU-based sealed runners use NVIDIA Confidential Computing instead. → Module 5, §2.5
 
 ### AI Hypercomputer
 Google Cloud's holistic AI supercomputing architecture combining performance-optimized hardware, open software frameworks (LeaderWorkerSet, Kueue, JobSet), and storage systems. → Module 5, §2

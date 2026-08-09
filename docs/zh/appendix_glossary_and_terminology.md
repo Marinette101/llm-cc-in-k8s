@@ -314,7 +314,13 @@ AMD 的可信设备指派，把 Instinct 加速器与 SEV-SNP 配对。→ 模�
 ## 8. Google Cloud
 
 ### GKE Hypercluster
-Google Cloud 专为大规模 AI 训练与机密 LLM 推理构建的超算级 Kubernetes 架构。深度整合机密 GPU 加速节点池、高吞吐存储（GCS FUSE / Hyperdisk ML）与 AI 编排引擎。→ 模块 5 §2 与 模块 6 §2
+Google Cloud 的超算级 Kubernetes 架构：单个符合一致性标准的控制面，以**链接运行器（linked runners）**的形式跨区域管理加速器算力——这些实例不注册为 `Node` 对象，也不带 Kubernetes agent。需资格准入。**规模本身不是机密性属性**；见"密封配置"。→ 模块 5 §2 与 §2.5、模块 6 §2
+
+### 密封配置（Sealed configuration，Hypercluster）
+让 Hypercluster 真正具备机密性的那种运行器模式：最小化 OS 镜像、禁用 SSH 与容器 shell、运行一个上报固件与工作负载度量值的证明 agent、由实例侧强制签名镜像 digest 策略，并明确声明管理员与 Google 人员无法访问宿主。**默认配置保留管理员与 SRE 的 SSH 访问权，不是一个机密部署。** → 模块 5 §2.5
+
+### Titanium Intelligence Enclave (TIE)
+在 TPU 上支撑密封 Hypercluster 运行器的 TEE，属于 Google 的 Private AI Compute 平台。基于 GPU 的密封运行器则改用 NVIDIA Confidential Computing。→ 模块 5 §2.5
 
 ### AI Hypercomputer
 Google Cloud 的一体化 AI 超算架构，结合了针对性能优化的硬件体系、开源软件框架（LeaderWorkerSet、Kueue、JobSet）与高吞吐存储系统。→ 模块 5 §2

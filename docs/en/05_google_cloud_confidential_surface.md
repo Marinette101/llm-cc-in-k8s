@@ -163,6 +163,33 @@ To achieve 3P MaaS isolation on GKE without abandoning Kubernetes, production ar
 - Node auto-provisioning supports SEV and SEV-SNP, but not TDX — which matters, because TDX is the confidential-GPU path.
 - Maintenance events cause disruption where live migration is unavailable (`maintenance-policy=TERMINATE`).
 
+### 2.5 Hypercluster: Default versus Sealed, and Why Only One of Them Counts
+
+Everything in §2.1 about Hypercluster describes scale and orchestration. None of it is a confidentiality property. The confidentiality property lives in a configuration choice that is easy to miss and that decides whether any of this module's argument applies.
+
+Hypercluster runs accelerator capacity as **linked runners** — instances that, in Google's words, "aren't registered as `Node` objects in the Kubernetes API server" and carry "no Kubernetes agents and a minimal set of GKE components." A small number of ordinary **control nodes** manage a very large number of these runners, across regions. That split is itself security-relevant: much of §2.3's attack surface exists because a full kubelet and the control plane's scheduling authority live inside the TEE with your workload. Runners shrink that surface considerably.
+
+But the runners come in two configurations, and they are not variants of each other:
+
+| | **Default configuration** | **Sealed configuration** |
+| :--- | :--- | :--- |
+| Host OS | Container-Optimized OS | Minimal COS image |
+| SSH to the instance | **Available** to platform administrators and SREs | Disabled |
+| Container shell access | Available | Disabled |
+| Google personnel access | Available for troubleshooting | **"Administrators and Google personnel can't access host instances"** |
+| TEE | Not the point of this mode | Titanium Intelligence Enclave (TPU) / NVIDIA CC (GPU) |
+| Attestation | — | Agent sends firmware and workload measurements to Google Cloud Attestation |
+| Workload admission | Ordinary Kubernetes | Instance-enforced policy requiring signed container image digests |
+
+**The default configuration is not a confidential deployment.** Platform administrators and emergency personnel can SSH to the instance. Against adversary A3 that is the §2.3 failure with a second door added, and no amount of Binary Authorization or Pod Security Admission changes it — those are control-plane policies, and the SSH path does not traverse the control plane. If you take one operational fact from this module, take this one: **a Hypercluster is not confidential because it is a Hypercluster; it is confidential because it is sealed.**
+
+The sealed configuration is a genuinely different claim, and it is the one that matters for third-party model serving. Disabled shell access, an attestation agent covering firmware *and* workload, instance-side enforcement of signed image digests, and an explicit no-access statement covering Google's own personnel — that is the Confidential Space property set (§3), arriving this time with Kubernetes orchestration attached rather than instead of it. §6.2 recommends Confidential Space partly because Confidential GKE Nodes cannot make that claim. Sealed Hypercluster can, which is why §6 revisits the recommendation.
+
+Two qualifications belong next to that, and neither is a footnote:
+
+1. **The verifier is Google Cloud Attestation.** The attestation agent reports measurements to a Google service and receives claims tokens back. Read Module 3, §1.3 again with that in mind: for a model provider whose threat model includes Google, a Google-issued token attesting to Google's infrastructure is the cloud-operated-verifier row, which is the weakest of the three. The sealed configuration removes Google's *operational* access; it does not by itself remove Google from the *appraisal* path. Getting the strong version still means doing what Module 3's lab does — verifying raw evidence yourself and holding the key outside the workload's project.
+2. **Eligibility and observability.** Hypercluster is "available only to eligible GKE customers" and Google is direct that it is not intended for most production AI/ML workloads, with "increased operational friction" as an accepted tradeoff. GKE logging and monitoring agents are absent from linked infrastructure. Module 7's chapter on debugging without SSH is not a thought experiment here — it is the operating manual.
+
 ---
 
 ## Part 3: Confidential Space

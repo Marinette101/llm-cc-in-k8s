@@ -39,7 +39,7 @@
 
 在机密计算下提供前沿 LLM（70B、405B、MoE 架构）服务需要高带宽多 GPU 互联、分布式多节点编排、低延迟权重流式加载以及动态算力调度。现代生产架构分布在三种不同模式上：
 
-1. **原生 GKE Hypercluster（配合机密加速节点池，主要参考架构）**：通过 [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws) 直接在机密 GPU 节点池上运行分布式推理（如 vLLM / TensorRT-LLM）。Pod 内运行的证明代理直接获取底层硬件 quote，向模型提供方外部 KMS 解封 DEK 并流式加载到受保护 HBM 中。控制面风险通过 Binary Authorization 镜像签名准入、严格 Pod 安全策略、私有端点以及 Pod 内端到端载荷加密彻底化解。
+1. **原生 GKE Hypercluster（配合机密加速节点池，主要参考架构）**：通过 [LeaderWorkerSet (LWS)](https://github.com/kubernetes-sigs/lws) 直接在机密 GPU 节点池上运行分布式推理（如 vLLM / TensorRT-LLM）。Pod 内运行的证明代理直接获取底层硬件 quote，向模型提供方外部 KMS 解封 DEK 并流式加载到受保护 HBM 中。控制面风险主要靠让运行器跑在**密封配置**下来化解（模块 5 §2.5）——它在实例侧禁用 SSH 与 shell 访问，并把签名镜像 digest 的强制点放在实例上而非控制面；Binary Authorization 镜像签名准入、严格 Pod 安全策略、私有端点以及 Pod 内端到端载荷加密则作为纵深防御。**在默认配置下这套模式不成立**，因为管理员的 SSH 会绕过上述每一项控制。
 2. **GKE Hypercluster 分离平面 / 混合编排**：由 GKE Hypercluster 充当不可信前端调度器（Kueue / Dynamic Workload Scheduler）与 L4 路由器，将实际计算分发给独立的 [Confidential Space](05_google_cloud_confidential_surface.md#part-3-confidential-space) 工作节点（适用于合规政策绝对严禁任何宿主机 agent 驻留的场景）。
 3. **基于机密容器（CoCo）的 GKE Hypercluster**：采用 microVM 运行时（如基于 TDX/SEV-SNP 的 Kata Containers），每个 Pod 独占独立的硬件 TEE，将宿主机 Kubelet 与操作系统彻底置于 Pod 的信任边界之外。
 
@@ -173,6 +173,78 @@ flowchart TD
 **轮转：** 轮转 KEK 意味着在提供方 KMS 中重新封装 DEK——很便宜，毫秒级生效，且完全不触碰加密后的权重文件。轮转 DEK 意味着重新加密整个模型——很贵。**将系统设计为"日常操作仅轮转 KEK"。**
 
 **吊销：** 从释放策略里删掉一个镜像摘要，能阻止**新** Pod 拿到密钥。已在运行的 Pod 仍在内存中持有 DEK。如果吊销必须立即生效，需结合短期密钥租约与周期性重新证明机制；一旦租约续期失败，推理进程立即销毁并擦除 GPU 显存。
+
+### 3.4 你实际要部署些什么
+
+上面那套架构是一张图。下面这份是对象清单，而组织它的依据只有一个真正要紧的问题：**谁能改动它。** 模块 3 的实验展示过：一个握有 project-owner 权限的攻击者，压根不碰工作负载就偷走了密钥——他改的是释放策略。下面每一项的摆放位置，都是为了让那次攻击失败。
+
+#### 提供方平面 —— 位于集群运维方的 IAM 之外
+
+这些对象必须住在一个集群管理员并不持有其 IAM 的项目里。做不到这一点，其余的都是装饰。
+
+| 对象 | 为什么它在这里 |
+| :--- | :--- |
+| **KEK**，位于 Cloud HSM 或 Cloud EKM | 密钥本身。如果它在运维方项目里，整个保证就退化成那个项目的 IAM |
+| **验证服务**，评估原始证据 | 模块 3 §1.3 的第二行。即便在密封运行器上，也别让 Google Cloud Attestation 的 token 成为唯一的评估 |
+| **参考值** —— 批准的度量值、TCB 下界、镜像 digest、GPU RIM | 攻击者最想改的那份白名单 |
+| **Binary Authorization attestor 密钥** | 谁握着签名密钥，谁就定义了什么叫"已批准" |
+
+#### 集群平面 —— Kubernetes 对象
+
+```yaml
+# 工作负载身份绑定：一个能联合到提供方 KMS 的 K8s SA
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: inference-sa
+  namespace: confidential-serving
+  annotations:
+    iam.gke.io/gcp-service-account: infer@OPERATOR_PROJECT.iam.gserviceaccount.com
+---
+# 出站白名单：Pod 只与验证方、KMS 和权重存储桶通信。
+# 别的都不行。正是它把"信任这个镜像"变成了"约束这个镜像"。
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: inference-egress
+  namespace: confidential-serving
+spec:
+  podSelector:
+    matchLabels: { app: inference }
+  policyTypes: [Egress]
+  egress:
+    - to: [{ ipBlock: { cidr: PROVIDER_VERIFIER_CIDR } }]
+    - to: [{ ipBlock: { cidr: PROVIDER_KMS_CIDR } }]
+```
+
+与之并列的还有：承载证明 agent 的 `LeaderWorkerSet`、一条 `requireAttestationsBy` 指向提供方 attestor 的 Binary Authorization 策略、给命名空间打上 `pod-security.kubernetes.io/enforce: restricted`，以及——在密封运行器上——由实例侧强制、把签名镜像 digest 钉死的工作负载策略。
+
+#### RBAC，以及它到底是干什么用的
+
+人的直觉是把 RBAC 当成一种机密性控制。在这套设计里它不是。机密性来自硬件；RBAC 存在的意义，是堵住模块 5 实验里用一条命令走通的那条**人的**路径：
+
+```yaml
+# RBAC 里没有 "deny" 动词 —— 你是靠从不授予来关掉 exec 的。
+# 请审计任何授予了下面这四个子资源的 Role 或 ClusterRole。
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: inference-operator
+  namespace: confidential-serving
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  # 刻意不给的：pods/exec、pods/attach、pods/portforward、
+  # pods/ephemeralcontainers。每一个都是通往信任边界内部的一个 shell。
+  - apiGroups: ["leaderworkerset.x-k8s.io"]
+    resources: ["leaderworkersets"]
+    verbs: ["get", "list", "watch", "update"]
+```
+
+不要只顾着写新策略，更要去审计集群里**已有的**授权——对每个主体跑 `kubectl auth can-i --list`，并在所有 `ClusterRole` 里横扫一遍 `pods/exec`，包括你的平台团队早已持有的那些 `cluster-admin` 绑定。
+
+接下来这句话让整段话保持诚实。**RBAC 由 API server 强制执行，而 API server 由 Google 运营、位于你的 TEE 之外。** 它约束的是你的工程师；它约束不了 A3 攻击者，因为后者根本不需要经过准入控制。在**密封**运行器上，这个缺口由实例自己堵上——shell 访问是在镜像里被禁用的，而不是被策略拒绝的。在默认运行器上，没有任何东西堵它。这就是上一模块 §2.5 换成部署后果的说法：对付"无意的内部人"，RBAC 是对的控制；对付"设计上的内部人"，它是错的控制。
 
 ---
 
@@ -350,7 +422,7 @@ flowchart TD
 | :--- | :--- | :--- |
 | **A1 — 恶意邻居租户** | 无法访问 CVM DRAM 或 GPU HBM；受硬件 TEE 隔离 | ✅ 已防御 |
 | **A2 — 被攻破的 Hypervisor** | 在 DRAM 与 PCIe 总线上只能看到密文；受 TDX 与 GPU CC 完整性保护 | ✅ 已防御 |
-| **A3 — 拥有 Host Root 的云内部人员** | 能停机或分析流量时序；无法读取权重、Prompt 或 KV Cache；无法绕过提供方 EKM 策略 | ✅ 机密性已防御 |
+| **A3 — 拥有 Host Root 的云内部人员** | 能停机或分析流量时序；无法读取权重、Prompt 或 KV Cache；无法绕过提供方 EKM 策略 | ✅ 机密性已防御 —— **仅在密封运行器上成立。** 在默认配置的 Hypercluster 实例上，平台管理员与 SRE 保有 SSH 访问权，此行应为 ❌（模块 5 §2.5） |
 | **A4 — 物理 / DMA 攻击者** | 内存与总线具备硬件级完整性加密 | ✅ 已防御 |
 | **B1 — 被篡改的镜像** | 在 Enclave 内拥有完全权限 | ⚠️ 依赖供应链防护：cosign 签名、Binary Authorization、证明摘要白名单 |
 | **B2 — 恶意模型提供方** | 编写了持有明文 Prompt 的代码 | ⚠️ 部分防御：VPC Service Controls、阻断任意出网、开源审计（P2b 边界） |
